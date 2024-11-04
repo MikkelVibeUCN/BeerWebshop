@@ -17,9 +17,9 @@ namespace BeerWebshop.RESTAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBeer([FromBody] Product beer)
+        public async Task<IActionResult> CreateBeer([FromBody] Product product)
         {
-            var result = _productDAO.CreateBeerAsync(beer);
+            var result = _productDao.CreateAsync(product);
             return Ok(result);
         }
     }

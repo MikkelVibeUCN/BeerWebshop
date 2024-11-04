@@ -11,7 +11,7 @@ namespace BeerWebshop.RESTAPI
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<IProductDAO, ProductDAO>();
+            builder.Services.AddScoped<IProductDAO, ProductDAOStub>();
 
             var app = builder.Build();
 

@@ -7,38 +7,43 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
 public class ProductDAO : IProductDAO
 {
+    private const string _insertProductSql = @"
+        INSERT INTO Products (Name, Brewery, Price, Description, Stock, ABV, Category)
+        VALUES (@Name, @Brewery, @Price, @Description, @Stock, @ABV, @Category);
+        SELECT CAST(SCOPE_IDENTITY() AS int);";
+
+    private const string _getByIdSql = @"SELECT * FROM Products WHERE Id = @Id;";
+
     private readonly string _connectionString;
 
     public ProductDAO(string connectionString)
     {
         _connectionString = connectionString;
     }
-    public async Task<int> CreateAsync(Product beer)
+    public async Task<int> CreateAsync(Product product)
     {
-        const string sql = @"
-        INSERT INTO Products (Name, Brewery, Price, Description, Stock, ABV, Category)
-        VALUES (@Name, @Brewery, @Price, @Description, @Stock, @ABV, @Category);
-        SELECT CAST(SCOPE_IDENTITY() AS int);";
-
-        using (var connection = new SqlConnection("YourConnectionString"))
+        try
         {
-            connection.Open();
-            var id = await connection.ExecuteScalarAsync<int>(sql, new
-            {
-                beer.Name,
-                beer.Brewery,
-                beer.Price,
-                beer.Description,
-                beer.Stock,
-                beer.ABV,
-                beer.Category
-            });
-            return id;
+            using var connection = new SqlConnection(_connectionString);
+            return (await connection.QuerySingleAsync<int>(_insertProductSql, product));
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error creating product: {ex.Message}", ex);
         }
     }
 
-    public Task<Product> GetByIdAsync(int id)
+    public async Task<Product> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            return await connection.QuerySingleAsync<Product>(_getByIdSql, new { Id = id });
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error getting product by id: {ex.Message}", ex);
+        }
+
     }
 }
