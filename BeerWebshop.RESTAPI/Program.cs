@@ -1,4 +1,6 @@
 
+using BeerWebshop.RESTAPI.Services;
+
 namespace BeerWebshop.RESTAPI
 {
     public class Program
@@ -13,6 +15,7 @@ namespace BeerWebshop.RESTAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSingleton<IBeerDao, BeerDaoStub>();
 
             var app = builder.Build();
 
