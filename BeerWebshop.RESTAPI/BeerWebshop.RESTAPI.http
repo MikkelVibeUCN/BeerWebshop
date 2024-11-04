@@ -1,0 +1,6 @@
+@BeerWebshop.RESTAPI_HostAddress = http://localhost:5071
+
+GET {{BeerWebshop.RESTAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
