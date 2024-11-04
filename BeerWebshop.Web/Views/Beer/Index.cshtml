@@ -58,7 +58,7 @@
                 @Html.DisplayFor(modelItem => item.Type)
             </td>
             <td>
-                @Html.ActionLink("Tilføj til kurv", "AddToCart", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Tilføj til kurv", "AddToCart", new { /* id=item.PrimaryKey */ }) | @Html.ActionLink("Details", "Details", new { id = item.Id })
             </td>
         </tr>
 }
