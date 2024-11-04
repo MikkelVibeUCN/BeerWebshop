@@ -20,11 +20,6 @@ namespace BeerWebshop.Web.Controllers
             IEnumerable<Beer> beers = _restClient.GetTenLatestBeers();
             return View(beers);
         }
-        // GET: BeerController
-        public ActionResult Index()
-        {
-            return View();
-        }
 
         // GET: BeerController/Details/5
         public ActionResult Details(int id)
