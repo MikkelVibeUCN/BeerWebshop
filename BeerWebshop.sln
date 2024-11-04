@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerWebshop.Web", "BeerWebshop.Web\BeerWebshop.Web.csproj", "{B2643EFE-5A5E-4E47-B7FA-2E96D502D5F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{D01538FE-A50E-44F2-BC84-5FFCDC9D12E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerWebshop.DAL", "DAL\BeerWebshop.DAL.csproj", "{D01538FE-A50E-44F2-BC84-5FFCDC9D12E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerWebshop.DesktopClient", "BeerWebshop.DesktopClient\BeerWebshop.DesktopClient.csproj", "{BCD3FEE2-CFCF-42B6-9124-0E8E94E46D58}"
 EndProject
