@@ -11,7 +11,7 @@ namespace BeerWebshop.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddScoped<IRestClient, RestClientStub>();
+            builder.Services.AddSingleton<IRestClient, RestClientStub>();
 
             var app = builder.Build();
 

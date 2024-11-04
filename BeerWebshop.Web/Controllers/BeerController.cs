@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.Web.Controllers
 {
-    public class BeersController : Controller
+    public class BeerController : Controller
     {
         private readonly IRestClient _restClient;
 
-        public BeersController(IRestClient restClient)
+        public BeerController(IRestClient restClient)
         {
             _restClient = restClient;
         }
@@ -20,6 +20,13 @@ namespace BeerWebshop.Web.Controllers
             IEnumerable<Beer> beers = _restClient.GetTenLatestBeers();
             return View(beers);
         }
+
+        // GET: BeerController/Details/5
+        public ActionResult Details(int id)
+        {
+            return View(_restClient.GetBeerFromId(id));
+        }
+
 
     }
 }

@@ -1,0 +1,36 @@
+﻿@model BeerWebshop.Web.ApiClient.DTO.Beer
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>
+        Fra @Html.DisplayFor(model => model.Brewery),
+        @Html.DisplayFor(model => model.ABV)%,
+        @Html.DisplayFor(model => model.Type)
+    </h4>
+    <hr />
+
+    <!-- Image with block display -->
+    <div>
+        <img style="max-width: 450px; max-height: 300px; display: block;"
+             src="@(string.IsNullOrEmpty(Model.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : Model.Url)" alt="@Model.Name" />
+    </div>
+
+    <!-- Description as a paragraph below the image -->
+    <p>@Html.DisplayFor(model => model.Description)</p>
+</div>
+
+<div class="price-section">
+    <h4>@Html.DisplayFor(model => model.Price) kr.</h4>
+</div>
+
+<div>
+    <form asp-action="AddToCart" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-primary">Tilføj til kurv</button>
+    </form>
+</div>
