@@ -6,11 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="DAO\DAOClasses\" />
-    <Folder Include="DAO\Interfaces\" />
-    <Folder Include="Entities\" />
-    <Folder Include="Data\" />
-  </ItemGroup>
-
 </Project>
