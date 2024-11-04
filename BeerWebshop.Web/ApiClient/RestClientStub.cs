@@ -40,7 +40,7 @@ namespace BeerWebshop.Web.ApiClient
 
         public Beer GetBeerFromId(int id)
         {
-            return _beers.First(beer => beer.Id == id);
+            return _beers.FirstOrDefault(beer => beer.Id == id);
         }
 
         public IEnumerable<Beer> GetTenLatestBeers()
