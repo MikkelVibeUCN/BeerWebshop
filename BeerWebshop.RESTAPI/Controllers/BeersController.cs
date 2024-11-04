@@ -7,11 +7,11 @@ namespace BeerWebshop.RESTAPI.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class BeerController : ControllerBase
+    public class BeersController : ControllerBase
     {
         private readonly IBeerDao _beerDao;
 
-        public BeerController(IBeerDao beerDao)
+        public BeersController(IBeerDao beerDao)
         {
             _beerDao = beerDao;
         }
