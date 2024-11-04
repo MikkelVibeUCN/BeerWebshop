@@ -4,7 +4,19 @@ namespace BeerWebshop.RESTAPI.Services;
 
 public class BeerDaoStub : IBeerDao
 {
-    private static readonly List<BeerDTO> _beers = new();
+    private static readonly List<BeerDTO> _beers = new()
+    {
+        new BeerDTO
+        {
+            Id = 1,
+            Name = "Heineken",
+            Price = 1.5m,
+            Description = "Heineken is a pale lager beer with 5% alcohol by volume produced by the Dutch brewing company Heineken International.",
+            Stock = 100,
+            ABV = 5,
+            Category = "Lager"
+        }
+    };
 
     public Task<int> CreateBeerAsync(BeerDTO beer)
     {
@@ -13,8 +25,8 @@ public class BeerDaoStub : IBeerDao
         return Task.FromResult(beer.Id);
     }
 
-    public Task<BeerDTO> GetBearByIdAsync(int id)
+    public async Task<BeerDTO?> GetBearByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(_beers.FirstOrDefault(b => b.Id == id));
     }
 }
