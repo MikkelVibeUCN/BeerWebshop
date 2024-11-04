@@ -2,7 +2,7 @@
 {
     public class Beer
     {
-        public required int Id { get; set; }
+        public int Id { get; set; }
         public required string Name { get; set; }
         public required string Brewery { get; set; }
         public required float Price { get; set; }
