@@ -1,6 +1,5 @@
-﻿using BeerWebshop.RESTAPI.DTO;
-using BeerWebshop.RESTAPI.Services;
-using Microsoft.AspNetCore.Http;
+﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
+using BeerWebshop.DAL.DATA.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers
@@ -9,15 +8,15 @@ namespace BeerWebshop.RESTAPI.Controllers
     [ApiController]
     public class BeersController : ControllerBase
     {
-        private readonly IBeerDao _beerDao;
+        private readonly IBeerDAO _beerDao;
 
-        public BeersController(IBeerDao beerDao)
+        public BeersController(IBeerDAO beerDao)
         {
             _beerDao = beerDao;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBeer([FromBody] BeerDTO beer)
+        public async Task<IActionResult> CreateBeer([FromBody] Beer beer)
         {
             var result = _beerDao.CreateBeerAsync(beer);
             return Ok(result);

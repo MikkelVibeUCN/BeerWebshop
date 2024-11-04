@@ -12,7 +12,7 @@ namespace BeerWebshop.DAL.DATA.Entities
         public string Brewery { get; set; }
         public float Price { get; set; }
         public string Description { get; set; }
-        public int stock { get; set; }
+        public int Stock { get; set; }
         public float ABV { get; set; }
         public string Category { get; set; }
         public int? Id { get; set; }
@@ -23,7 +23,7 @@ namespace BeerWebshop.DAL.DATA.Entities
             Brewery = brewery;
             Price = price;
             Description = description;
-            this.stock = stock;
+            Stock = stock;
             ABV = abv;
             Category = category;
             Id = id;
