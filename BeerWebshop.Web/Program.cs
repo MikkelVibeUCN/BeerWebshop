@@ -1,3 +1,5 @@
+using BeerWebshop.Web.ApiClient;
+
 namespace BeerWebshop.Web
 {
     public class Program
@@ -8,6 +10,8 @@ namespace BeerWebshop.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSingleton<IRestClient, RestClientStub>();
 
             var app = builder.Build();
 
