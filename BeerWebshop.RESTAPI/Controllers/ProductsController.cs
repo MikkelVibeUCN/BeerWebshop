@@ -16,8 +16,15 @@ namespace BeerWebshop.RESTAPI.Controllers
             _productDao = productDAO;
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdAsync(int id)
+        {
+            var result = _productDao.GetByIdAsync(id);
+            return Ok(result);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateBeer([FromBody] Product product)
+        public async Task<IActionResult> CreateAsync([FromBody] Product product)
         {
             var result = _productDao.CreateAsync(product);
             return Ok(result);

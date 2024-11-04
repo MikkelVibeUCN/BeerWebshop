@@ -5,7 +5,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
 public class ProductDAOStub : IProductDAO
 {
-    private static readonly List<Product> products = new();
+    private static readonly List<Product> products = new()
+    {
+         new Product("Test Beer", "Test Brewery", 2.99f, "Test Description", 100, 5.0f, "Test Category", 1)
+    };
 
     public Task<int> CreateAsync(Product product)
     {
