@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 
-public interface IBeerDAO
+public interface IProductDAO
 {
-    Task<int> CreateBeerAsync(Beer beer);
-    Task<Beer> GetBeerByIdAsync(int id);
+    Task<int> CreateAsync(Product beer);
+    Task<Product> GetByIdAsync(int id);
 }

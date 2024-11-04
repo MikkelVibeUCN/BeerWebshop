@@ -10,7 +10,7 @@ namespace BeerWebshop.DAL.DATA.Entities
     {
         public int? Id { get; set; }
         public int Quantity { get; set; }
-        public Beer Beer { get; set; }
+        public Product Beer { get; set; }
 
         public float SubTotal
         {
@@ -20,7 +20,7 @@ namespace BeerWebshop.DAL.DATA.Entities
             }
         }
 
-        public OrderLine(int quantity, Beer beer, int? id = null)
+        public OrderLine(int quantity, Product beer, int? id = null)
         {
             Id = id;
             Quantity = quantity;

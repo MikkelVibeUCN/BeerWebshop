@@ -5,15 +5,15 @@ using System.Data.SqlClient;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
-public class BeerDao : IBeerDAO
+public class ProductDAO : IProductDAO
 {
     private readonly string _connectionString;
 
-    public BeerDao(string connectionString)
+    public ProductDAO(string connectionString)
     {
         _connectionString = connectionString;
     }
-    public async Task<int> CreateBeerAsync(Beer beer)
+    public async Task<int> CreateAsync(Product beer)
     {
         const string sql = @"
         INSERT INTO Products (Name, Brewery, Price, Description, Stock, ABV, Category)
@@ -37,7 +37,7 @@ public class BeerDao : IBeerDAO
         }
     }
 
-    public Task<Beer> GetBeerByIdAsync(int id)
+    public Task<Product> GetByIdAsync(int id)
     {
         throw new NotImplementedException();
     }
