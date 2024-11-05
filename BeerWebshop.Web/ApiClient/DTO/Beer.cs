@@ -10,6 +10,7 @@
         public required int Stock { get; set; }
         public float ABV { get; set; }
         public required string Type { get; set; }
+        public string Url { get; set; }
 
 
     }
