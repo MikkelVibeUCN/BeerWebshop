@@ -7,14 +7,17 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <UserSecretsId>30ba8078-d9bc-46e5-bce5-6cd5e879e14b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,8 +28,12 @@
     <Folder Include="APIClientLibraryTests\" />
     <Folder Include="RESTAPITests\" />
     <Folder Include="DesktopClientTests\" />
-    <Folder Include="DALTests\" />
     <Folder Include="WebTests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BeerWebshop.DAL\BeerWebshop.DAL.csproj" />
+    <ProjectReference Include="..\BeerWebshop.RESTAPI\BeerWebshop.RESTAPI.csproj" />
   </ItemGroup>
 
 </Project>

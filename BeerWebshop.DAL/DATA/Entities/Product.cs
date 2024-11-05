@@ -17,6 +17,9 @@ namespace BeerWebshop.DAL.DATA.Entities
         public string Category { get; set; }
         public int? Id { get; set; }
         
+        public Product()
+        {
+        }
         public Product(string name, string brewery, float price, string description, int stock, float abv, string category, int? id = null)
         {
             Name = name;

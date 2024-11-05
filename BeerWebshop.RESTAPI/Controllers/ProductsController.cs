@@ -1,5 +1,4 @@
-﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
+﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,15 +18,15 @@ namespace BeerWebshop.RESTAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var result = _productDao.GetByIdAsync(id);
+            var result = await _productDao.GetByIdAsync(id);
             return Ok(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] Product product)
         {
-            var result = _productDao.CreateAsync(product);
-            return Ok(result);
+            var productId = await _productDao.CreateAsync(product);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = productId }, product);
         }
     }
 }
