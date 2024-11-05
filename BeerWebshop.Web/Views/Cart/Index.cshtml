@@ -149,8 +149,19 @@
             });
 
             $('#pay-button').on('click', function () {
-                // Redirect to payment page or perform payment action
-                window.location.href = '/Payment'; // Change to your payment URL
+                // Count items in the cart
+                var itemCount = $('.quantity-input').toArray().reduce((count, input) => {
+                    return count + (parseInt($(input).val()) || 0);
+                }, 0);
+
+                // Check if there are items in the cart
+                if (itemCount > 0) {
+                    // Perform payment action
+                    window.location.href = '/Checkout'; // Change to your payment URL
+                } else {
+                    // Optionally show a notification if cart is empty
+                    window.showNotification('Kurven er tom. Tilføj venligst varer, før du går til kassen.', 'error');
+                }
             });
         });
     </script>
