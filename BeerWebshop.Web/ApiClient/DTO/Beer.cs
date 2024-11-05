@@ -11,5 +11,6 @@
         public float ABV { get; set; }
         public required string Type { get; set; }
 
+
     }
 }
