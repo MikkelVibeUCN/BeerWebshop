@@ -1,6 +1,6 @@
 ﻿namespace BeerWebshop.Web.ApiClient.DTO
 {
-    public class Beer
+    public class Product
     {
         public int Id { get; set; }
         public required string Name { get; set; }
