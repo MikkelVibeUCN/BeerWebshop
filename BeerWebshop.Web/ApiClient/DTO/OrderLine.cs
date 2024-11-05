@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BeerWebshop.DAL.DATA.Entities
+﻿namespace BeerWebshop.Web.ApiClient.DTO
 {
     public class OrderLine
     {
-        public int? Id { get; set; }
         public int Quantity { get; set; }
         public Product Product { get; set; }
 
@@ -20,11 +13,10 @@ namespace BeerWebshop.DAL.DATA.Entities
             }
         }
 
-        public OrderLine(int quantity, Product Product, int? id = null)
+        public OrderLine(int quantity, Product product)
         {
-            Id = id;
             Quantity = quantity;
-            Product = Product;
+            Product = product;
         }
     }
 }

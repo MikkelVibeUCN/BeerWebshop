@@ -1,4 +1,5 @@
 using BeerWebshop.Web.ApiClient;
+using BeerWebshop.Web.Services;
 
 namespace BeerWebshop.Web
 {
@@ -11,7 +12,16 @@ namespace BeerWebshop.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddSingleton<IRestClient, RestClientStub>();
+            IRestClient restClient = new RestClientStub();
+            builder.Services.AddSingleton(restClient);
+
+            var beerService = new BeerService(restClient);
+            builder.Services.AddSingleton(beerService);
+
+            ICartService cartService = new CartServiceStop(beerService);
+            builder.Services.AddSingleton(cartService);
+
+            
 
             var app = builder.Build();
 

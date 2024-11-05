@@ -4,9 +4,9 @@ namespace BeerWebshop.Web.ApiClient
 {
     public interface IRestClient
     {
-        IEnumerable<Beer> GetTenLatestBeers();
-        Beer GetBeerFromId(int id);
-        int AddNewBeer(Beer beer);
+        IEnumerable<Product> GetTenLatestBeers();
+        Product GetBeerFromId(int id);
+        int AddNewBeer(Product product);
 
     }
 }

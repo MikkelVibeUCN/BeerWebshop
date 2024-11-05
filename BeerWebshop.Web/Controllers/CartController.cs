@@ -1,20 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BeerWebshop.Web.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace BeerWebshop.Web.Controllers
 {
     public class CartController : Controller
     {
+        private readonly ICartService _cartService;
+        public CartController(ICartService cartService)
+        {
+            _cartService = cartService;
+        }
+
+
         // GET: CartController
         public ActionResult Index()
         {
-            return View();
-        }
-
-        // GET: CartController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
+            var cart = _cartService.GetCart();
+            return View(cart);
         }
 
         // GET: CartController/Create
@@ -78,6 +82,25 @@ namespace BeerWebshop.Web.Controllers
             {
                 return View();
             }
+        }
+
+
+        [HttpPost]
+        public void RemoveOrderLine(int productId)
+        {
+            _cartService.RemoveFromCart(productId);
+        }
+
+        [HttpPost]
+        public void UpdateQuantity(int productId, int newQuantity)
+        {
+            _cartService.UpdateQuantity(productId, newQuantity);
+        }
+
+        [HttpPost]
+        public void AddToCart(int productId, int quantity)
+        {
+            _cartService.AddToCart(productId, quantity);
         }
     }
 }
