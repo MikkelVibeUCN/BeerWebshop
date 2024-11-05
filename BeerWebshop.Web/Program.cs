@@ -18,7 +18,7 @@ namespace BeerWebshop.Web
             var beerService = new BeerService(restClient);
             builder.Services.AddSingleton(beerService);
 
-            ICartService cartService = new CartServiceStop(beerService);
+            ICartService cartService = new CartService(beerService);
             builder.Services.AddSingleton(cartService);
 
             
