@@ -28,4 +28,13 @@ public class ProductApiClientTest
         Assert.AreEqual(existingBeerId, result.Id);
     }
 
+    [Test]
+    public async Task GetBeerFromCategoryAsync_WhenCategoryExist_ShouldReturnBeers()
+    {
+        var productsFromCategory = (await _productAPIClient.GetBeerByCategory("IPA")).ToList();
+
+        Assert.IsTrue(productsFromCategory.Count >= 5, "There should be at least five product in the IPA category.");
+        Assert.IsTrue(productsFromCategory.All(p => p.Category == "IPA"), "All products should be in the IPA category.");
+    }
+
 }
