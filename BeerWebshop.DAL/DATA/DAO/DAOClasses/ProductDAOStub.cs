@@ -26,4 +26,9 @@ public class ProductDAOStub : IProductDAO
     {
         throw new NotImplementedException();
     }
+
+    public Task<IEnumerable<Product>> GetAllAsync()
+    {
+        return Task.FromResult<IEnumerable<Product>>(products);
+    }
 }

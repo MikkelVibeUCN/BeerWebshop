@@ -17,6 +17,7 @@ public class ProductDAO : IProductDAO
 
     private const string _getByIdSql = @"SELECT * FROM Products WHERE Id = @Id;";
     private const string _deleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
+    private const string _getAllSql = @"SELECT * FROM Products;";
 
     private readonly string _connectionString;
 
@@ -62,6 +63,19 @@ public class ProductDAO : IProductDAO
         catch (Exception ex)
         {
             throw new Exception($"Error getting products from category: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<IEnumerable<Product>> GetAllAsync()
+    {
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            return await connection.QueryAsync<Product>(_getAllSql);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error getting all products: {ex.Message}", ex);
         }
     }
 

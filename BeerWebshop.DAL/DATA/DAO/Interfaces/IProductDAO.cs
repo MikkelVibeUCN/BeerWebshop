@@ -13,4 +13,6 @@ public interface IProductDAO
     Task<Product> GetByIdAsync(int id);
 
     Task<IEnumerable<Product>> GetFromCategoryAsync(string category);
+
+    Task<IEnumerable<Product>> GetAllAsync();
 }

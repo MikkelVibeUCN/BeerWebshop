@@ -36,6 +36,11 @@ namespace BeerWebshop.Web.Services
 
             Product beer = _beerService.GetBeerFromId(productId);
 
+            if (!HasEnoughStock(beer, quantity))
+            {
+                throw new Exception("Not enough stock");
+            }
+
             if (HasProductInCart(beer.Id))
             {
                 OrderLine orderLine = Cart.OrderLines.First(ol => ol.Product.Id == beer.Id);
@@ -51,21 +56,45 @@ namespace BeerWebshop.Web.Services
 
         public void RemoveFromCart(int productId)
         {
-            if (HasProductInCart(productId))
+            if (!HasProductInCart(productId))
             {
-                var orderLineToRemove = Cart.OrderLines.First(ol => ol.Product.Id == productId);
-                Cart.OrderLines.Remove(orderLineToRemove);
+                throw new Exception("Product not found in cart");
             }
+
+            var orderLineToRemove = Cart.OrderLines.First(ol => ol.Product.Id == productId);
+            Cart.OrderLines.Remove(orderLineToRemove);
         }
 
         public void UpdateQuantity(int productId, int newQuantity)
         {
-            if (HasProductInCart(productId))
+            if (!HasProductInCart(productId))
             {
-                var orderLineToUpdate = Cart.OrderLines.First(ol => ol.Product.Id == productId);
-                orderLineToUpdate.Quantity = newQuantity;
+                throw new Exception("Product not found in cart");
             }
+
+            var orderLineToUpdate = Cart.OrderLines.First(ol => ol.Product.Id == productId);
+
+            if (!HasEnoughStock(orderLineToUpdate.Product, newQuantity))
+            {
+                throw new Exception("Not enough stock");
+            }
+
+            orderLineToUpdate.Quantity = newQuantity;
         }
 
+        public bool HasEnoughStock(Product product, int quantity)
+        {
+            return product.Stock >= quantity;
+        }
+
+        public Product GetProductFromOrderlines(int productId)
+        {
+            var orderLine = Cart.OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
+            if (orderLine == null)
+            {
+                throw new InvalidOperationException($"Product with ID {productId} not found in order lines.");
+            }
+            return orderLine.Product;
+        }
     }
 }
