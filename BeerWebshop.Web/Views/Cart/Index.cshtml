@@ -42,10 +42,11 @@
     <table class="table">
         <thead>
             <tr>
-                <th style="width: 20%;">Product Name</th>
+                <th style="width: 10%"></th>
+                <th style="width: 15%;">Product Name</th>
                 <th style="width: 15%;">Brewery</th>
-                <th style="width: 10%;">Type</th>
-                <th style="width: 10%;">ABV</th>
+                <th style="width: 7.5%;">Type</th>
+                <th style="width: 7.5%;">ABV</th>
                 <th style="width: 10%;">Price</th>
                 <th style="width: 15%;">Quantity</th>
                 <th style="width: 15%;">Subtotal</th>
@@ -56,6 +57,9 @@
             @foreach (var orderLine in Model.OrderLines)
             {
                 <tr data-product-id="@orderLine.Product.Id">
+                    <td class="align-middle">
+                        <img src=@(string.IsNullOrEmpty(orderLine.Product.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLine.Product.Url) alt="@orderLine.Product.Name" style="width: 50px; height: auto;" />
+                    </td>
                     <td class="align-middle">@orderLine.Product.Name</td>
                     <td class="align-middle">@orderLine.Product.Brewery</td>
                     <td class="align-middle">@orderLine.Product.Type</td>
@@ -68,6 +72,7 @@
                                class="quantity-input form-control"
                                value="@orderLine.Quantity"
                                min="1"
+                               max="@orderLine.Product.Stock"
                                data-product-id="@orderLine.Product.Id"
                                style="width: 100%;" /> <!-- Make input fill the cell -->
                     </td>
@@ -108,6 +113,11 @@
             $(document).on('input', '.quantity-input', function () {
                 let productId = $(this).data('product-id');
                 let newQuantity = $(this).val();
+
+                if(newQuantity == 0) {
+                    $(this).val($(this).data('original-value'));
+                    return;
+                }
 
                 $.ajax({
                     url: '/Cart/UpdateQuantity',
