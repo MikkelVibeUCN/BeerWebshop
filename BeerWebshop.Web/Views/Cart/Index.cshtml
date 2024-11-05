@@ -7,42 +7,41 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Product Name</th>
-                <th>Brewery</th>
-                <th>Type</th>
-                <th>ABV</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-                <th>Action</th>
+                <th style="width: 20%;">Product Name</th>
+                <th style="width: 15%;">Brewery</th>
+                <th style="width: 10%;">Type</th>
+                <th style="width: 10%;">ABV</th>
+                <th style="width: 10%;">Price</th>
+                <th style="width: 10%;">Quantity</th>
+                <th style="width: 15%;">Subtotal</th>
+                <th style="width: 10%;">Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var orderLine in Model.OrderLines)
             {
                 <tr data-product-id="@orderLine.Product.Id">
-                    <td>@orderLine.Product.Name</td>
-                    <td>@orderLine.Product.Brewery</td>
-                    <td>@orderLine.Product.Type</td>
-                    <td>@orderLine.Product.ABV %</td>
-                    <td>@orderLine.Product.Price.ToString() kr.</td>
+                    <td class="align-middle">@orderLine.Product.Name</td>
+                    <td class="align-middle">@orderLine.Product.Brewery</td>
+                    <td class="align-middle">@orderLine.Product.Type</td>
+                    <td class="align-middle">@orderLine.Product.ABV %</td>
+                    <td class="align-middle">@orderLine.Product.Price.ToString("F2") kr.</td>
 
                     <!-- Editable Quantity Field with Auto Update -->
-                    <td>
-                        <div class="col-2">
-                            <input type="number"
-                                   class="quantity-input form-control"
-                                   value="@orderLine.Quantity"
-                                   min="1"
-                                   data-product-id="@orderLine.Product.Id" />
-                        </div>
+                    <td class="align-middle">
+                        <input type="number"
+                               class="quantity-input form-control"
+                               value="@orderLine.Quantity"
+                               min="1"
+                               data-product-id="@orderLine.Product.Id"
+                               style="width: 100%;" /> <!-- Make input fill the cell -->
                     </td>
 
                     <!-- Subtotal -->
-                    <td class="subtotal">@orderLine.SubTotal.ToString() kr.</td>
+                    <td class="align-middle subtotal">@orderLine.SubTotal.ToString("F2") kr.</td>
 
                     <!-- Remove Button -->
-                    <td>
+                    <td class="align-middle">
                         <button type="button"
                                 class="remove-button btn btn-danger"
                                 data-product-id="@orderLine.Product.Id">
@@ -61,7 +60,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Update cart when quantity changes
             $(document).on('input', '.quantity-input', function () {
                 let productId = $(this).data('product-id');
                 let newQuantity = $(this).val();
@@ -71,10 +69,9 @@
                     method: 'POST',
                     data: {
                         productId: productId,
-                        newQuantity: newQuantity // Ensure this matches your parameter name
+                        newQuantity: newQuantity
                     },
                     success: function () {
-                        // Reload the page after updating the cart
                         location.reload();
                     },
                     error: function () {
@@ -83,7 +80,6 @@
                 });
             });
 
-            // Remove product from cart
             $('.remove-button').on('click', function () {
                 let productId = $(this).data('product-id');
 
@@ -92,7 +88,6 @@
                     method: 'POST',
                     data: { productId: productId },
                     success: function () {
-                        // Reload the page after removing the product
                         location.reload();
                     },
                     error: function () {

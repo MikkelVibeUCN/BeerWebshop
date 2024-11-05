@@ -11,4 +11,6 @@ public interface IProductDAO
 {
     Task<int> CreateAsync(Product Product);
     Task<Product> GetByIdAsync(int id);
+
+    Task<IEnumerable<Product>> GetFromCategoryAsync(string category);
 }
