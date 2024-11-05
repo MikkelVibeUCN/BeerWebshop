@@ -65,4 +65,13 @@ public class ProductDaoTests
         Assert.That(createdProduct.ABV, Is.EqualTo(product.ABV));
         Assert.That(createdProduct.Category, Is.EqualTo(product.Category));
     }
+
+    [Test]
+    public async Task GetFromCategoryAsync_WhenCategoryIsIPA_ShouldReturnAllIPAProducts()
+    {
+        var productsFromCategory = (await _productDao.GetFromCategoryAsync("IPA")).ToList();
+
+        Assert.IsTrue(productsFromCategory.Count >= 5, "There should be at least five product in the IPA category.");
+        Assert.IsTrue(productsFromCategory.All(p => p.Category == "IPA"), "All products should be in the IPA category.");
+    }
 }

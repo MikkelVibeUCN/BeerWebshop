@@ -21,4 +21,9 @@ public class ProductDAOStub : IProductDAO
     {
         return Task.FromResult(products.FirstOrDefault(p => p.Id == id));
     }
+
+    public Task<IEnumerable<Product>> GetFromCategoryAsync(string category)
+    {
+        throw new NotImplementedException();
+    }
 }
