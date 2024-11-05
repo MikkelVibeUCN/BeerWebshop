@@ -1,5 +1,20 @@
 ﻿@model BeerWebshop.Web.Models.ShoppingCart
 
+<style>
+    .btn-light-green {
+        background-color: #32AA32; /* Light green background */
+        border-color: #32AA32; /* Same border color */
+        color: #FFFFFF;
+    }
+
+    .btn-light-green:hover {
+            background-color: #398439;
+            border-color: #398439;
+    }
+</style>
+
+
+
 <h1>Shopping Cart</h1>
 
 <div>
@@ -12,7 +27,7 @@
                 <th style="width: 10%;">Type</th>
                 <th style="width: 10%;">ABV</th>
                 <th style="width: 10%;">Price</th>
-                <th style="width: 10%;">Quantity</th>
+                <th style="width: 15%;">Quantity</th>
                 <th style="width: 15%;">Subtotal</th>
                 <th style="width: 10%;">Action</th>
             </tr>
@@ -53,7 +68,12 @@
         </tbody>
     </table>
 
-    <h3>Total Price: <span id="total-price">@Model.TotalPrice.ToString() kr.</span></h3>
+    <h4>Total beløb <span id="total-price">@Model.TotalPrice.ToString("F2") kr.</span></h4>
+    <button type="button" class="btn btn-light-green rounded-pill py-2 px-4" id="pay-button">
+        Gå til kassen
+    </button> <!-- Betal Button -->
+
+
 </div>
 
 @section Scripts {
@@ -94,6 +114,11 @@
                         window.showNotification('Error removing item from cart. Please try again.', 'error');
                     }
                 });
+            });
+
+            $('#pay-button').on('click', function () {
+                // Redirect to payment page or perform payment action
+                window.location.href = '/Payment'; // Change to your payment URL
             });
         });
     </script>

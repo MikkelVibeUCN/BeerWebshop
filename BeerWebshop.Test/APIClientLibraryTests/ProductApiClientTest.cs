@@ -27,4 +27,5 @@ public class ProductApiClientTest
         Assert.NotNull(result);
         Assert.AreEqual(existingBeerId, result.Id);
     }
+
 }
