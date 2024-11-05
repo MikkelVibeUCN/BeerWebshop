@@ -7,13 +7,33 @@
         color: #FFFFFF;
     }
 
-    .btn-light-green:hover {
+        .btn-light-green:hover {
             background-color: #398439;
             border-color: #398439;
+        }
+
+    .notification {
+        display: none; /* Hide by default */
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 1000;
     }
+
+        .notification.success {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green */
+            border: 1px solid #c3e6cb; /* Green border */
+        }
+
+        .notification.error {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red */
+            border: 1px solid #f5c6cb; /* Red border */
+        }
 </style>
-
-
 
 <h1>Shopping Cart</h1>
 
@@ -72,14 +92,19 @@
     <button type="button" class="btn btn-light-green rounded-pill py-2 px-4" id="pay-button">
         Gå til kassen
     </button> <!-- Betal Button -->
-
-
+    <!-- Notification Popup -->
+    <div id="notification" class="notification"></div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Track the original value before editing
+            $(document).on('focus', '.quantity-input', function () {
+                $(this).data('original-value', $(this).val());
+            });
+
             $(document).on('input', '.quantity-input', function () {
                 let productId = $(this).data('product-id');
                 let newQuantity = $(this).val();
@@ -94,9 +119,14 @@
                     success: function () {
                         location.reload();
                     },
-                    error: function () {
-                        window.showNotification('Error updating cart. Please try again.', 'error');
-                    }
+                    error: function (xhr) {
+                        // Get the original value back if the AJAX call fails
+                        var errorMessage = xhr.responseText || 'Error updating cart. Please try again.';
+                        window.showNotification(errorMessage, 'error');
+
+                        // Revert to the original value
+                        $(this).val($(this).data('original-value'));
+                    }.bind(this) // Bind 'this' to maintain context
                 });
             });
 
@@ -110,8 +140,10 @@
                     success: function () {
                         location.reload();
                     },
-                    error: function () {
-                        window.showNotification('Error removing item from cart. Please try again.', 'error');
+                    error: function (xhr) {
+                        // Use the existing window.showNotification function
+                        var errorMessage = xhr.responseText || 'Error removing item from cart. Please try again.';
+                        window.showNotification(errorMessage, 'error');
                     }
                 });
             });

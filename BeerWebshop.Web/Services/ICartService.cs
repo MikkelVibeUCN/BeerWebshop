@@ -1,4 +1,5 @@
-﻿using BeerWebshop.Web.Models;
+﻿using BeerWebshop.Web.ApiClient.DTO;
+using BeerWebshop.Web.Models;
 
 namespace BeerWebshop.Web.Services
 {
@@ -11,5 +12,9 @@ namespace BeerWebshop.Web.Services
         void UpdateQuantity(int productId, int quantity);
 
         void AddToCart(int productId, int quantity);
+
+        bool HasEnoughStock(Product product, int quantity);
+
+        Product? GetProductFromOrderlines(int productId);
     }
 }
