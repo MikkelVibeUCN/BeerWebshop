@@ -1,0 +1,28 @@
+﻿@model BeerWebshop.Web.Models.ShoppingCart
+
+<h2>Checkout</h2>
+@using (Html.BeginForm("CompleteOrder", "Cart", FormMethod.Post))
+{
+
+    <h3>Order Preview</h3>
+    <table class="table">
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+        @foreach (var item in Model.OrderLines)
+        {
+            <tr>
+                <td>@item.Product</td>
+                <td>@item.Quantity</td>
+                <td>@item.SubTotal.ToString("C")</td>
+                <td>@item.SubTotal.ToString("C")</td>
+            </tr>
+        }
+    </table>
+    <p>Total Price: @Model.TotalPrice.ToString("C")</p>
+
+    <button type="submit" class="btn btn-success">Place Order</button>
+}
