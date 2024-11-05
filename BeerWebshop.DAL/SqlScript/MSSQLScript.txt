@@ -1,0 +1,22 @@
+﻿USE [BeerWebShop]
+GO
+/****** Object:  Table [dbo].[Product]    Script Date: 04-11-2024 14:02:50 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product](
+	[Name] [nvarchar](30) NOT NULL,
+	[Brewery] [nvarchar](50) NOT NULL,
+	[Price] [float] NOT NULL,
+	[Description] [nvarchar](max) NOT NULL,
+	[Stock] [int] NOT NULL,
+	[ABV] [float] NOT NULL,
+	[Category] [nvarchar](20) NOT NULL,
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_Product] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
