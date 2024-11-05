@@ -35,5 +35,12 @@ namespace BeerWebshop.RESTAPI.Controllers
             var result = await _productDao.GetFromCategoryAsync(category);
             return Ok(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var result = await _productDao.GetAllAsync();
+            return Ok(result);
+        }
     }
 }

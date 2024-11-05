@@ -1,4 +1,5 @@
-﻿using BeerWebshop.Web.Services;
+﻿using BeerWebshop.Web.Models;
+using BeerWebshop.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,88 +7,45 @@ namespace BeerWebshop.Web.Controllers
 {
     public class CheckoutController : Controller
     {
-        private readonly CartService _cartService;
+        private readonly ICartService _cartService;
 
-        public CheckoutController(CartService cartService)
+        public CheckoutController(ICartService cartService)
         {
             _cartService = cartService;
         }
-
 
         // GET: CheckoutController
         public ActionResult Index()
         {
             var cart = _cartService.GetCart();
-            return View(cart);
+            var model = new Checkout
+            {
+                Cart = cart
+            };
+            return View(model);
         }
 
-        // GET: CheckoutController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: CheckoutController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: CheckoutController/Create
+        // POST: CheckoutController
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Index(Checkout model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                // Here you can process the order and save it to your database
+                // After processing, you can redirect to a confirmation page
+                return RedirectToAction("OrderConfirmation");
             }
-            catch
-            {
-                return View();
-            }
+
+            // If model state is not valid, return to the view with the same model
+            model.Cart = _cartService.GetCart(); // Reload cart
+            return View(model);
         }
 
-        // GET: CheckoutController/Edit/5
-        public ActionResult Edit(int id)
+        // GET: Order Confirmation
+        public ActionResult OrderConfirmation()
         {
             return View();
-        }
-
-        // POST: CheckoutController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: CheckoutController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: CheckoutController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }

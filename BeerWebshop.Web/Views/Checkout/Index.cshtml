@@ -1,28 +1,51 @@
-﻿@model BeerWebshop.Web.Models.ShoppingCart
+﻿@model BeerWebshop.Web.Models.Checkout
 
 <h2>Checkout</h2>
-@using (Html.BeginForm("CompleteOrder", "Cart", FormMethod.Post))
-{
 
-    <h3>Order Preview</h3>
-    <table class="table">
-        <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-        </tr>
-        @foreach (var item in Model.OrderLines)
+<div class="row">
+    <div class="col-md-6">
+        <h3>Billing Information</h3>
+        @using (Html.BeginForm("Index", "Checkout", FormMethod.Post))
         {
-            <tr>
-                <td>@item.Product</td>
-                <td>@item.Quantity</td>
-                <td>@item.SubTotal.ToString("C")</td>
-                <td>@item.SubTotal.ToString("C")</td>
-            </tr>
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-success">Place Order</button>
         }
-    </table>
-    <p>Total Price: @Model.TotalPrice.ToString("C")</p>
+    </div>
 
-    <button type="submit" class="btn btn-success">Place Order</button>
+    <div class="col-md-6">
+        <h3>Order Preview</h3>
+        <table class="table">
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+            @foreach (var item in Model.Cart.OrderLines)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@item.SubTotal.ToString("C")</td>
+                </tr>
+            }
+        </table>
+        <p>Total Price: @Model.Cart.TotalPrice.ToString("C")</p>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
