@@ -11,9 +11,8 @@ namespace BeerWebshop.APIClientLibrary.Client
     {
         Task<Product> GetBeerByIdAsync(int id);
         Task<IEnumerable<Product>> GetAllBeersAsync();
-        Task<int> CreateBeerAsync(ProductDTO entity);
-        Task<bool> UpdateBeerAsync(ProductDTO entity);
-        Task<bool> DeleteBeerAsync(int id);
+        Task<IEnumerable<Product>> GetBeerByCategory(string category);
+        
         
 
         
