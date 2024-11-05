@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.DTO
 {
-    public class BeerDTO
+    public class ProductDTO
     {
+        public int? Id { get; set; }
         [Required, MaxLength(100)]
         public required string Name { get; set; }
         [Required, MaxLength(100)]

@@ -13,6 +13,8 @@ public class ProductDAO : IProductDAO
         VALUES (@Name, @Brewery, @Price, @Description, @Stock, @ABV, @Category);
         SELECT CAST(SCOPE_IDENTITY() AS int);";
 
+    private const string _getFromCategorySql = @"SELECT * FROM Products WHERE Category = @Category;";
+
     private const string _getByIdSql = @"SELECT * FROM Products WHERE Id = @Id;";
     private const string _deleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
 
@@ -48,6 +50,19 @@ public class ProductDAO : IProductDAO
             throw new Exception($"Error getting product by id: {ex.Message}", ex);
         }
 
+    }
+
+    public async Task<IEnumerable<Product>> GetFromCategoryAsync(string category)
+    {
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            return await connection.QueryAsync<Product>(_getFromCategorySql, new { Category = category });
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error getting products from category: {ex.Message}", ex);
+        }
     }
 
     public async Task<bool> DeleteByIdAsync(int id)

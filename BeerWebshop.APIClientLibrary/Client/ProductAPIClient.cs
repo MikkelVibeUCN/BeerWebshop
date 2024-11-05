@@ -13,9 +13,9 @@ namespace BeerWebshop.APIClientLibrary.Client
         private RestClient _restClient;
         public ProductAPIClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
-        public async Task<BeerDTO> GetBeerByIdAsync(int id)
+        public async Task<Product> GetBeerByIdAsync(int id)
         {
-            var response = await _restClient.RequestAsync<BeerDTO>(Method.Get, $"Beers/{id}");
+            var response = await _restClient.RequestAsync<Product>(Method.Get, $"Products/{id}");
 
             if (!response.IsSuccessful)
             {
@@ -23,15 +23,15 @@ namespace BeerWebshop.APIClientLibrary.Client
             }
             return response.Data;
         }
-        public Task<IEnumerable<BeerDTO>> GetAllBeersAsync()
+        public Task<IEnumerable<Product>> GetAllBeersAsync()
         {
             throw new NotImplementedException();
         }
-        public Task<int> CreateBeerAsync(BeerDTO entity)
+        public Task<int> CreateBeerAsync(ProductDTO entity)
         {
             throw new NotImplementedException();
         }
-        public Task<bool> UpdateBeerAsync(BeerDTO entity)
+        public Task<bool> UpdateBeerAsync(ProductDTO entity)
         {
             throw new NotImplementedException();
         }
