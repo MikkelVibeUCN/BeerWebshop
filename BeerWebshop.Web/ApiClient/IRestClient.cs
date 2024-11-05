@@ -8,5 +8,6 @@ namespace BeerWebshop.Web.ApiClient
         Product GetBeerFromId(int id);
         int AddNewBeer(Product product);
 
+
     }
 }

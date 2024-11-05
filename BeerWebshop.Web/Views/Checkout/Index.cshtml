@@ -8,16 +8,64 @@
         @using (Html.BeginForm("Index", "Checkout", FormMethod.Post))
         {
             <div class="form-group">
-                <label asp-for="Name"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" class="form-control" required />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" class="form-control" required />
+                <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-success">Place Order</button>
+            <div class="form-group">
+                <label asp-for="Street"></label>
+                <input asp-for="Street" class="form-control" required />
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Number"></label>
+                <input asp-for="Number" class="form-control" required />
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Floor"></label>
+                <input asp-for="Floor" class="form-control" placeholder="Floor (optional)" />
+                <span asp-validation-for="Floor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostalCode"></label>
+                <input asp-for="PostalCode" class="form-control" required />
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City"></label>
+                <input asp-for="City" class="form-control" required />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+
+            <hr /> <!-- Horizontal line to separate sections -->
+
+            <h3>Credit Card Information</h3>
+            <div class="form-group">
+                <label for="creditCard">Credit Card Number</label>
+                <input type="text" id="creditCard" name="CreditCard" class="form-control" value="4111 1111 1111 1111" required />
+                <span class="text-danger" asp-validation-for="CreditCard"></span>
+            </div>
+            <div class="form-group">
+                <label for="expirationDate">Expiration Date</label>
+                <input type="text" id="expirationDate" name="ExpirationDate" class="form-control" value="12/25" placeholder="MM/YY" required />
+                <span class="text-danger" asp-validation-for="ExpirationDate"></span>
+            </div>
+            <div class="form-group">
+                <label for="cvc">CVC</label>
+                <input type="text" id="cvc" name="Cvc" class="form-control" value="123" required />
+                <span class="text-danger" asp-validation-for="Cvc"></span>
+            </div>
+
+            <!-- Place Order Button -->
+            <div class="text-right mt-3">
+                <button type="submit" class="btn btn-success">Place Order</button>
+            </div>
         }
     </div>
 
@@ -35,12 +83,12 @@
                 <tr>
                     <td>@item.Product.Name</td>
                     <td>@item.Quantity</td>
-                    <td>@item.Product.Price.ToString("C")</td>
-                    <td>@item.SubTotal.ToString("C")</td>
+                    <td>@item.Product.Price.ToString("F2") kr.</td>
+                    <td>@item.SubTotal.ToString("F2") kr.</td>
                 </tr>
             }
         </table>
-        <p>Total Price: @Model.Cart.TotalPrice.ToString("C")</p>
+        <p>Total Price: @Model.Cart.TotalPrice.ToString("F2") kr.</p>
     </div>
 </div>
 
