@@ -8,10 +8,22 @@ namespace BeerWebshop.RESTAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddScoped<IProductDAO>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                return new ProductDAO(connectionString);
+            });
+
+
+
+
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<IProductDAO, ProductDAOStub>();
+            
 
             var app = builder.Build();
 

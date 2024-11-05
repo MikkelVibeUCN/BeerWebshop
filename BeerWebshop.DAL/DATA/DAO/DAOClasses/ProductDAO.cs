@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
@@ -13,6 +14,7 @@ public class ProductDAO : IProductDAO
         SELECT CAST(SCOPE_IDENTITY() AS int);";
 
     private const string _getByIdSql = @"SELECT * FROM Products WHERE Id = @Id;";
+    private const string _deleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
 
     private readonly string _connectionString;
 
@@ -25,7 +27,8 @@ public class ProductDAO : IProductDAO
         try
         {
             using var connection = new SqlConnection(_connectionString);
-            return (await connection.QuerySingleAsync<int>(_insertProductSql, product));
+            var newProductId = await connection.QuerySingleAsync<int>(_insertProductSql, product);
+            return newProductId;
         }
         catch (Exception ex)
         {
@@ -45,5 +48,19 @@ public class ProductDAO : IProductDAO
             throw new Exception($"Error getting product by id: {ex.Message}", ex);
         }
 
+    }
+
+    public async Task<bool> DeleteByIdAsync(int id)
+    {
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var rowsAffected = await connection.ExecuteAsync(_deleteByIdSql, new { Id = id });
+            return rowsAffected > 0;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error deleting product by id: {ex.Message}", ex);
+        }
     }
 }
