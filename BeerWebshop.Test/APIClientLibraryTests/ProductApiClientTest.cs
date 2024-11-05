@@ -37,4 +37,13 @@ public class ProductApiClientTest
         Assert.IsTrue(productsFromCategory.All(p => p.Category == "IPA"), "All products should be in the IPA category.");
     }
 
+    [Test]
+    public async Task GetAllBeersAsync_WhenBeersExist_ShouldReturnAllBeers()
+    {
+        var allProducts = (await _productAPIClient.GetAllBeersAsync()).ToList();
+
+        Assert.IsTrue(allProducts.Count >= 5, "There should be at least ten products in the database.");
+        Assert.IsTrue(allProducts.All(p => p.Id > 0), "All products should have an ID greater than 0.");
+    }
+
 }
