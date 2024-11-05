@@ -18,13 +18,17 @@ namespace BeerWebshop.Web.Controllers
         public ActionResult Index()
         {
             var cart = _cartService.GetCart();
+            if (cart.OrderLines.Count < 1)
+            {
+                return Redirect("/cart"); ;
+            }
             var model = new Checkout
             {
                 Cart = cart
             };
+
             return View(model);
         }
-
         // POST: CheckoutController
         [HttpPost]
         [ValidateAntiForgeryToken]
