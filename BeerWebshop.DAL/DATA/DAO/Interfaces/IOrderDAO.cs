@@ -10,6 +10,6 @@ namespace BeerWebshop.DAL.DATA.DAO.Interfaces
 {
     public interface IOrderDAO
     {
-        Task<int> SaveOrderAsync(OrderDAOStub order);
+        Task<int> SaveOrderAsync(Order order);
     }
 }
