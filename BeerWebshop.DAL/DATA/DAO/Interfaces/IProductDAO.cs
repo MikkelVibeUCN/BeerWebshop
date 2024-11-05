@@ -9,6 +9,8 @@ namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 
 public interface IProductDAO
 {
-    Task<int> CreateAsync(Product beer);
+    Task<int> CreateAsync(Product Product);
     Task<Product> GetByIdAsync(int id);
+
+    Task<IEnumerable<Product>> GetFromCategoryAsync(string category);
 }

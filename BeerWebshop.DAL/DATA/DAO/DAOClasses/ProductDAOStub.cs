@@ -7,7 +7,7 @@ public class ProductDAOStub : IProductDAO
 {
     private static readonly List<Product> products = new()
     {
-         new Product("Test Beer", "Test Brewery", 2.99f, "Test Description", 100, 5.0f, "Test Category", 1)
+         new Product("Test Product", "Test Brewery", 2.99f, "Test Description", 100, 5.0f, "Test Category", 1)
     };
 
     public Task<int> CreateAsync(Product product)
@@ -20,5 +20,10 @@ public class ProductDAOStub : IProductDAO
     public Task<Product> GetByIdAsync(int id)
     {
         return Task.FromResult(products.FirstOrDefault(p => p.Id == id));
+    }
+
+    public Task<IEnumerable<Product>> GetFromCategoryAsync(string category)
+    {
+        throw new NotImplementedException();
     }
 }

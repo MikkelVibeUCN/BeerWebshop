@@ -1,4 +1,4 @@
-﻿@model BeerWebshop.Web.ApiClient.DTO.Beer
+﻿@model BeerWebshop.Web.ApiClient.DTO.Product
 
 @{
     ViewData["Title"] = Model.Name;
@@ -17,7 +17,8 @@
     <!-- Image with block display -->
     <div>
         <img style="max-width: 450px; max-height: 300px; display: block;"
-             src="@(string.IsNullOrEmpty(Model.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : Model.Url)" alt="@Model.Name" />
+             src="@(string.IsNullOrEmpty(Model.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : Model.Url)"
+             alt="@Model.Name" />
     </div>
 
     <!-- Description as a paragraph below the image -->
@@ -28,9 +29,35 @@
     <h4>@Html.DisplayFor(model => model.Price) kr.</h4>
 </div>
 
+<!-- Notification Popup -->
+<div id="notification" class="notification"></div>
+
 <div>
-    <form asp-action="AddToCart" method="post">
-        <input type="hidden" name="id" value="@Model.Id" />
-        <button type="submit" class="btn btn-primary">Tilføj til kurv</button>
-    </form>
+    <button type="button" class="btn btn-primary add-to-cart" data-product-id="@Model.Id">Tilføj til kurv</button>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').on('click', function (event) {
+                event.preventDefault(); // Prevent the link from being followed
+                var productId = $(this).data('product-id');
+
+                $.ajax({
+                    url: '/Cart/AddToCart', // URL to your add to cart action
+                    method: 'POST',
+                    data: { productId: productId },
+                    success: function (response) {
+                        // Update cart item count or other UI elements as needed
+                        $('#cart-item-count').text(response.cartItemCount);
+                        window.showNotification('Produkt tilføjet til kurv!', 'success'); // Call the layout function
+                    },
+                    error: function () {
+                        window.showNotification('Fejl ved tilføjelse til kurv. Prøv igen.', 'error'); // Call the layout function
+                    }
+                });
+            });
+        });
+    </script>
+}
+

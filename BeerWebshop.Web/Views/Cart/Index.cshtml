@@ -1,0 +1,105 @@
+﻿@model BeerWebshop.Web.Models.ShoppingCart
+
+<h1>Shopping Cart</h1>
+
+<div>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Brewery</th>
+                <th>Type</th>
+                <th>ABV</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderLine in Model.OrderLines)
+            {
+                <tr data-product-id="@orderLine.Product.Id">
+                    <td>@orderLine.Product.Name</td>
+                    <td>@orderLine.Product.Brewery</td>
+                    <td>@orderLine.Product.Type</td>
+                    <td>@orderLine.Product.ABV %</td>
+                    <td>@orderLine.Product.Price.ToString() kr.</td>
+
+                    <!-- Editable Quantity Field with Auto Update -->
+                    <td>
+                        <div class="col-2">
+                            <input type="number"
+                                   class="quantity-input form-control"
+                                   value="@orderLine.Quantity"
+                                   min="1"
+                                   data-product-id="@orderLine.Product.Id" />
+                        </div>
+                    </td>
+
+                    <!-- Subtotal -->
+                    <td class="subtotal">@orderLine.SubTotal.ToString() kr.</td>
+
+                    <!-- Remove Button -->
+                    <td>
+                        <button type="button"
+                                class="remove-button btn btn-danger"
+                                data-product-id="@orderLine.Product.Id">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3>Total Price: <span id="total-price">@Model.TotalPrice.ToString() kr.</span></h3>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Update cart when quantity changes
+            $(document).on('input', '.quantity-input', function () {
+                let productId = $(this).data('product-id');
+                let newQuantity = $(this).val();
+
+                $.ajax({
+                    url: '/Cart/UpdateQuantity',
+                    method: 'POST',
+                    data: {
+                        productId: productId,
+                        newQuantity: newQuantity // Ensure this matches your parameter name
+                    },
+                    success: function () {
+                        // Reload the page after updating the cart
+                        location.reload();
+                    },
+                    error: function () {
+                        window.showNotification('Error updating cart. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // Remove product from cart
+            $('.remove-button').on('click', function () {
+                let productId = $(this).data('product-id');
+
+                $.ajax({
+                    url: '/Cart/RemoveOrderLine',
+                    method: 'POST',
+                    data: { productId: productId },
+                    success: function () {
+                        // Reload the page after removing the product
+                        location.reload();
+                    },
+                    error: function () {
+                        window.showNotification('Error removing item from cart. Please try again.', 'error');
+                    }
+                });
+            });
+        });
+    </script>
+}

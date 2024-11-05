@@ -25,13 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="APIClientLibraryTests\" />
     <Folder Include="RESTAPITests\" />
     <Folder Include="DesktopClientTests\" />
     <Folder Include="WebTests\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BeerWebshop.APIClientLibrary\BeerWebshop.APIClientLibrary.csproj" />
     <ProjectReference Include="..\BeerWebshop.DAL\BeerWebshop.DAL.csproj" />
     <ProjectReference Include="..\BeerWebshop.RESTAPI\BeerWebshop.RESTAPI.csproj" />
   </ItemGroup>

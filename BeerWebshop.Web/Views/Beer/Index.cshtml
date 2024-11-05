@@ -1,18 +1,18 @@
-﻿@model IEnumerable<BeerWebshop.Web.ApiClient.DTO.Beer>
+﻿@model IEnumerable<BeerWebshop.Web.ApiClient.DTO.Product>
 
 @{
-    ViewData["Title"] = "Our Beers";
+    ViewData["Title"] = "Alle øl";
 }
 
-<h1>Our Beers</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div class="row">
     @foreach (var item in Model)
     {
         <div class="col-md-4 mb-4">
             <!-- Card as a clickable link to the Details action -->
-            <a asp-action="Details" asp-route-id="@item.Id" style="text-decoration: none; color: inherit;">
-                <div class="card h-100">
+            <div class="card h-100">
+                <a asp-action="Details" asp-route-id="@item.Id" style="text-decoration: none; color: inherit;">
                     <!-- Display Image at the top of the card -->
                     <img class="card-img-top" style="max-height: 200px; object-fit: cover;"
                          src="@(string.IsNullOrEmpty(item.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : item.Url)"
@@ -29,11 +29,49 @@
                             <li><strong>Pris:</strong> @item.Price kr.</li>
                         </ul>
                     </div>
-                    <div class="card-footer">
-                        <span class="btn btn-primary">Tilføj til kurv</span>
-                    </div>
+                </a>
+                <div class="card-footer">
+                    <button type="button"
+                            class="btn btn-primary add-to-cart"
+                            data-product-id="@item.Id">
+                        Tilføj til kurv
+                    </button>
                 </div>
-            </a>
+            </div>
         </div>
     }
 </div>
+
+<!-- Cart Count Display -->
+<div>
+    <h3>Items in Cart: <span id="cart-item-count">0</span></h3>
+</div>
+
+<!-- Notification Popup -->
+<div id="notification" class="notification"></div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').on('click', function (event) {
+                event.preventDefault(); // Prevent the link from being followed
+                var productId = $(this).data('product-id');
+
+                $.ajax({
+                    url: '/Cart/AddToCart', // URL to your add to cart action
+                    method: 'POST',
+                    data: { productId: productId },
+                    success: function (response) {
+                        // Update cart item count or other UI elements as needed
+                        $('#cart-item-count').text(response.cartItemCount);
+                        window.showNotification('Produkt tilføjet til kurv!', 'success'); // Call the layout function
+                    },
+                    error: function () {
+                        window.showNotification('Fejl ved tilføjelse til kurv. Prøv igen.', 'error'); // Call the layout function
+                    }
+                });
+            });
+        });
+    </script>
+}
+

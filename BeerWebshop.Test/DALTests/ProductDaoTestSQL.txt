@@ -1,0 +1,8 @@
+﻿INSERT INTO Products (Name, Brewery, Price, Description, Stock, ABV, Category)
+VALUES 
+('Hoppy IPA', 'Brew House', 6.50, 'A refreshing IPA with strong hoppy flavors.', 15, 5.8, 'IPA'),
+('Citrus IPA', 'Sunset Brewery', 6.75, 'An IPA with a hint of citrus, perfect for summer.', 20, 6.2, 'IPA'),
+('Tropical IPA', 'Island Brews', 7.00, 'A fruity IPA with tropical flavors.', 18, 6.5, 'IPA'),
+('Double IPA', 'Mountain Brewery', 8.50, 'A strong, hoppy double IPA.', 10, 8.0, 'IPA'),
+('Session IPA', 'River Side Brewery', 5.50, 'A light and easy-drinking IPA for any occasion.', 25, 4.5, 'IPA');
+
