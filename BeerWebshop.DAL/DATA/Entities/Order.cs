@@ -9,7 +9,7 @@ namespace BeerWebshop.DAL.DATA.Entities
     public class Order
     {
         public DateTime Date { get; set; }
-        private List<OrderLine> OrderLines { get; set; }
+        public List<OrderLine> OrderLines { get; set; }
         public string DeliveryAddress { get; set; }
         public bool IsDelivered { get; set; }
         public int? Id { get; set; }
@@ -30,6 +30,7 @@ namespace BeerWebshop.DAL.DATA.Entities
             IsDelivered = isDelivered;
             Id = id;
         }
+        public Order() { }
 
         public void AddOrderLine(OrderLine orderLine)
         {

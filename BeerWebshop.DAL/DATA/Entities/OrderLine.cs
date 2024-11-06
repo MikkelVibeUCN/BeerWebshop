@@ -26,5 +26,6 @@ namespace BeerWebshop.DAL.DATA.Entities
             Quantity = quantity;
             Product = Product;
         }
+        public OrderLine() { }
     }
 }
