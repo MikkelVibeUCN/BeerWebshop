@@ -17,31 +17,54 @@ namespace BeerWebshop.Web.Services
 
         public ShoppingCart GetCartFromCookies()
         {
-            var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[CartCookieKey];
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                throw new Exception("HttpContext was null");
+            }
+
+            var cookieValue = httpContext.Request.Cookies[CartCookieKey];
             if (string.IsNullOrEmpty(cookieValue))
             {
                 return new ShoppingCart();
             }
 
-            return JsonConvert.DeserializeObject<ShoppingCart>(cookieValue);
+            var cart = JsonConvert.DeserializeObject<ShoppingCart>(cookieValue);
+            if (cart == null)
+            {
+                throw new Exception("Failed to deserialize cart from cookies");
+            }
+            return cart;
         }
 
         public void SaveCartToCookies(ShoppingCart cart)
         {
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                throw new Exception("HttpContext was null");
+            }
+
             var cookieOptions = new CookieOptions
             {
-                Expires = DateTime.Now.AddDays(30), 
+                Expires = DateTime.Now.AddDays(30),
                 HttpOnly = true,
-                SameSite = SameSiteMode.Lax 
+                SameSite = SameSiteMode.Lax
             };
 
             var cartJson = JsonConvert.SerializeObject(cart);
-            _httpContextAccessor.HttpContext.Response.Cookies.Append(CartCookieKey, cartJson, cookieOptions);
+            httpContext.Response.Cookies.Append(CartCookieKey, cartJson, cookieOptions);
         }
 
         public void RemoveCartFromCookies()
         {
-            _httpContextAccessor.HttpContext.Response.Cookies.Delete(CartCookieKey);
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                throw new Exception("HttpContext was null");
+            }
+
+            httpContext.Response.Cookies.Delete(CartCookieKey);
         }
     }
 }
