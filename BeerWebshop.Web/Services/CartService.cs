@@ -1,30 +1,29 @@
 ﻿using BeerWebshop.Web.ApiClient.DTO;
 using BeerWebshop.Web.Models;
+using System.Linq;
 
 namespace BeerWebshop.Web.Services
 {
     public class CartService : ICartService
     {
         private readonly BeerService _beerService;
-        public ShoppingCart Cart { get; set; }
-        public CartService(BeerService beerService)
+        private readonly CookieService _cookieService;
+
+        public CartService(BeerService beerService, CookieService cookieService)
         {
-            Cart = new ShoppingCart();
             _beerService = beerService;
+            _cookieService = cookieService;
         }
+
         public ShoppingCart GetCart()
         {
-            return Cart;
+            return _cookieService.GetCartFromCookies();
         }
 
         private bool HasProductInCart(int productId)
         {
-            var orderLine = Cart.OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
-            if (orderLine != null)
-            {
-                return true;
-            }
-            return false;
+            var orderLine = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
+            return orderLine != null;
         }
 
         public void AddToCart(int productId, int quantity)
@@ -41,38 +40,47 @@ namespace BeerWebshop.Web.Services
                 throw new Exception("Not enough stock");
             }
 
+            var cart = GetCart();
+
             if (HasProductInCart(beer.Id))
             {
-                OrderLine orderLine = Cart.OrderLines.First(ol => ol.Product.Id == beer.Id);
-
+                OrderLine orderLine = cart.OrderLines.First(ol => ol.Product.Id == beer.Id);
                 UpdateQuantity(beer.Id, orderLine.Quantity + quantity);
             }
             else
             {
                 var orderLine = new OrderLine(quantity, beer);
-                Cart.AddOrderLine(orderLine);
+                cart.AddOrderLine(orderLine);
             }
+
+            _cookieService.SaveCartToCookies(cart);
         }
 
         public void RemoveFromCart(int productId)
         {
+            var cart = GetCart();
+
             if (!HasProductInCart(productId))
             {
                 throw new Exception("Product not found in cart");
             }
 
-            var orderLineToRemove = Cart.OrderLines.First(ol => ol.Product.Id == productId);
-            Cart.OrderLines.Remove(orderLineToRemove);
+            var orderLineToRemove = cart.OrderLines.First(ol => ol.Product.Id == productId);
+            cart.OrderLines.Remove(orderLineToRemove);
+
+            _cookieService.SaveCartToCookies(cart); 
         }
 
         public void UpdateQuantity(int productId, int newQuantity)
         {
+            var cart = GetCart();
+
             if (!HasProductInCart(productId))
             {
                 throw new Exception("Product not found in cart");
             }
 
-            var orderLineToUpdate = Cart.OrderLines.First(ol => ol.Product.Id == productId);
+            var orderLineToUpdate = cart.OrderLines.First(ol => ol.Product.Id == productId);
 
             if (!HasEnoughStock(orderLineToUpdate.Product, newQuantity))
             {
@@ -80,6 +88,7 @@ namespace BeerWebshop.Web.Services
             }
 
             orderLineToUpdate.Quantity = newQuantity;
+            _cookieService.SaveCartToCookies(cart); 
         }
 
         public bool HasEnoughStock(Product product, int quantity)
@@ -89,7 +98,7 @@ namespace BeerWebshop.Web.Services
 
         public Product GetProductFromOrderlines(int productId)
         {
-            var orderLine = Cart.OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
+            var orderLine = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
             if (orderLine == null)
             {
                 throw new InvalidOperationException($"Product with ID {productId} not found in order lines.");

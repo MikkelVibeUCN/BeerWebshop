@@ -9,19 +9,16 @@ namespace BeerWebshop.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
 
             IRestClient restClient = new RestClientStub();
             builder.Services.AddSingleton(restClient);
 
-            var beerService = new BeerService(restClient);
-            builder.Services.AddSingleton(beerService);
+            builder.Services.AddScoped<BeerService>(provider => new BeerService(restClient));
 
-            ICartService cartService = new CartService(beerService);
-            builder.Services.AddSingleton(cartService);
-
-            
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddScoped<CookieService>(); 
 
             var app = builder.Build();
 
