@@ -13,7 +13,7 @@ public class ProductDaoTests
     [SetUp]
     public async Task SetUpAsync()
     {
-        _productDao = new ProductDAO(Configuration.ConnectionString);
+        _productDao = new ProductDAO(Configuration.ConnectionString());
     }
 
     [TearDown]

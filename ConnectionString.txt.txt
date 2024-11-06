@@ -1,0 +1,1 @@
+Server=38.242.242.6;Database=BeerWebshop;UserId=BeerWebshopUser;Password=BeerWebshop%;

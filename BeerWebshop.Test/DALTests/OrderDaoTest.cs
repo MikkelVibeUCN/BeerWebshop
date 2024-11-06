@@ -19,7 +19,7 @@ namespace BeerWebshop.Test.DALTests
         [SetUp]
         public async Task SetUpAsync()
         {
-            _orderDao = new OrderDao(Configuration.ConnectionString);
+            _orderDao = new OrderDao(Configuration.ConnectionString());
            
         }
         [Test]

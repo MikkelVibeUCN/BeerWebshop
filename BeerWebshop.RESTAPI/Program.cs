@@ -16,6 +16,13 @@ namespace BeerWebshop.RESTAPI
                 return new ProductDAO(connectionString);
             });
 
+            builder.Services.AddScoped<IOrderDAO>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                return new OrderDao(connectionString);
+            });
+
 
 
 
