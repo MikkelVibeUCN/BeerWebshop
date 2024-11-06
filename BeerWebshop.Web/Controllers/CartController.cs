@@ -1,4 +1,5 @@
-﻿using BeerWebshop.Web.Services;
+﻿using BeerWebshop.Web.ApiClient.DTO;
+using BeerWebshop.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices.Marshalling;
@@ -8,9 +9,11 @@ namespace BeerWebshop.Web.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
-        public CartController(ICartService cartService)
+        private readonly BeerService _beerService;
+        public CartController(ICartService cartService, BeerService beerService)
         {
             _cartService = cartService;
+            _beerService = beerService;
         }
 
 
@@ -86,21 +89,61 @@ namespace BeerWebshop.Web.Controllers
 
 
         [HttpPost]
-        public void RemoveOrderLine(int productId)
+        public IActionResult RemoveOrderLine(int productId)
         {
-            _cartService.RemoveFromCart(productId);
+            try
+            {
+                _cartService.RemoveFromCart(productId);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost]
-        public void UpdateQuantity(int productId, int newQuantity)
+        public IActionResult UpdateQuantity(int productId, int newQuantity)
         {
-            _cartService.UpdateQuantity(productId, newQuantity);
+            try
+            {
+                if (!HasEnoughStock(productId, newQuantity))
+                {
+                    return BadRequest("Not enough products in stock");
+                }
+
+                _cartService.UpdateQuantity(productId, newQuantity);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            
         }
 
         [HttpPost]
-        public void AddToCart(int productId, int quantity)
+        public IActionResult AddToCart(int productId, int quantity)
         {
-            _cartService.AddToCart(productId, quantity);
+            try
+            {
+                _cartService.AddToCart(productId, quantity);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+        }
+
+        private bool HasEnoughStock(int productId, int newQuantity)
+        {
+            Product beer = _beerService.GetBeerFromId(productId);
+
+            return _cartService.HasEnoughStock(beer, newQuantity);
         }
     }
 }

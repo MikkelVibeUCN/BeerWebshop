@@ -1,0 +1,99 @@
+﻿@model BeerWebshop.Web.Models.Checkout
+
+<h2>Checkout</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Billing Information</h3>
+        @using (Html.BeginForm("Index", "Checkout", FormMethod.Post))
+        {
+            <div class="form-group">
+                <label asp-for="Firstname"></label>
+                <input asp-for="Firstname" class="form-control" required />
+                <span asp-validation-for="Firstname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Lastname"></label>
+                <input asp-for="Lastname" class="form-control" required />
+                <span asp-validation-for="Lastname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Street"></label>
+                <input asp-for="Street" class="form-control" required />
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Number"></label>
+                <input asp-for="Number" class="form-control" required />
+                <span asp-validation-for="Number" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Floor"></label>
+                <input asp-for="Floor" class="form-control" name=" " placeholder="Floor (optional)" />
+                <span asp-validation-for="Floor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostalCode"></label>
+                <input asp-for="PostalCode" class="form-control" required />
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City"></label>
+                <input asp-for="City" class="form-control" required />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+
+            <hr /> <!-- Horizontal line to separate sections -->
+
+            <h3>Credit Card Information</h3>
+            <div class="form-group">
+                <label for="creditCard">Credit Card Number</label>
+                <input type="text" id="creditCard" name="CreditCard" class="form-control" value="4111 1111 1111 1111" required />
+                <span class="text-danger" asp-validation-for="CreditCard"></span>
+            </div>
+            <div class="form-group">
+                <label for="expirationDate">Expiration Date</label>
+                <input type="text" id="expirationDate" name="ExpirationDate" class="form-control" value="12/25" placeholder="MM/YY" required />
+                <span class="text-danger" asp-validation-for="ExpirationDate"></span>
+            </div>
+            <div class="form-group">
+                <label for="cvc">CVC</label>
+                <input type="text" id="cvc" name="Cvc" class="form-control" value="123" required />
+                <span class="text-danger" asp-validation-for="Cvc"></span>
+            </div>
+
+            <!-- Place Order Button -->
+            <div class="text-right mt-3">
+                <button type="submit" class="btn btn-success">Place Order</button>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-6">
+        <h3>Order Preview</h3>
+        <table class="table">
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+            @foreach (var item in Model.Cart.OrderLines)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price.ToString("F2") kr.</td>
+                    <td>@item.SubTotal.ToString("F2") kr.</td>
+                </tr>
+            }
+        </table>
+        <p>Total Price: @Model.Cart.TotalPrice.ToString("F2") kr.</p>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

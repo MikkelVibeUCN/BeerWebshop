@@ -4,8 +4,6 @@
     ViewData["Title"] = "Alle øl";
 }
 
-<h1>@ViewData["Title"]</h1>
-
 <div class="row">
     @foreach (var item in Model)
     {
@@ -54,24 +52,26 @@
     <script>
         $(document).ready(function () {
             $('.add-to-cart').on('click', function (event) {
-                event.preventDefault(); // Prevent the link from being followed
+                event.preventDefault();
                 var productId = $(this).data('product-id');
 
                 $.ajax({
-                    url: '/Cart/AddToCart', // URL to your add to cart action
+                    url: '/Cart/AddToCart',
                     method: 'POST',
-                    data: { productId: productId },
+                    data: { productId: productId, quantity: 1 }, // Ensure to send a quantity, defaulting to 1
                     success: function (response) {
-                        // Update cart item count or other UI elements as needed
                         $('#cart-item-count').text(response.cartItemCount);
-                        window.showNotification('Produkt tilføjet til kurv!', 'success'); // Call the layout function
+                        window.showNotification('Produkt tilføjet til kurv!', 'success');
                     },
-                    error: function () {
-                        window.showNotification('Fejl ved tilføjelse til kurv. Prøv igen.', 'error'); // Call the layout function
+                    error: function (xhr) {
+                        // Get the error message from the response
+                        var errorMessage = xhr.responseText || 'Fejl ved tilføjelse til kurv. Prøv igen.';
+                        window.showNotification(errorMessage, 'error');
                     }
                 });
             });
         });
     </script>
 }
+
 

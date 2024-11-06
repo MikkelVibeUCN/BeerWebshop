@@ -67,7 +67,6 @@
         </div>
     </footer>
 
-    <!-- Notification Popup -->
     <div id="notification" class="notification"></div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -78,19 +77,19 @@
         function showNotification(message, type) {
             var $notification = $('#notification');
             $notification.text(message);
-            $notification.removeClass('error success'); // Clear previous types
+            $notification.removeClass('error success');
             if (type === 'error') {
                 $notification.addClass('error');
             } else {
-                $notification.addClass('success'); // Use success class for other types
+                $notification.addClass('success');
             }
             $notification.css('display', 'block').css('opacity', 1).css('transform', 'translateY(0)');
             setTimeout(function () {
                 $notification.css('opacity', 0).css('transform', 'translateY(-10px)');
                 setTimeout(function () {
                     $notification.css('display', 'none');
-                }, 500); // Hide after fade out
-            }, 1500); // Show for 3 seconds
+                }, 200); 
+            }, 1500);
         }
     </script>
 

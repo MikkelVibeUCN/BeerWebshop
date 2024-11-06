@@ -19,29 +19,34 @@ namespace BeerWebshop.APIClientLibrary.Client
 
             if (!response.IsSuccessful)
             {
+                throw new Exception($"Error retrieving the beer by its id. Message was {response.ErrorMessage}");
+            }
+            return response.Data;
+        }
+        public async Task<IEnumerable<Product>> GetAllBeersAsync()
+        {
+            var response = await _restClient.RequestAsync<IEnumerable<Product>>(Method.Get, $"Products");
+
+            if (!response.IsSuccessful)
+            {
                 throw new Exception($"Error retrieving all beers. Message was {response.ErrorMessage}");
             }
             return response.Data;
         }
-        public Task<IEnumerable<Product>> GetAllBeersAsync()
-        {
-            throw new NotImplementedException();
-        }
-        public Task<int> CreateBeerAsync(ProductDTO entity)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<bool> UpdateBeerAsync(ProductDTO entity)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<bool> DeleteBeerAsync(int id)
+        public async Task<IEnumerable<Product>> GetBeerByCategory(string category)
         {
-            throw new NotImplementedException();
+            
+            var response = await _restClient.RequestAsync<List<Product>>(Method.Get, $"Products/category/{category}");
+
+            if (!response.IsSuccessful)
+            {
+                
+                throw new Exception($"Error retrieving beers by category '{category}'. Status Code: {response.StatusCode}, Message: {response.ErrorMessage}");
+            }
+
+            return response.Data ?? new List<Product>(); 
         }
-
-
 
     }
 }

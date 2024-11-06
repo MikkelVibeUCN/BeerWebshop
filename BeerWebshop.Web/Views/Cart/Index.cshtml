@@ -1,5 +1,40 @@
 ﻿@model BeerWebshop.Web.Models.ShoppingCart
 
+<style>
+    .btn-light-green {
+        background-color: #32AA32; /* Light green background */
+        border-color: #32AA32; /* Same border color */
+        color: #FFFFFF;
+    }
+
+        .btn-light-green:hover {
+            background-color: #398439;
+            border-color: #398439;
+        }
+
+    .notification {
+        display: none; /* Hide by default */
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 1000;
+    }
+
+        .notification.success {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green */
+            border: 1px solid #c3e6cb; /* Green border */
+        }
+
+        .notification.error {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red */
+            border: 1px solid #f5c6cb; /* Red border */
+        }
+</style>
+
 <h1>Shopping Cart</h1>
 
 <div>
@@ -7,42 +42,46 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Product Name</th>
-                <th>Brewery</th>
-                <th>Type</th>
-                <th>ABV</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-                <th>Action</th>
+                <th style="width: 10%"></th>
+                <th style="width: 15%;">Product Name</th>
+                <th style="width: 15%;">Brewery</th>
+                <th style="width: 7.5%;">Type</th>
+                <th style="width: 7.5%;">ABV</th>
+                <th style="width: 10%;">Price</th>
+                <th style="width: 15%;">Quantity</th>
+                <th style="width: 15%;">Subtotal</th>
+                <th style="width: 10%;">Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var orderLine in Model.OrderLines)
             {
                 <tr data-product-id="@orderLine.Product.Id">
-                    <td>@orderLine.Product.Name</td>
-                    <td>@orderLine.Product.Brewery</td>
-                    <td>@orderLine.Product.Type</td>
-                    <td>@orderLine.Product.ABV %</td>
-                    <td>@orderLine.Product.Price.ToString() kr.</td>
+                    <td class="align-middle">
+                        <img src=@(string.IsNullOrEmpty(orderLine.Product.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLine.Product.Url) alt="@orderLine.Product.Name" style="width: 50px; height: auto;" />
+                    </td>
+                    <td class="align-middle">@orderLine.Product.Name</td>
+                    <td class="align-middle">@orderLine.Product.Brewery</td>
+                    <td class="align-middle">@orderLine.Product.Type</td>
+                    <td class="align-middle">@orderLine.Product.ABV %</td>
+                    <td class="align-middle">@orderLine.Product.Price.ToString("F2") kr.</td>
 
                     <!-- Editable Quantity Field with Auto Update -->
-                    <td>
-                        <div class="col-2">
-                            <input type="number"
-                                   class="quantity-input form-control"
-                                   value="@orderLine.Quantity"
-                                   min="1"
-                                   data-product-id="@orderLine.Product.Id" />
-                        </div>
+                    <td class="align-middle">
+                        <input type="number"
+                               class="quantity-input form-control"
+                               value="@orderLine.Quantity"
+                               min="1"
+                               max="@orderLine.Product.Stock"
+                               data-product-id="@orderLine.Product.Id"
+                               style="width: 100%;" /> <!-- Make input fill the cell -->
                     </td>
 
                     <!-- Subtotal -->
-                    <td class="subtotal">@orderLine.SubTotal.ToString() kr.</td>
+                    <td class="align-middle subtotal">@orderLine.SubTotal.ToString("F2") kr.</td>
 
                     <!-- Remove Button -->
-                    <td>
+                    <td class="align-middle">
                         <button type="button"
                                 class="remove-button btn btn-danger"
                                 data-product-id="@orderLine.Product.Id">
@@ -54,36 +93,53 @@
         </tbody>
     </table>
 
-    <h3>Total Price: <span id="total-price">@Model.TotalPrice.ToString() kr.</span></h3>
+    <h4>Total beløb <span id="total-price">@Model.TotalPrice.ToString("F2") kr.</span></h4>
+    <button type="button" class="btn btn-light-green rounded-pill py-2 px-4" id="pay-button">
+        Gå til kassen
+    </button> <!-- Betal Button -->
+    <!-- Notification Popup -->
+    <div id="notification" class="notification"></div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Update cart when quantity changes
+            // Track the original value before editing
+            $(document).on('focus', '.quantity-input', function () {
+                $(this).data('original-value', $(this).val());
+            });
+
             $(document).on('input', '.quantity-input', function () {
                 let productId = $(this).data('product-id');
                 let newQuantity = $(this).val();
+
+                if(newQuantity == 0) {
+                    $(this).val($(this).data('original-value'));
+                    return;
+                }
 
                 $.ajax({
                     url: '/Cart/UpdateQuantity',
                     method: 'POST',
                     data: {
                         productId: productId,
-                        newQuantity: newQuantity // Ensure this matches your parameter name
+                        newQuantity: newQuantity
                     },
                     success: function () {
-                        // Reload the page after updating the cart
                         location.reload();
                     },
-                    error: function () {
-                        window.showNotification('Error updating cart. Please try again.', 'error');
-                    }
+                    error: function (xhr) {
+                        // Get the original value back if the AJAX call fails
+                        var errorMessage = xhr.responseText || 'Error updating cart. Please try again.';
+                        window.showNotification(errorMessage, 'error');
+
+                        // Revert to the original value
+                        $(this).val($(this).data('original-value'));
+                    }.bind(this) // Bind 'this' to maintain context
                 });
             });
 
-            // Remove product from cart
             $('.remove-button').on('click', function () {
                 let productId = $(this).data('product-id');
 
@@ -92,13 +148,30 @@
                     method: 'POST',
                     data: { productId: productId },
                     success: function () {
-                        // Reload the page after removing the product
                         location.reload();
                     },
-                    error: function () {
-                        window.showNotification('Error removing item from cart. Please try again.', 'error');
+                    error: function (xhr) {
+                        // Use the existing window.showNotification function
+                        var errorMessage = xhr.responseText || 'Error removing item from cart. Please try again.';
+                        window.showNotification(errorMessage, 'error');
                     }
                 });
+            });
+
+            $('#pay-button').on('click', function () {
+                // Count items in the cart
+                var itemCount = $('.quantity-input').toArray().reduce((count, input) => {
+                    return count + (parseInt($(input).val()) || 0);
+                }, 0);
+
+                // Check if there are items in the cart
+                if (itemCount > 0) {
+                    // Perform payment action
+                    window.location.href = '/Checkout'; // Change to your payment URL
+                } else {
+                    // Optionally show a notification if cart is empty
+                    window.showNotification('Kurven er tom. Tilføj venligst varer, før du går til kassen.', 'error');
+                }
             });
         });
     </script>
