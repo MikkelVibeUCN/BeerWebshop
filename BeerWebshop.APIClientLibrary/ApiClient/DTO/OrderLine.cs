@@ -1,4 +1,4 @@
-﻿namespace BeerWebshop.Web.ApiClient.DTO
+﻿namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
     public class OrderLine
     {

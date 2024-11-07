@@ -1,5 +1,5 @@
-﻿using BeerWebshop.Web.ApiClient.DTO;
-using BeerWebshop.Web.Services;
+﻿using BeerWebshop.Web.Services;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices.Marshalling;
@@ -141,7 +141,7 @@ namespace BeerWebshop.Web.Controllers
 
         private async Task<bool> HasEnoughStock(int productId, int newQuantity)
         {
-            Product? beer = await _beerService.GetBeerFromId(productId);
+            Product? beer = await _beerService.GetProductFromId(productId);
             if(beer == null)
             {
                 throw new Exception("Beer not found");

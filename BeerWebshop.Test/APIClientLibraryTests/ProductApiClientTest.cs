@@ -1,4 +1,4 @@
-﻿using BeerWebshop.APIClientLibrary.Client;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;

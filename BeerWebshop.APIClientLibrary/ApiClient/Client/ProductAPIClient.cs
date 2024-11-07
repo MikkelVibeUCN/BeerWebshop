@@ -1,12 +1,12 @@
-﻿using BeerWebshop.APIClientLibrary.DTO;
-using RestSharp;
+﻿using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
-namespace BeerWebshop.APIClientLibrary.Client
+namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
     public class ProductAPIClient : IProductAPIClient
     {
@@ -36,17 +36,31 @@ namespace BeerWebshop.APIClientLibrary.Client
 
         public async Task<IEnumerable<Product>> GetBeerByCategory(string category)
         {
-            
+
             var response = await _restClient.RequestAsync<List<Product>>(Method.Get, $"Products/category/{category}");
 
             if (!response.IsSuccessful)
             {
-                
+
                 throw new Exception($"Error retrieving beers by category '{category}'. Status Code: {response.StatusCode}, Message: {response.ErrorMessage}");
             }
 
-            return response.Data ?? new List<Product>(); 
+            return response.Data ?? new List<Product>();
         }
 
+        public Task<Product?> GetProductFromId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Product>> GetProducts(ProductQueryParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<string>> GetProductCategories()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

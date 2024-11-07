@@ -1,4 +1,4 @@
-﻿using BeerWebshop.Web.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.Web.Models
 {

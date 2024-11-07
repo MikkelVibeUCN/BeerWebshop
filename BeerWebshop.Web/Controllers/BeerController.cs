@@ -1,9 +1,8 @@
 ﻿using BeerWebshop.APIClientLibrary;
-using BeerWebshop.Web.ApiClient;
-using BeerWebshop.Web.ApiClient.DTO;
 using BeerWebshop.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.Web.Controllers
 {
@@ -19,12 +18,12 @@ namespace BeerWebshop.Web.Controllers
         // GET: BeerController
         public async Task<IActionResult> Index(ProductQueryParameters parameters)
         {
-            ViewBag.Categories = await _beerService.GetBeerCategories();
+            ViewBag.Categories = await _beerService.GetProductCategories();
 
             ViewBag.CurrentSortOrder = parameters.SortBy;
             ViewBag.CurrentCategory = parameters.Category;
 
-            IEnumerable<Product> beers = await _beerService.GetBeers(parameters);
+            IEnumerable<Product> beers = await _beerService.GetProducts(parameters);
 
             return View(beers);
         }
@@ -32,7 +31,7 @@ namespace BeerWebshop.Web.Controllers
         // GET: BeerController/Details/5
         public ActionResult Details(int id)
         {
-            return View(_beerService.GetBeerFromId(id));
+            return View(_beerService.GetProductFromId(id));
         }
 
 
