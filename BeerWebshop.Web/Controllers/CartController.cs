@@ -103,11 +103,11 @@ namespace BeerWebshop.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateQuantity(int productId, int newQuantity)
+        public async Task<IActionResult> UpdateQuantity(int productId, int newQuantity)
         {
             try
             {
-                if (!HasEnoughStock(productId, newQuantity))
+                if (!await HasEnoughStock(productId, newQuantity))
                 {
                     return BadRequest("Not enough products in stock");
                 }
@@ -139,10 +139,13 @@ namespace BeerWebshop.Web.Controllers
             }
         }
 
-        private bool HasEnoughStock(int productId, int newQuantity)
+        private async Task<bool> HasEnoughStock(int productId, int newQuantity)
         {
-            Product beer = _beerService.GetBeerFromId(productId);
-
+            Product? beer = await _beerService.GetBeerFromId(productId);
+            if(beer == null)
+            {
+                throw new Exception("Beer not found");
+            }
             return _cartService.HasEnoughStock(beer, newQuantity);
         }
     }
