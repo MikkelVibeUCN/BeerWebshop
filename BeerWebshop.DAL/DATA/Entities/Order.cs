@@ -13,6 +13,8 @@ namespace BeerWebshop.DAL.DATA.Entities
         public string DeliveryAddress { get; set; }
         public bool IsDelivered { get; set; }
         public int? Id { get; set; }
+        public byte IsDeleted { get; set; }
+        public int CustomerId_FK { get; set; }
 
         public float TotalPrice
         {
@@ -22,13 +24,15 @@ namespace BeerWebshop.DAL.DATA.Entities
             }
         }
 
-        public Order(DateTime date, List<OrderLine> orderLines, string deliveryAddress, bool isDelivered, int? id = null)
+        public Order(DateTime date, List<OrderLine> orderLines, string deliveryAddress, bool isDelivered, int customerId_FK, int? id = null)
         {
             Date = date;
             OrderLines = orderLines;
             DeliveryAddress = deliveryAddress;
             IsDelivered = isDelivered;
             Id = id;
+            CustomerId_FK = customerId_FK;
+            
         }
         public Order() { }
 

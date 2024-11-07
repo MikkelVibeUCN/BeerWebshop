@@ -1,22 +1,71 @@
-﻿USE [BeerWebShop]
-GO
-/****** Object:  Table [dbo].[Product]    Script Date: 04-11-2024 14:02:50 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Product](
-	[Name] [nvarchar](30) NOT NULL,
-	[Brewery] [nvarchar](50) NOT NULL,
-	[Price] [float] NOT NULL,
-	[Description] [nvarchar](max) NOT NULL,
-	[Stock] [int] NOT NULL,
-	[ABV] [float] NOT NULL,
-	[Category] [nvarchar](20) NOT NULL,
-	[Id] [int] IDENTITY(1,1) NOT NULL,
- CONSTRAINT [PK_Product] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+﻿CREATE TABLE Categories (
+    Id INT PRIMARY KEY,
+    [Name] NVARCHAR(255) NOT NULL,
+    IsDeleted BIT DEFAULT 0 
+);
+
+CREATE TABLE Breweries (
+    Id INT PRIMARY KEY,
+    [Name] NVARCHAR(255) NOT NULL,
+    IsDeleted BIT DEFAULT 0
+);
+
+CREATE TABLE Postalcode (
+    Postalcode INT PRIMARY KEY,
+    City NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Address (
+    Id INT PRIMARY KEY,
+    Street NVARCHAR(255) NOT NULL,
+    StreetNumber NVARCHAR(50) NOT NULL,
+    ApartmentNumber NVARCHAR(50),
+    Postalcode_FK INT,
+    UNIQUE (Street, StreetNumber, ApartmentNumber, Postalcode_FK),
+    FOREIGN KEY (Postalcode_FK) REFERENCES Postalcode (Postalcode)
+);
+
+CREATE TABLE Customers (
+    Id INT PRIMARY KEY,
+    FirstName NVARCHAR(255) NOT NULL,
+    LastName NVARCHAR(255) NOT NULL,
+    Phone NVARCHAR(50),
+    PasswordHash NVARCHAR(255) NOT NULL,
+    AddressId_FK INT,
+    IsDeleted BIT DEFAULT 0,
+    FOREIGN KEY (AddressId_FK) REFERENCES Address (Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Products (
+    Id INT PRIMARY KEY,
+    [Name] NVARCHAR(255) NOT NULL,
+    CategoryId_FK INT,
+    BreweryId_FK INT,
+    Price FLOAT NOT NULL,
+    [Description] NVARCHAR(255),
+    Stock INT DEFAULT 0,
+    Abv FLOAT,
+    [RowVersion] ROWVERSION,
+    ImageUrl NVARCHAR(255),
+    IsDeleted BIT DEFAULT 0, 
+    FOREIGN KEY (CategoryId_FK) REFERENCES Categories (Id) ON DELETE SET NULL,
+    FOREIGN KEY (BreweryId_FK) REFERENCES Breweries (Id) ON DELETE SET NULL
+);
+CREATE TABLE Orders (
+    Id INT PRIMARY KEY,
+    CreatedAt DATETIME NOT NULL,
+    IsDelivered BIT DEFAULT 0,
+    CustomerId_FK INT NOT NULL,
+    IsDeleted BIT DEFAULT 0, 
+    FOREIGN KEY (CustomerId_FK) REFERENCES Customers (Id) ON DELETE CASCADE
+);
+
+CREATE TABLE Orderlines (
+    OrderId INT,
+    ProductId INT,
+    Quantity INT NOT NULL,
+    Total FLOAT NOT NULL,
+    PRIMARY KEY (OrderId, ProductId),
+    FOREIGN KEY (OrderId) REFERENCES Orders (Id) ON DELETE CASCADE,
+    FOREIGN KEY (ProductId) REFERENCES Products (Id) ON DELETE NO ACTION
+);
