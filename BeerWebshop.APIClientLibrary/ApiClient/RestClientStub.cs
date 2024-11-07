@@ -1,9 +1,9 @@
-﻿using BeerWebshop.APIClientLibrary;
-using BeerWebshop.Web.ApiClient.DTO;
+﻿
+using BeerWebshop.APIClientLibrary.ApiClient.Client;
 
-namespace BeerWebshop.Web.ApiClient
+namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
-    public class RestClientStub : IRestClient
+    public class ProductApiClienttub : IProductAPIClient
     {
         #region Testdata til øl
         private static List<Product> _beers = new List<Product>()
@@ -39,17 +39,17 @@ namespace BeerWebshop.Web.ApiClient
             return Product.Id;
         }
 
-        public Task<Product?> GetBeerFromId(int id)
+        public Task<Product?> GetProductFromId(int id)
         {
             return Task.FromResult(_beers.FirstOrDefault(Product => Product.Id == id));
         }
 
-        public Task<List<string>> GetBeerCategories()
+        public Task<List<string>> GetProductCategories()
         {
             return Task.FromResult(_beers.Select(beer => beer.Type).Distinct().ToList());
         }
 
-        public Task<List<Product>> GetBeers(ProductQueryParameters parameters)
+        public Task<List<Product>> GetProducts(ProductQueryParameters parameters)
         {
             var filteredBeers = _beers.AsQueryable();
 

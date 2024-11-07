@@ -1,4 +1,4 @@
-﻿using BeerWebshop.Web.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.Web.Models;
 
 namespace BeerWebshop.Web.Services
@@ -15,6 +15,6 @@ namespace BeerWebshop.Web.Services
 
         bool HasEnoughStock(Product product, int quantity);
 
-        Product? GetProductFromOrderlines(int productId);
+        Product GetProductFromOrderlines(int productId);
     }
 }

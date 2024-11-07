@@ -1,4 +1,4 @@
-﻿using BeerWebshop.Web.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.Web.Models;
 using System.Linq;
 
@@ -32,7 +32,7 @@ namespace BeerWebshop.Web.Services
                 quantity = 1;
             }
 
-            Product? beer = await _beerService.GetBeerFromId(productId);
+            Product? beer = await _beerService.GetProductFromId(productId);
             if(beer == null)
             {
                 throw new Exception("Beer not found");

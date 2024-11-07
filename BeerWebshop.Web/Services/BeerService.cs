@@ -1,31 +1,31 @@
 ﻿using BeerWebshop.APIClientLibrary;
-using BeerWebshop.Web.ApiClient;
-using BeerWebshop.Web.ApiClient.DTO;
+using BeerWebshop.APIClientLibrary.ApiClient.Client;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.Web.Services
 {
     public class BeerService
     {
-        private readonly IRestClient _restClient;
+        private readonly IProductAPIClient _productAPIClient;
 
-        public BeerService(IRestClient restClient)
+        public BeerService(IProductAPIClient restClient)
         {
-            _restClient = restClient;
+            _productAPIClient = restClient;
         }
 
-        public async Task<Product?> GetBeerFromId(int id)
+        public async Task<Product?> GetProductFromId(int id)
         {
-            return await _restClient.GetBeerFromId(id);
+            return await _productAPIClient.GetProductFromId(id);
         }
 
-        public async Task<List<Product>> GetBeers(ProductQueryParameters parameters)
+        public async Task<List<Product>> GetProducts(ProductQueryParameters parameters)
         {
-            return await _restClient.GetBeers(parameters);
+            return await _productAPIClient.GetProducts(parameters);
         }
 
-        public async Task<List<string>> GetBeerCategories()
+        public async Task<List<string>> GetProductCategories()
         {
-            return await _restClient.GetBeerCategories();
+            return await _productAPIClient.GetProductCategories();
         }
     }
 }
