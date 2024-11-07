@@ -1,4 +1,6 @@
-﻿namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
+﻿using System.ComponentModel;
+
+namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
     public class Product
     {
@@ -10,8 +12,7 @@
         public required int Stock { get; set; }
         public float ABV { get; set; }
         public required string Type { get; set; }
-        public string Url { get; set; }
-
+        public string ImageUrl { get; set; }
 
     }
 }
