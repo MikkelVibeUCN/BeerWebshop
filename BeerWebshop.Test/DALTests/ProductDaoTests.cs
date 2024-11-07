@@ -41,14 +41,11 @@ public class ProductDaoTests
     public async Task CreateAsync_WhenCreated_ShouldReturnId()
     {
         // Arrange
-        var category = new Category { Id = 19, Name = "Sample Category" };
-        var brewery = new Brewery { Id = 19, Name = "Sample Brewery" };
-
         var product = new Product
         {
             Name = "All that jazz",
-            Brewery = brewery,
-            Category = category,
+            CategoryId_FK = 19, 
+            BreweryId_FK = 19,  
             Price = 75f,
             Description = "Banana.",
             Stock = 10,
@@ -66,13 +63,14 @@ public class ProductDaoTests
         var createdProduct = await _productDao.GetByIdAsync(createdProductId);
         Assert.IsNotNull(createdProduct, "The created product should not be null.");
         Assert.That(createdProduct.Name, Is.EqualTo(product.Name));
-        Assert.That(createdProduct.Brewery.Id, Is.EqualTo(product.Brewery.Id));
+        Assert.That(createdProduct.CategoryId_FK, Is.EqualTo(product.CategoryId_FK));
+        Assert.That(createdProduct.BreweryId_FK, Is.EqualTo(product.BreweryId_FK));
         Assert.That(createdProduct.Price, Is.EqualTo(product.Price));
         Assert.That(createdProduct.Description, Is.EqualTo(product.Description));
         Assert.That(createdProduct.Stock, Is.EqualTo(product.Stock));
         Assert.That(createdProduct.Abv, Is.EqualTo(product.Abv));
-        Assert.That(createdProduct.Category.Id, Is.EqualTo(product.Category.Id));
         Assert.That(createdProduct.ImageUrl, Is.EqualTo(product.ImageUrl));
         Assert.That(createdProduct.IsDeleted, Is.EqualTo(product.IsDeleted));
     }
+
 }
