@@ -10,9 +10,11 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
     public interface IProductAPIClient
     {
-        Task<Product?> GetProductFromId(int id);
-        Task<List<Product>> GetProducts(ProductQueryParameters parameters);
-        Task<List<string>> GetProductCategories();
+        Task<ProductDTO?> GetProductFromIdAsync(int id);
+        Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters);
+        Task<IEnumerable<string>> GetProductCategoriesAsync();
+
+        Task<int> CreateProductAsync(ProductDTO productDTO);
 
     }
 }

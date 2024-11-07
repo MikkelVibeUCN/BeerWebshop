@@ -1,31 +1,23 @@
 ﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
-using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
 public class ProductDAO : IProductDAO
 {
-    private const string _insertProductSql = @"
-    INSERT INTO Products 
-    (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
-    VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
-    SELECT CAST(SCOPE_IDENTITY() AS int);";
+    private const string _insertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
+                                            VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
+                                            SELECT CAST(SCOPE_IDENTITY() AS int);";
 
-    private const string _getByIdSql = @"
-    SELECT * 
-    FROM Products 
-    WHERE Id = @Id;";
+    private const string _getByIdSql = @"SELECT * FROM Products WHERE Id = @Id;";
 
-    private const string _getFromCategorySql = @"
-    SELECT p.* 
-    FROM Products p
-    JOIN Categories c ON p.CategoryId_FK = c.Id
-    WHERE c.Name = @Category;";
+    private const string _getFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
 
     private const string _deleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
+
+    private const string _getAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
 
     private readonly string _connectionString;
 
@@ -87,7 +79,22 @@ public class ProductDAO : IProductDAO
         }
     }
 
+    public async Task<IEnumerable<string>> GetProductCategoriesAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
 
+            try
+            {
+                return await connection.QueryAsync<string>(_getAllProductCategoriesSql);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error retrieving categories: {ex.Message}", ex);
+            }
+        }
+    }
 
     public async Task<IEnumerable<Product>> GetFromCategoryAsync(string category)
     {
@@ -128,5 +135,19 @@ public class ProductDAO : IProductDAO
         const string sql = "SELECT * FROM Breweries WHERE Id = @Id;";
         using var connection = new SqlConnection(_connectionString);
         return await connection.QuerySingleOrDefaultAsync<Brewery>(sql, new { Id = breweryId });
+    }
+
+    public async Task<int?> GetCategoryIdByName(string categoryName)
+    {
+        const string sql = "SELECT Id FROM Categories WHERE Name = @Name AND IsDeleted = 0";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = categoryName });
+    }
+
+    public async Task<int?> GetBreweryIdByName(string breweryName)
+    {
+        const string sql = "SELECT Id FROM Breweries WHERE Name = @Name AND IsDeleted = 0";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = breweryName });
     }
 }

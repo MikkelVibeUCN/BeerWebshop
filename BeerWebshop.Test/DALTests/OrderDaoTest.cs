@@ -12,40 +12,34 @@ using System.Xml.Linq;
 
 namespace BeerWebshop.Test.DALTests
 {
-    //public class OrderDaoTest
-    //{
-    //    public OrderDao _orderDao;
-        
-    //    [SetUp]
-    //    public async Task SetUpAsync()
-    //    {
-    //        _orderDao = new OrderDao(Configuration.ConnectionString());
-           
-    //    }
-    //    [Test]
-    //    public async Task InsertOrderAsync_WhenOrderIsInserted_ShouldReturnOrderId()
-    //    {
-    //        // Arrange
-    //        var order = new Order(DateTime.Now, new List<OrderLine>(), "123 Main St", false);
-    //        var product = new Product
-    //        {
-    //            Id = 1,
-    //            Name = "Test Beer",
-    //            Brewery = "Test Brewery",
-    //            Price = 5.99f,
-    //            Description = "A test beer for unit testing.",
-    //            Stock = 10,
-    //            ABV = 4.5f,
-    //            Category = "Test Category"
-    //        };
-    //        var orderLine1 = new OrderLine(2, product);
-    //        order.AddOrderLine(orderLine1);
-    //        // Act
-    //        var orderId = await _orderDao.SaveOrderAsync(order);
+    public class OrderDaoTest
+    {
+        public OrderDao _orderDao;
+        public ProductDAO _productDao;
 
-    //        // Assert
-    //        Assert.That(orderId, Is.EqualTo(1));
-            
-    //    }
-    //}
+        [SetUp]
+        public async Task SetUpAsync()
+        {
+            _orderDao = new OrderDao(Configuration.ConnectionString());
+            _productDao = new ProductDAO(Configuration.ConnectionString());
+
+        }
+        [Test]
+        public async Task InsertOrderAsync_WhenOrderIsInserted_ShouldReturnOrderId()
+        {
+            // Arrange
+            var order = new Order(DateTime.Now, new List<OrderLine>(), "123 Main St", false,1);
+
+            var product = await _productDao.GetByIdAsync(27);
+           
+            var orderLine1 = new OrderLine(2,product,27);
+            order.AddOrderLine(orderLine1);
+            // Act
+            var orderId = await _orderDao.SaveOrderAsync(order);
+
+            // Assert
+            Assert.That(orderId, Is.GreaterThan(0));
+
+        }
+    }
 }

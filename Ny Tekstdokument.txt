@@ -1,0 +1,1 @@
+connstring Server=38.242.242.6;Database=BeerWebshop;User Id=BeerWebshopUser;Password=BeerWebshop%;

@@ -73,4 +73,15 @@ public class ProductDaoTests
         Assert.That(createdProduct.IsDeleted, Is.EqualTo(product.IsDeleted));
     }
 
+    [Test]
+    public async Task GetProductCategoriesAsync_WhenCategoriesExist_ShouldReturnAllCategories()
+    {
+        int existingCategoriesCount = 3;
+
+        var categories = await _productDao.GetProductCategoriesAsync();
+
+        Assert.IsNotNull(categories, "The categories should not be null.");
+        Assert.That(categories.Count(), Is.EqualTo(existingCategoriesCount), "The number of categories should be the same as the number of categories in the database.");   
+    }
+
 }
