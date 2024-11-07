@@ -16,4 +16,6 @@ public interface IProductDAO
 
     Task<bool> DeleteAsync(int id);
 
+    Task<IEnumerable<string>> GetProductCategoriesAsync();
+
 }

@@ -1,5 +1,6 @@
 ﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers
@@ -18,12 +19,14 @@ namespace BeerWebshop.RESTAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var result = await _productDao.GetByIdAsync(id);
-            if(result == null)
+            var product = await _productDao.GetByIdAsync(id);
+            if (product == null)
             {
-                return NotFound($"Product with id {id} was not found");
+                return NotFound($"Product with id {id} was not found.");
             }
-            return Ok(result);
+
+            var productDTO = MapToDTO(product);
+            return Ok(productDTO);
         }
 
         [HttpPost]
@@ -37,6 +40,14 @@ namespace BeerWebshop.RESTAPI.Controllers
             return CreatedAtAction(nameof(GetByIdAsync), new { id = productId }, product);
         }
 
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategoriesAsync()
+        {
+            var result = await _productDao.GetProductCategoriesAsync();
+            return Ok(result);
+        }
+
+
         [HttpGet("category/{category}")]
         public async Task<IActionResult> GetFromCategoryAsync(string category)
         {
@@ -44,11 +55,20 @@ namespace BeerWebshop.RESTAPI.Controllers
             return Ok(result);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllAsync()
-        //{
-        //    var result = await _productDao.GetAllAsync();
-        //    return Ok(result);
-        //}
+        private ProductDTO MapToDTO(Product product)
+        {
+            return new ProductDTO
+            {
+                Id = product.Id ?? 0, 
+                Name = product.Name,
+                Brewery = product.Brewery?.Name,
+                Price = product.Price,
+                Description = product.Description,
+                Stock = product.Stock,
+                ABV = product.Abv,
+                Type = product.Category?.Name,
+                ImageUrl = product.ImageUrl
+            };
+        }
     }
 }

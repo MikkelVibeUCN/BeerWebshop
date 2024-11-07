@@ -13,52 +13,30 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
         private RestClient _restClient;
         public ProductAPIClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
-        public async Task<Product> GetBeerByIdAsync(int id)
+        public async Task<IEnumerable<string>> GetProductCategoriesAsync()
         {
-            var response = await _restClient.RequestAsync<Product>(Method.Get, $"Products/{id}");
+            var response = await _restClient.RequestAsync<IEnumerable<string>>(Method.Get, "Products/Categories");
 
-            if (!response.IsSuccessful)
+            if(!response.IsSuccessful)
             {
-                throw new Exception($"Error retrieving the beer by its id. Message was {response.ErrorMessage}");
+                throw new Exception($"Error retrieving all categories. Message was {response.Content}");
             }
-            return response.Data;
-        }
-        public async Task<IEnumerable<Product>> GetAllBeersAsync()
-        {
-            var response = await _restClient.RequestAsync<IEnumerable<Product>>(Method.Get, $"Products");
 
-            if (!response.IsSuccessful)
-            {
-                throw new Exception($"Error retrieving all beers. Message was {response.ErrorMessage}");
-            }
             return response.Data;
         }
 
-        public async Task<IEnumerable<Product>> GetBeerByCategory(string category)
+        public async Task<ProductDTO?> GetProductFromIdAsync(int id)
         {
-
-            var response = await _restClient.RequestAsync<List<Product>>(Method.Get, $"Products/category/{category}");
+            var response = await _restClient.RequestAsync<ProductDTO>(Method.Get, $"Products/{id}");
 
             if (!response.IsSuccessful)
             {
-
-                throw new Exception($"Error retrieving beers by category '{category}'. Status Code: {response.StatusCode}, Message: {response.ErrorMessage}");
+                throw new Exception($"Error retrieving all authors. Message was {response.Content}");
             }
-
-            return response.Data ?? new List<Product>();
+            return response.Data;
         }
 
-        public Task<Product?> GetProductFromId(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Product>> GetProducts(ProductQueryParameters parameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<string>> GetProductCategories()
+        public Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)
         {
             throw new NotImplementedException();
         }
