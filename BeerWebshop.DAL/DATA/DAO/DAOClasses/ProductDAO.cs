@@ -136,4 +136,18 @@ public class ProductDAO : IProductDAO
         using var connection = new SqlConnection(_connectionString);
         return await connection.QuerySingleOrDefaultAsync<Brewery>(sql, new { Id = breweryId });
     }
+
+    public async Task<int?> GetCategoryIdByName(string categoryName)
+    {
+        const string sql = "SELECT Id FROM Categories WHERE Name = @Name AND IsDeleted = 0";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = categoryName });
+    }
+
+    public async Task<int?> GetBreweryIdByName(string breweryName)
+    {
+        const string sql = "SELECT Id FROM Breweries WHERE Name = @Name AND IsDeleted = 0";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = breweryName });
+    }
 }

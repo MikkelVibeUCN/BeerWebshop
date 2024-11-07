@@ -70,5 +70,9 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
             int skip = parameters.PageNumber * parameters.PageSize;
             return (Task<IEnumerable<ProductDTO>>)filteredBeers.Skip(skip).Take(parameters.PageSize).AsEnumerable();
         }
+        public Task<int> CreateProductAsync(ProductDTO Product)
+        {
+            return Task.FromResult(AddNewBeer(Product));
+        }
     }
 }

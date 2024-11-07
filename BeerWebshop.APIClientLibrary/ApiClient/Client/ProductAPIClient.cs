@@ -13,6 +13,17 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
         private RestClient _restClient;
         public ProductAPIClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
+        public async Task<int> CreateProductAsync(ProductDTO productDTO)
+        {
+            var response = await _restClient.RequestAsync<int>(Method.Post, "Products", productDTO);
+
+            if (!response.IsSuccessful)
+            {
+                throw new Exception($"Error creating product. Message was {response.Content}");
+            }
+
+            return response.Data;
+        }
         public async Task<IEnumerable<string>> GetProductCategoriesAsync()
         {
             var response = await _restClient.RequestAsync<IEnumerable<string>>(Method.Get, "Products/Categories");
@@ -31,7 +42,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 
             if (!response.IsSuccessful)
             {
-                throw new Exception($"Error retrieving all authors. Message was {response.Content}");
+                throw new Exception($"Error retrieving product. Message was {response.Content}");
             }
             return response.Data;
         }

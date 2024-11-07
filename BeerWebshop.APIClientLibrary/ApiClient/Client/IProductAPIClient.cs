@@ -14,5 +14,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
         Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters);
         Task<IEnumerable<string>> GetProductCategoriesAsync();
 
+        Task<int> CreateProductAsync(ProductDTO productDTO);
+
     }
 }
