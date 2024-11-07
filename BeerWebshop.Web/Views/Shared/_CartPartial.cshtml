@@ -19,7 +19,7 @@
         {
             <tr data-product-id="@orderLine.Product.Id">
                 <td class="align-middle">
-                    <img src="@((string.IsNullOrEmpty(orderLine.Product.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLine.Product.Url))" alt="@orderLine.Product.Name" style="width: 50px; height: auto;" />
+                    <img src="@((string.IsNullOrEmpty(orderLine.Product.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLine.Product.ImageUrl))" alt="@orderLine.Product.Name" style="width: 50px; height: auto;" />
                 </td>
                 <td class="align-middle">@orderLine.Product.Name</td>
                 <td class="align-middle">@orderLine.Product.Brewery</td>

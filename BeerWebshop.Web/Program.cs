@@ -14,14 +14,14 @@ namespace BeerWebshop.Web
 
             builder.Services.AddControllersWithViews();
 
-            IProductAPIClient productAPIClient = new ProductApiClienttub();
+            IProductAPIClient productAPIClient = new ProductApiClientStub();
 
             builder.Services.AddScoped<BeerService>(provider => new BeerService(productAPIClient));
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<CookieService>();
             builder.Services.AddScoped<CheckoutService>();
             builder.Services.AddScoped<OrderService>();
-            builder.Services.AddScoped<IOrderAPIClient, OrderAPIClientStub>();
+            builder.Services.AddScoped<IOrderApiClient, OrderAPIClientStub>();
 
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

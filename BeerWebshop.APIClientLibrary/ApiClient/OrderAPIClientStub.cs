@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient
 {
-    public class OrderAPIClientStub : IOrderAPIClient
+    public class OrderAPIClientStub : IOrderApiClient
     {
         public Task<Order> SaveOrder(Order order)
         {

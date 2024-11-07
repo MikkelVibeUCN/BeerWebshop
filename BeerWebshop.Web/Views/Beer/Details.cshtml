@@ -1,4 +1,4 @@
-﻿@model BeerWebshop.APIClientLibrary.ApiClient.DTO.ProductDTO
+﻿@model BeerWebshop.APIClientLibrary.ApiClient.DTO.Product
 
 @{
     ViewData["Title"] = Model.Name;
@@ -17,7 +17,7 @@
     <!-- Image with block display -->
     <div>
         <img style="max-width: 450px; max-height: 300px; display: block;"
-             src="@(string.IsNullOrEmpty(Model.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : Model.Url)"
+             src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : Model.ImageUrl)"
              alt="@Model.Name" />
     </div>
 

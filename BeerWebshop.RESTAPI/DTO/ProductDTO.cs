@@ -1,6 +1,6 @@
 ﻿namespace BeerWebshop.RESTAPI.DTO;
 
-public class ProductDTO
+public class Product
 {
         public int Id { get; set; }
         public required string Name { get; set; }

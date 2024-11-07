@@ -20,27 +20,27 @@ namespace BeerWebshop.RESTAPI.Controllers
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _productDao.GetByIdAsync(id);
-            var productDTO = MapToDTO(result);
+            var Product = MapToDTO(result);
             if (result == null)
             {
                 return NotFound($"Product with id {id} was not found.");
             }
-            return Ok(productDTO);
+            return Ok(Product);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] ProductDTO productDTO)
+        public async Task<IActionResult> CreateProductAsync([FromBody] Product Product)
         {
-            if (productDTO == null)
+            if (Product == null)
             {
                 return BadRequest("Product data is required.");
             }
 
-            var product = await MapToEntity(productDTO);
+            var product = await MapToEntity(Product);
 
             var productId = await _productDao.CreateAsync(product);
 
-            productDTO.Id = productId;
+            Product.Id = productId;
 
             return CreatedAtRoute("GetProductById", new { id = productId }, productId);
         }
@@ -60,9 +60,9 @@ namespace BeerWebshop.RESTAPI.Controllers
             return Ok(result);
         }
 
-        private ProductDTO MapToDTO(Product product)
+        private Product MapToDTO(Product product)
         {
-            return new ProductDTO
+            return new Product
             {
                 Id = product.Id ?? 0, 
                 Name = product.Name,
@@ -76,18 +76,18 @@ namespace BeerWebshop.RESTAPI.Controllers
             };
         }
 
-        private async Task<Product> MapToEntity(ProductDTO productDTO)
+        private async Task<Product> MapToEntity(Product Product)
         {
             return new Product
             {
-                Name = productDTO.Name,
-                CategoryId_FK = await _productDao.GetCategoryIdByName(productDTO.Type), 
-                BreweryId_FK = await _productDao.GetBreweryIdByName(productDTO.Brewery), 
-                Price = productDTO.Price,
-                Description = productDTO.Description,
-                Stock = productDTO.Stock,
-                Abv = productDTO.ABV,
-                ImageUrl = productDTO.ImageUrl,
+                Name = Product.Name,
+                CategoryId_FK = await _productDao.GetCategoryIdByName(Product.Type), 
+                BreweryId_FK = await _productDao.GetBreweryIdByName(Product.Brewery), 
+                Price = Product.Price,
+                Description = Product.Description,
+                Stock = Product.Stock,
+                Abv = Product.ABV,
+                ImageUrl = Product.ImageUrl,
                 IsDeleted = false 
             };
         }

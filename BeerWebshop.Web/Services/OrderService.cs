@@ -6,12 +6,11 @@ namespace BeerWebshop.Web.Services
 {
     public class OrderService
     {
-        private readonly IOrderAPIClient _orderAPIClient;
-        public OrderService(IOrderAPIClient orderAPIClient)
+        private readonly IOrderApiClient _orderAPIClient;
+        public OrderService(IOrderApiClient orderAPIClient)
         {
             _orderAPIClient = orderAPIClient;
         }
-
 
         public async Task<Order> SaveOrder(CheckoutViewModel model)
         {

@@ -3,7 +3,7 @@
     public class OrderLine
     {
         public int Quantity { get; set; }
-        public ProductDTO Product { get; set; }
+        public Product Product { get; set; }
 
         public float SubTotal
         {
@@ -13,7 +13,7 @@
             }
         }
 
-        public OrderLine(int quantity, ProductDTO product)
+        public OrderLine(int quantity, Product product)
         {
             Quantity = quantity;
             Product = product;
