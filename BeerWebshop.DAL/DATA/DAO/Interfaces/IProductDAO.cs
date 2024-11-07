@@ -14,5 +14,6 @@ public interface IProductDAO
 
     Task<IEnumerable<Product>> GetFromCategoryAsync(string category);
 
-    Task<IEnumerable<Product>> GetAllAsync();
+    Task<bool> DeleteAsync(int id);
+
 }
