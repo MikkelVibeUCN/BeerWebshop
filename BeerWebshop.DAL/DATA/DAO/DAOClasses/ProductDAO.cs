@@ -9,15 +9,26 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 public class ProductDAO : IProductDAO
 {
     private const string _insertProductSql = @"
-        INSERT INTO Products (Name, Brewery, Price, Description, Stock, ABV, Category)
-        VALUES (@Name, @Brewery, @Price, @Description, @Stock, @ABV, @Category);
-        SELECT CAST(SCOPE_IDENTITY() AS int);";
+    INSERT INTO Products 
+    (Name, CategoryId_FK as CategoryId, BreweryId_FK as BreweryId, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
+    VALUES (@Name, @Category, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
+    SELECT CAST(SCOPE_IDENTITY() AS int);";
 
-    private const string _getFromCategorySql = @"SELECT * FROM Products WHERE Category = @Category;";
+    private const string _getByIdSql = @"
+    SELECT p.*, c.Name AS Category, b.Name AS Brewery 
+    FROM Products p
+    LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
+    LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id
+    WHERE p.Id = @Id;";
 
-    private const string _getByIdSql = @"SELECT * FROM Products WHERE Id = @Id;";
+    private const string _getFromCategorySql = @"
+    SELECT p.* 
+    FROM Products p
+    JOIN Categories c ON p.CategoryId_FK = c.Id
+    WHERE c.Name = @Category;";
+
+
     private const string _deleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
-    private const string _getAllSql = @"SELECT * FROM Products;";
 
     private readonly string _connectionString;
 
@@ -30,7 +41,19 @@ public class ProductDAO : IProductDAO
         try
         {
             using var connection = new SqlConnection(_connectionString);
-            var newProductId = await connection.QuerySingleAsync<int>(_insertProductSql, product);
+            var parameters = new
+            {
+                product.Name,
+                CategoryId = product.Category?.Id,
+                BreweryId = product.Brewery?.Id,
+                product.Price,
+                product.Description,
+                product.Stock,
+                product.Abv,
+                product.ImageUrl,
+                product.IsDeleted
+            };
+            var newProductId = await connection.QuerySingleAsync<int>(_insertProductSql, parameters);
             return newProductId;
         }
         catch (Exception ex)
@@ -66,20 +89,7 @@ public class ProductDAO : IProductDAO
         }
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync()
-    {
-        try
-        {
-            using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<Product>(_getAllSql);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error getting all products: {ex.Message}", ex);
-        }
-    }
-
-    public async Task<bool> DeleteByIdAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         try
         {

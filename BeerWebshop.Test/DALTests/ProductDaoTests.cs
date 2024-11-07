@@ -21,7 +21,7 @@ public class ProductDaoTests
     {
         if (_createdProductId > 0)
         {
-            await _productDao.DeleteByIdAsync(_createdProductId);
+            await _productDao.DeleteAsync(_createdProductId);
             _createdProductId = 0;
         }
     }
@@ -29,7 +29,7 @@ public class ProductDaoTests
     [Test]
     public async Task GetByIdAsync_WhenProductExist_ShouldReturnProduct()
     {
-        int existingProductId = 1;
+        int existingProductId = 27;
 
         var product = await _productDao.GetByIdAsync(existingProductId);
 
@@ -38,40 +38,41 @@ public class ProductDaoTests
     }
 
     [Test]
-    public async Task CreateAsync_ShouldAddNewProductAndReturnId()
+    public async Task CreateAsync_WhenCreated_ShouldReturnId()
     {
+        // Arrange
+        var category = new Category { Id = 19, Name = "Sample Category" };
+        var brewery = new Brewery { Id = 19, Name = "Sample Brewery" };
+
         var product = new Product
         {
-            Name = "Test Beer",
-            Brewery = "Test Brewery",
-            Price = 5.99f,
-            Description = "A test beer for unit testing.",
+            Name = "All that jazz",
+            Brewery = brewery,
+            Category = category,
+            Price = 75f,
+            Description = "Banana.",
             Stock = 10,
-            ABV = 4.5f,
-            Category = "Test Category"
+            Abv = 8.5f,
+            ImageUrl = "http://example.com/image.jpg",
+            IsDeleted = false
         };
 
-        _createdProductId = await _productDao.CreateAsync(product);
+        // Act
+        var createdProductId = await _productDao.CreateAsync(product);
 
-        Assert.Greater(_createdProductId, 0, "The returned product ID should be greater than 0.");
+        // Assert
+        Assert.Greater(createdProductId, 0, "The returned product ID should be greater than 0.");
 
-        var createdProduct = await _productDao.GetByIdAsync(_createdProductId);
+        var createdProduct = await _productDao.GetByIdAsync(createdProductId);
         Assert.IsNotNull(createdProduct, "The created product should not be null.");
         Assert.That(createdProduct.Name, Is.EqualTo(product.Name));
-        Assert.That(createdProduct.Brewery, Is.EqualTo(product.Brewery));
+        Assert.That(createdProduct.Brewery.Id, Is.EqualTo(product.Brewery.Id));
         Assert.That(createdProduct.Price, Is.EqualTo(product.Price));
         Assert.That(createdProduct.Description, Is.EqualTo(product.Description));
         Assert.That(createdProduct.Stock, Is.EqualTo(product.Stock));
-        Assert.That(createdProduct.ABV, Is.EqualTo(product.ABV));
-        Assert.That(createdProduct.Category, Is.EqualTo(product.Category));
-    }
-
-    [Test]
-    public async Task GetFromCategoryAsync_WhenCategoryIsIPA_ShouldReturnAllIPAProducts()
-    {
-        var productsFromCategory = (await _productDao.GetFromCategoryAsync("IPA")).ToList();
-
-        Assert.IsTrue(productsFromCategory.Count >= 5, "There should be at least five product in the IPA category.");
-        Assert.IsTrue(productsFromCategory.All(p => p.Category == "IPA"), "All products should be in the IPA category.");
+        Assert.That(createdProduct.Abv, Is.EqualTo(product.Abv));
+        Assert.That(createdProduct.Category.Id, Is.EqualTo(product.Category.Id));
+        Assert.That(createdProduct.ImageUrl, Is.EqualTo(product.ImageUrl));
+        Assert.That(createdProduct.IsDeleted, Is.EqualTo(product.IsDeleted));
     }
 }

@@ -8,29 +8,17 @@ namespace BeerWebshop.DAL.DATA.Entities
 {
     public class Product
     {
+        public int? Id { get; set; }
         public string Name { get; set; }
-        public string Brewery { get; set; }
+        public Category Category { get; set; }
+        public Brewery Brewery { get; set; }
         public float Price { get; set; }
         public string Description { get; set; }
         public int Stock { get; set; }
-        public float ABV { get; set; }
-        public string Category { get; set; }
-        public int? Id { get; set; }
-        
-        public Product()
-        {
-        }
-        public Product(string name, string brewery, float price, string description, int stock, float abv, string category, int? id = null)
-        {
-            Name = name;
-            Brewery = brewery;
-            Price = price;
-            Description = description;
-            Stock = stock;
-            ABV = abv;
-            Category = category;
-            Id = id;
-        }
+        public float Abv { get; set; }
+        public string? ImageUrl { get; set; }
+        public bool IsDeleted { get; set; }
+        public byte[] RowVersion { get; set; }
 
     }
 }
