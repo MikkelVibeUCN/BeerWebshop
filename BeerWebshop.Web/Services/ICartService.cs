@@ -9,7 +9,7 @@ namespace BeerWebshop.Web.Services
         ShoppingCart GetCart();
         void RemoveFromCart(int productId);
 
-        void UpdateQuantity(int productId, int quantity);
+        void UpdateQuantity(int productId, int quantity, ShoppingCart? cart = null);
 
         void AddToCart(int productId, int quantity);
 

@@ -8,14 +8,13 @@ namespace BeerWebshop.Web.Services
     public class CookieService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private const string CartCookieKey = "Cart";
 
         public CookieService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public ShoppingCart GetCartFromCookies()
+        public T? GetObjectFromCookie<T>(string cookieKey)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
@@ -23,21 +22,22 @@ namespace BeerWebshop.Web.Services
                 throw new Exception("HttpContext was null");
             }
 
-            var cookieValue = httpContext.Request.Cookies[CartCookieKey];
-            if (string.IsNullOrEmpty(cookieValue))
+            var cookieValue = httpContext.Request.Cookies[cookieKey];
+
+            if (cookieValue == null)
             {
-                return new ShoppingCart();
+                return default;
             }
 
-            var cart = JsonConvert.DeserializeObject<ShoppingCart>(cookieValue);
-            if (cart == null)
+            var objectT = JsonConvert.DeserializeObject<T>(cookieValue);
+            if (objectT == null)
             {
                 throw new Exception("Failed to deserialize cart from cookies");
             }
-            return cart;
+            return objectT;
         }
 
-        public void SaveCartToCookies(ShoppingCart cart)
+        public void RemoveCookies<T>(string cookieKey)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
@@ -45,26 +45,26 @@ namespace BeerWebshop.Web.Services
                 throw new Exception("HttpContext was null");
             }
 
-            var cookieOptions = new CookieOptions
+            httpContext.Response.Cookies.Delete(cookieKey);
+        }
+
+        public void SaveCookie<T>(T objectToSaveToCookie, string cookieKey, CookieOptions? options = null)
+        {
+            var cookieOptions = options ?? new CookieOptions
             {
                 Expires = DateTime.Now.AddDays(30),
                 HttpOnly = true,
                 SameSite = SameSiteMode.Lax
             };
 
-            var cartJson = JsonConvert.SerializeObject(cart);
-            httpContext.Response.Cookies.Append(CartCookieKey, cartJson, cookieOptions);
-        }
-
-        public void RemoveCartFromCookies()
-        {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
             {
                 throw new Exception("HttpContext was null");
             }
 
-            httpContext.Response.Cookies.Delete(CartCookieKey);
+            var cartJson = JsonConvert.SerializeObject(objectToSaveToCookie);
+            httpContext.Response.Cookies.Append(cookieKey, cartJson, cookieOptions);
         }
     }
 }

@@ -8,6 +8,8 @@ namespace BeerWebshop.Web.Services
     {
         private readonly BeerService _beerService;
         private readonly CookieService _cookieService;
+        private const string CartCookieKey = "Cart";
+
         public CartService(BeerService beerService, CookieService cookieService)
         {
             _beerService = beerService;
@@ -16,7 +18,7 @@ namespace BeerWebshop.Web.Services
 
         public ShoppingCart GetCart()
         {
-            return _cookieService.GetCartFromCookies();
+            return GetCartFromCookies();
         }
 
         private bool HasProductInCart(int productId)
@@ -33,7 +35,7 @@ namespace BeerWebshop.Web.Services
             }
 
             Product? beer = await _beerService.GetProductFromId(productId);
-            if(beer == null)
+            if (beer == null)
             {
                 throw new Exception("Beer not found");
             }
@@ -48,7 +50,7 @@ namespace BeerWebshop.Web.Services
             if (HasProductInCart(beer.Id))
             {
                 OrderLine orderLine = cart.OrderLines.First(ol => ol.Product.Id == beer.Id);
-                UpdateQuantity(beer.Id, orderLine.Quantity + quantity);
+                UpdateQuantity(beer.Id, orderLine.Quantity + quantity, cart);
             }
             else
             {
@@ -56,7 +58,7 @@ namespace BeerWebshop.Web.Services
                 cart.AddOrderLine(orderLine);
             }
 
-            _cookieService.SaveCartToCookies(cart);
+            SaveCartToCookies(cart);
         }
 
         public void RemoveFromCart(int productId)
@@ -71,12 +73,15 @@ namespace BeerWebshop.Web.Services
             var orderLineToRemove = cart.OrderLines.First(ol => ol.Product.Id == productId);
             cart.OrderLines.Remove(orderLineToRemove);
 
-            _cookieService.SaveCartToCookies(cart); 
+            SaveCartToCookies(cart);
         }
 
-        public void UpdateQuantity(int productId, int newQuantity)
+        public void UpdateQuantity(int productId, int newQuantity, ShoppingCart? cart = null)
         {
-            var cart = GetCart();
+            if(cart == null)
+            {
+                cart = GetCart();
+            }
 
             if (!HasProductInCart(productId))
             {
@@ -89,9 +94,9 @@ namespace BeerWebshop.Web.Services
             {
                 throw new Exception("Not enough stock");
             }
-
             orderLineToUpdate.Quantity = newQuantity;
-            _cookieService.SaveCartToCookies(cart); 
+
+            SaveCartToCookies(cart);
         }
 
         public bool HasEnoughStock(Product product, int quantity)
@@ -107,6 +112,20 @@ namespace BeerWebshop.Web.Services
                 throw new InvalidOperationException($"Product with ID {productId} not found in order lines.");
             }
             return orderLine.Product;
+        }
+        public ShoppingCart GetCartFromCookies()
+        {
+            ShoppingCart? cart = _cookieService.GetObjectFromCookie<ShoppingCart>(CartCookieKey);
+
+            if (cart == null)
+            {
+                cart = new ShoppingCart();
+            }
+            return cart;
+        }
+        public void SaveCartToCookies(ShoppingCart cart)
+        {
+            _cookieService.SaveCookie<ShoppingCart>(cart, CartCookieKey);
         }
     }
 }

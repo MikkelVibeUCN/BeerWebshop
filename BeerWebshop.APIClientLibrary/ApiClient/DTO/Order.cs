@@ -2,9 +2,10 @@
 {
     public class Order
     {
+        public int Id { get; set; }
         public DateTime Date { get; set; }
-        private List<OrderLine> OrderLines { get; set; }
-        public string DeliveryAddress { get; set; }
+        public List<OrderLine> OrderLines { get; set; }
+        public Customer Customer { get; set; }
         public bool IsDelivered { get; set; }
 
         public float TotalPrice
@@ -23,8 +24,11 @@
         {
             Date = date;
             OrderLines = orderLines;
-            DeliveryAddress = deliveryAddress;
             IsDelivered = isDelivered;
+        }
+
+        public Order()
+        {
         }
 
         public void AddOrderLine(OrderLine orderLine)

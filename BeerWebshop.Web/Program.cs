@@ -1,6 +1,7 @@
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.Web.Services;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.APIClientLibrary.ApiClient;
 
 
 namespace BeerWebshop.Web
@@ -18,6 +19,9 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<BeerService>(provider => new BeerService(productAPIClient));
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<CookieService>();
+            builder.Services.AddScoped<CheckoutService>();
+            builder.Services.AddScoped<OrderService>();
+            builder.Services.AddScoped<IOrderAPIClient, OrderAPIClientStub>();
 
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

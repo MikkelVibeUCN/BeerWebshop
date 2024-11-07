@@ -1,4 +1,4 @@
-﻿@model BeerWebshop.Web.Models.Checkout
+﻿@model BeerWebshop.Web.Models.CheckoutViewModel
 
 <h2>Checkout</h2>
 
@@ -8,63 +8,58 @@
         @using (Html.BeginForm("Index", "Checkout", FormMethod.Post))
         {
             <div class="form-group">
-                <label asp-for="Firstname"></label>
-                <input asp-for="Firstname" class="form-control" required />
-                <span asp-validation-for="Firstname" class="text-danger"></span>
+                <label asp-for="Checkout.Firstname"></label>
+                <input asp-for="Checkout.Firstname" class="form-control" required />
+                <span asp-validation-for="Checkout.Firstname" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Lastname"></label>
-                <input asp-for="Lastname" class="form-control" required />
-                <span asp-validation-for="Lastname" class="text-danger"></span>
+                <label asp-for="Checkout.Lastname"></label>
+                <input asp-for="Checkout.Lastname" class="form-control" required />
+                <span asp-validation-for="Checkout.Lastname" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Phonenumber"></label>
-                <input asp-for="Phonenumber" class="form-control" required />
-                <span asp-validation-for="Phonenumber" class="text-danger"></span>
+                <label asp-for="Checkout.Phonenumber"></label>
+                <input asp-for="Checkout.Phonenumber" class="form-control" required />
+                <span asp-validation-for="Checkout.Phonenumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Street"></label>
-                <input asp-for="Street" class="form-control" required />
-                <span asp-validation-for="Street" class="text-danger"></span>
+                <label asp-for="Checkout.Street"></label>
+                <input asp-for="Checkout.Street" class="form-control" required />
+                <span asp-validation-for="Checkout.Street" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Number"></label>
-                <input asp-for="Number" class="form-control" required />
-                <span asp-validation-for="Number" class="text-danger"></span>
+                <label asp-for="Checkout.Number"></label>
+                <input asp-for="Checkout.Number" class="form-control" required />
+                <span asp-validation-for="Checkout.Number" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Floor"></label>
-                <input asp-for="Floor" class="form-control" name=" " placeholder="Floor (optional)" />
-                <span asp-validation-for="Floor" class="text-danger"></span>
+                <label asp-for="Checkout.PostalCode"></label>
+                <input asp-for="Checkout.PostalCode" class="form-control" required />
+                <span asp-validation-for="Checkout.PostalCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PostalCode"></label>
-                <input asp-for="PostalCode" class="form-control" required />
-                <span asp-validation-for="PostalCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="City"></label>
-                <input asp-for="City" class="form-control" required />
-                <span asp-validation-for="City" class="text-danger"></span>
+                <label asp-for="Checkout.City"></label>
+                <input asp-for="Checkout.City" class="form-control" required />
+                <span asp-validation-for="Checkout.City" class="text-danger"></span>
             </div>
 
             <hr /> <!-- Horizontal line to separate sections -->
 
             <h3>Credit Card Information</h3>
             <div class="form-group">
-                <label for="creditCard">Credit Card Number</label>
-                <input type="text" id="creditCard" name="CreditCard" class="form-control" value="4111 1111 1111 1111" required />
-                <span class="text-danger" asp-validation-for="CreditCard"></span>
+                <label asp-for="Checkout.CreditCard"></label>
+                <input asp-for="Checkout.CreditCard" class="form-control" value="@Model.Checkout.CreditCard" required />
+                <span asp-validation-for="Checkout.CreditCard" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="expirationDate">Expiration Date</label>
-                <input type="text" id="expirationDate" name="ExpirationDate" class="form-control" value="12/25" placeholder="MM/YY" required />
-                <span class="text-danger" asp-validation-for="ExpirationDate"></span>
+                <label asp-for="Checkout.ExpirationDate"></label>
+                <input asp-for="Checkout.ExpirationDate" class="form-control" value="@Model.Checkout.ExpirationDate" placeholder="MM/YY" required />
+                <span asp-validation-for="Checkout.ExpirationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="cvc">CVC</label>
-                <input type="text" id="cvc" name="Cvc" class="form-control" value="123" required />
-                <span class="text-danger" asp-validation-for="Cvc"></span>
+                <label asp-for="Checkout.Cvc"></label>
+                <input asp-for="Checkout.Cvc" class="form-control" value="@Model.Checkout.Cvc" required />
+                <span asp-validation-for="Checkout.Cvc" class="text-danger"></span>
             </div>
 
             <!-- Place Order Button -->
@@ -74,31 +69,52 @@
         }
     </div>
 
-    <div class="col-md-6">
-        <h3>Order Preview</h3>
-        <table class="table">
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Subtotal</th>
-            </tr>
-            @foreach (var item in Model.Cart.OrderLines)
-            {
-                <tr>
-                    <td>@item.Product.Name</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.Product.Price.ToString("F2") kr.</td>
-                    <td>@item.SubTotal.ToString("F2") kr.</td>
-                </tr>
-            }
-        </table>
-        <p>Total Price: @Model.Cart.TotalPrice.ToString("F2") kr.</p>
-    </div>
+    @Html.Partial("_CartPartial", Model.Cart.OrderLines)
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            // Initialize the checkoutData object
+            var checkoutData = {
+                Firstname: $("input[name='Checkout.Firstname']").val(),
+                Lastname: $("input[name='Checkout.Lastname']").val(),
+                Phonenumber: $("input[name='Checkout.Phonenumber']").val(),
+                Street: $("input[name='Checkout.Street']").val(),
+                Number: $("input[name='Checkout.Number']").val(),
+                PostalCode: $("input[name='Checkout.PostalCode']").val(),
+                City: $("input[name='Checkout.City']").val(),
+                CreditCard: $("input[name='Checkout.CreditCard']").val(),
+                ExpirationDate: $("input[name='Checkout.ExpirationDate']").val(),
+                Cvc: $("input[name='Checkout.Cvc']").val()
+            };
+
+            // Event listener for when the user leaves a field (on change)
+            $("input").on("change", function () {
+                var fieldName = $(this).attr('name'); // Get the field name
+                var fieldValue = $(this).val(); // Get the value of the field
+
+                // Update the corresponding field in the checkoutData model
+                checkoutData[fieldName.replace("Checkout.", "")] = fieldValue;
+
+                // Send AJAX request to save the data
+                $.ajax({
+                    url: '/Checkout/SaveCheckout', // URL for the controller action
+                    method: 'POST',
+                    contentType: 'application/json', // Indicate we are sending JSON
+                    data: JSON.stringify(checkoutData), // Send updated data as JSON
+                    success: function (response) {
+                        console.log("Checkout data saved successfully!");
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error saving data. Please try again.");
+                    }
+                });
+            });
+            $("")
+        });
+    </script>
 }

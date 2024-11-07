@@ -39,59 +39,8 @@
 
 <div>
     <hr />
-    <table class="table">
-        <thead>
-            <tr>
-                <th style="width: 10%"></th>
-                <th style="width: 15%;">Product Name</th>
-                <th style="width: 15%;">Brewery</th>
-                <th style="width: 7.5%;">Type</th>
-                <th style="width: 7.5%;">ABV</th>
-                <th style="width: 10%;">Price</th>
-                <th style="width: 15%;">Quantity</th>
-                <th style="width: 15%;">Subtotal</th>
-                <th style="width: 10%;">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var orderLine in Model.OrderLines)
-            {
-                <tr data-product-id="@orderLine.Product.Id">
-                    <td class="align-middle">
-                        <img src=@(string.IsNullOrEmpty(orderLine.Product.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLine.Product.Url) alt="@orderLine.Product.Name" style="width: 50px; height: auto;" />
-                    </td>
-                    <td class="align-middle">@orderLine.Product.Name</td>
-                    <td class="align-middle">@orderLine.Product.Brewery</td>
-                    <td class="align-middle">@orderLine.Product.Type</td>
-                    <td class="align-middle">@orderLine.Product.ABV %</td>
-                    <td class="align-middle">@orderLine.Product.Price.ToString("F2") kr.</td>
 
-                    <!-- Editable Quantity Field with Auto Update -->
-                    <td class="align-middle">
-                        <input type="number"
-                               class="quantity-input form-control"
-                               value="@orderLine.Quantity"
-                               min="1"
-                               max="@orderLine.Product.Stock"
-                               data-product-id="@orderLine.Product.Id"
-                               style="width: 100%;" /> <!-- Make input fill the cell -->
-                    </td>
-
-                    <!-- Subtotal -->
-                    <td class="align-middle subtotal">@orderLine.SubTotal.ToString("F2") kr.</td>
-
-                    <!-- Remove Button -->
-                    <td class="align-middle">
-                        <button type="button"
-                                class="remove-button btn btn-danger"
-                                data-product-id="@orderLine.Product.Id">
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    @Html.Partial("_CartPartial", Model.OrderLines)
 
     <h4>Total beløb <span id="total-price">@Model.TotalPrice.ToString("F2") kr.</span></h4>
     <button type="button" class="btn btn-light-green rounded-pill py-2 px-4" id="pay-button">
@@ -102,77 +51,21 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Track the original value before editing
-            $(document).on('focus', '.quantity-input', function () {
-                $(this).data('original-value', $(this).val());
-            });
+        $('#pay-button').on('click', function () {
+            // Count items in the cart
+            var itemCount = $('.quantity-input').toArray().reduce((count, input) => {
+                return count + (parseInt($(input).val()) || 0);
+            }, 0);
 
-            $(document).on('input', '.quantity-input', function () {
-                let productId = $(this).data('product-id');
-                let newQuantity = $(this).val();
-
-                if(newQuantity == 0) {
-                    $(this).val($(this).data('original-value'));
-                    return;
-                }
-
-                $.ajax({
-                    url: '/Cart/UpdateQuantity',
-                    method: 'POST',
-                    data: {
-                        productId: productId,
-                        newQuantity: newQuantity
-                    },
-                    success: function () {
-                        location.reload();
-                    },
-                    error: function (xhr) {
-                        // Get the original value back if the AJAX call fails
-                        var errorMessage = xhr.responseText || 'Error updating cart. Please try again.';
-                        window.showNotification(errorMessage, 'error');
-
-                        // Revert to the original value
-                        $(this).val($(this).data('original-value'));
-                    }.bind(this) // Bind 'this' to maintain context
-                });
-            });
-
-            $('.remove-button').on('click', function () {
-                let productId = $(this).data('product-id');
-
-                $.ajax({
-                    url: '/Cart/RemoveOrderLine',
-                    method: 'POST',
-                    data: { productId: productId },
-                    success: function () {
-                        location.reload();
-                    },
-                    error: function (xhr) {
-                        // Use the existing window.showNotification function
-                        var errorMessage = xhr.responseText || 'Error removing item from cart. Please try again.';
-                        window.showNotification(errorMessage, 'error');
-                    }
-                });
-            });
-
-            $('#pay-button').on('click', function () {
-                // Count items in the cart
-                var itemCount = $('.quantity-input').toArray().reduce((count, input) => {
-                    return count + (parseInt($(input).val()) || 0);
-                }, 0);
-
-                // Check if there are items in the cart
-                if (itemCount > 0) {
-                    // Perform payment action
-                    window.location.href = '/Checkout'; // Change to your payment URL
-                } else {
-                    // Optionally show a notification if cart is empty
-                    window.showNotification('Kurven er tom. Tilføj venligst varer, før du går til kassen.', 'error');
-                }
-            });
+            // Check if there are items in the cart
+            if (itemCount > 0) {
+                // Perform payment action
+                window.location.href = '/Checkout'; // Change to your payment URL
+            } else {
+                // Optionally show a notification if cart is empty
+                window.showNotification('Kurven er tom. Tilføj venligst varer, før du går til kassen.', 'error');
+            }
         });
     </script>
 }
