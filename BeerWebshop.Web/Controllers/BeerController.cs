@@ -1,4 +1,5 @@
-﻿using BeerWebshop.Web.ApiClient;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.Web.ApiClient;
 using BeerWebshop.Web.ApiClient.DTO;
 using BeerWebshop.Web.Services;
 using Microsoft.AspNetCore.Http;
@@ -16,9 +17,15 @@ namespace BeerWebshop.Web.Controllers
         }
 
         // GET: BeerController
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ProductQueryParameters parameters)
         {
-            IEnumerable<Product> beers = _beerService.GetTenLatestBeers();
+            ViewBag.Categories = await _beerService.GetBeerCategories();
+
+            ViewBag.CurrentSortOrder = parameters.SortBy;
+            ViewBag.CurrentCategory = parameters.Category;
+
+            IEnumerable<Product> beers = await _beerService.GetBeers(parameters);
+
             return View(beers);
         }
 

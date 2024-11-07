@@ -8,7 +8,6 @@ namespace BeerWebshop.Web.Services
     {
         private readonly BeerService _beerService;
         private readonly CookieService _cookieService;
-
         public CartService(BeerService beerService, CookieService cookieService)
         {
             _beerService = beerService;
@@ -26,14 +25,18 @@ namespace BeerWebshop.Web.Services
             return orderLine != null;
         }
 
-        public void AddToCart(int productId, int quantity)
+        public async void AddToCart(int productId, int quantity)
         {
             if (quantity == 0)
             {
                 quantity = 1;
             }
 
-            Product beer = _beerService.GetBeerFromId(productId);
+            Product? beer = await _beerService.GetBeerFromId(productId);
+            if(beer == null)
+            {
+                throw new Exception("Beer not found");
+            }
 
             if (!HasEnoughStock(beer, quantity))
             {

@@ -1,4 +1,5 @@
-﻿using BeerWebshop.Web.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.Web.ApiClient.DTO;
 
 namespace BeerWebshop.Web.ApiClient
 {
@@ -30,7 +31,7 @@ namespace BeerWebshop.Web.ApiClient
         };
         #endregion
 
-        public int AddNewBeer(Product Product)
+        private int AddNewBeer(Product Product)
         {
             var nextAvailableId = _beers.Max(post => post.Id) + 1;
             Product.Id = nextAvailableId;
@@ -38,15 +39,38 @@ namespace BeerWebshop.Web.ApiClient
             return Product.Id;
         }
 
-        public Product GetBeerFromId(int id)
+        public Task<Product?> GetBeerFromId(int id)
         {
-            return _beers.FirstOrDefault(Product => Product.Id == id);
+            return Task.FromResult(_beers.FirstOrDefault(Product => Product.Id == id));
         }
 
-        public IEnumerable<Product> GetTenLatestBeers()
+        public Task<List<string>> GetBeerCategories()
         {
-            return _beers.Take(10);
+            return Task.FromResult(_beers.Select(beer => beer.Type).Distinct().ToList());
+        }
+
+        public Task<List<Product>> GetBeers(ProductQueryParameters parameters)
+        {
+            var filteredBeers = _beers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(parameters.Category))
+            {
+                filteredBeers = filteredBeers.Where(beer => beer.Type.Equals(parameters.Category, StringComparison.OrdinalIgnoreCase));
+            }
+
+            filteredBeers = parameters.SortBy?.ToLower() switch
+            {
+                "nameasc" => filteredBeers.OrderBy(beer => beer.Name),
+                "namedesc" => filteredBeers.OrderByDescending(beer => beer.Name),
+                "priceasc" => filteredBeers.OrderBy(beer => beer.Price),
+                "pricedesc" => filteredBeers.OrderByDescending(beer => beer.Price),
+                _ => filteredBeers
+            };
+
+            int skip = parameters.PageNumber * parameters.PageSize;
+            filteredBeers = filteredBeers.Skip(skip).Take(parameters.PageSize);
+
+            return Task.FromResult(filteredBeers.ToList());
         }
     }
-
 }

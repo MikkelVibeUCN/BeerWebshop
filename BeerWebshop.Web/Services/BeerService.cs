@@ -1,4 +1,5 @@
-﻿using BeerWebshop.Web.ApiClient;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.Web.ApiClient;
 using BeerWebshop.Web.ApiClient.DTO;
 
 namespace BeerWebshop.Web.Services
@@ -12,13 +13,19 @@ namespace BeerWebshop.Web.Services
             _restClient = restClient;
         }
 
-        public IEnumerable<Product> GetTenLatestBeers()
+        public async Task<Product?> GetBeerFromId(int id)
         {
-            return _restClient.GetTenLatestBeers();
+            return await _restClient.GetBeerFromId(id);
         }
-        public Product GetBeerFromId(int id)
+
+        public async Task<List<Product>> GetBeers(ProductQueryParameters parameters)
         {
-            return _restClient.GetBeerFromId(id);
+            return await _restClient.GetBeers(parameters);
+        }
+
+        public async Task<List<string>> GetBeerCategories()
+        {
+            return await _restClient.GetBeerCategories();
         }
     }
 }

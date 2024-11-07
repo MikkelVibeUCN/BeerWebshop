@@ -1,17 +1,44 @@
 ﻿@model IEnumerable<BeerWebshop.Web.ApiClient.DTO.Product>
 
 @{
-    ViewData["Title"] = "Alle øl";
+    ViewData["Title"] = "All Beers";
+    string selectedSortOrder = ViewBag.CurrentSortOrder ?? "";
+    string selectedCategory = ViewBag.CurrentCategory ?? "";
 }
+
+<form method="get" asp-action="Index">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="sortOrder">Sort by:</label>
+            <select id="sortOrder" name="SortBy" class="form-control">
+                <option value="nameAsc" selected="@(selectedSortOrder == "nameAsc")">Name (A-Z)</option>
+                <option value="nameDesc" selected="@(selectedSortOrder == "nameDesc")">Name (Z-A)</option>
+                <option value="priceAsc" selected="@(selectedSortOrder == "priceAsc")">Price (Low to High)</option>
+                <option value="priceDesc" selected="@(selectedSortOrder == "priceDesc")">Price (High to Low)</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="category">Category:</label>
+            <select id="category" name="Category" class="form-control">
+                <option value="">All Categories</option>
+                @foreach (var category in ViewBag.Categories as IEnumerable<string>)
+                {
+                    <option value="@category" selected="@(category == selectedCategory)">@category</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+    </div>
+</form>
 
 <div class="row">
     @foreach (var item in Model)
     {
         <div class="col-md-4 mb-4">
-            <!-- Card as a clickable link to the Details action -->
             <div class="card h-100">
                 <a asp-action="Details" asp-route-id="@item.Id" style="text-decoration: none; color: inherit;">
-                    <!-- Display Image at the top of the card -->
                     <img class="card-img-top" style="max-height: 200px; object-fit: cover;"
                          src="@(string.IsNullOrEmpty(item.Url) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : item.Url)"
                          alt="@item.Name" />
@@ -23,8 +50,8 @@
 
                         <ul class="list-unstyled mt-3 mb-4">
                             <li><strong>Type:</strong> @item.Type</li>
-                            <li><strong>Alkohol:</strong> @item.ABV%</li>
-                            <li><strong>Pris:</strong> @item.Price kr.</li>
+                            <li><strong>Alcohol:</strong> @item.ABV%</li>
+                            <li><strong>Price:</strong> @item.Price kr.</li>
                         </ul>
                     </div>
                 </a>
@@ -32,7 +59,7 @@
                     <button type="button"
                             class="btn btn-primary add-to-cart"
                             data-product-id="@item.Id">
-                        Tilføj til kurv
+                        Add to Cart
                     </button>
                 </div>
             </div>
@@ -40,12 +67,6 @@
     }
 </div>
 
-<!-- Cart Count Display -->
-<div>
-    <h3>Items in Cart: <span id="cart-item-count">0</span></h3>
-</div>
-
-<!-- Notification Popup -->
 <div id="notification" class="notification"></div>
 
 @section Scripts {
@@ -58,14 +79,13 @@
                 $.ajax({
                     url: '/Cart/AddToCart',
                     method: 'POST',
-                    data: { productId: productId, quantity: 1 }, // Ensure to send a quantity, defaulting to 1
+                    data: { productId: productId, quantity: 1 },
                     success: function (response) {
                         $('#cart-item-count').text(response.cartItemCount);
-                        window.showNotification('Produkt tilføjet til kurv!', 'success');
+                        window.showNotification('Product added to cart!', 'success');
                     },
                     error: function (xhr) {
-                        // Get the error message from the response
-                        var errorMessage = xhr.responseText || 'Fejl ved tilføjelse til kurv. Prøv igen.';
+                        var errorMessage = xhr.responseText || 'Error adding to cart. Try again.';
                         window.showNotification(errorMessage, 'error');
                     }
                 });
@@ -73,5 +93,3 @@
         });
     </script>
 }
-
-

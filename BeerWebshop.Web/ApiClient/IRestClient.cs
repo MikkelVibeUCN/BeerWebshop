@@ -1,13 +1,13 @@
-﻿using BeerWebshop.Web.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.Web.ApiClient.DTO;
 
 namespace BeerWebshop.Web.ApiClient
 {
     public interface IRestClient
     {
-        IEnumerable<Product> GetTenLatestBeers();
-        Product GetBeerFromId(int id);
-        int AddNewBeer(Product product);
-
+        Task<Product?> GetBeerFromId(int id);
+        Task<List<Product>> GetBeers(ProductQueryParameters parameters);
+        Task<List<string>> GetBeerCategories();
 
     }
 }
