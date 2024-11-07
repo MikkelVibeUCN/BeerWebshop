@@ -2,7 +2,7 @@
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
-    public class ProductDTO
+    public class Product
     {
         public int Id { get; set; }
         public required string Name { get; set; }

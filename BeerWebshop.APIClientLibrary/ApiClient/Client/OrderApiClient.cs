@@ -14,9 +14,9 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
         public OrderApiClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
 
-        public async Task<OrderDTO> SaveOrder(OrderDTO orderDTO)
+        public async Task<Order> SaveOrder(Order orderDTO)
         {   
-            var response = await _restClient.RequestAsync<OrderDTO>(Method.Post, "Orders", orderDTO);
+            var response = await _restClient.RequestAsync<Order>(Method.Post, "Orders", orderDTO);
 
             if (!response.IsSuccessful)
             {

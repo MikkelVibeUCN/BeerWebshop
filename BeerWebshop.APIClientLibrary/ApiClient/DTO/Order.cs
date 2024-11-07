@@ -1,6 +1,6 @@
 ﻿namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
-    public class OrderDTO
+    public class Order
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
@@ -20,7 +20,7 @@
             }
         }
 
-        public OrderDTO(DateTime date, List<OrderLine> orderLines, string deliveryAddress, bool isDelivered)
+        public Order(DateTime date, List<OrderLine> orderLines, string deliveryAddress, bool isDelivered)
         {
             Date = date;
             OrderLines = orderLines;
