@@ -9,7 +9,6 @@ public interface IProductAPIClient
     Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters);
     Task<IEnumerable<string>> GetProductCategoriesAsync();
     Task<int> GetProductCountAsync(ProductQueryParameters parameters);
-
     Task<int> CreateProductAsync(ProductDTO ProductDTO);
 
 }
