@@ -16,5 +16,6 @@ namespace BeerWebshop.Web.Services
         bool HasEnoughStock(ProductDTO productDTO, int quantity);
 
         ProductDTO GetProductFromOrderlines(int productId);
+        void ClearCartCookies();
     }
 }

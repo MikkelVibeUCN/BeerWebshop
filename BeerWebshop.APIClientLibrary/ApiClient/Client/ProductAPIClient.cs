@@ -38,6 +38,11 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
+        public Task<int> GetProductCountAsync(ProductQueryParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<ProductDTO?> GetProductFromIdAsync(int id)
         {
             var response = await _restClient.RequestAsync<ProductDTO>(Method.Get, $"Products/{id}");

@@ -78,7 +78,6 @@
     }
     <script>
         $(document).ready(function () {
-            // Initialize the checkoutData object
             var checkoutData = {
                 Firstname: $("input[name='Checkout.Firstname']").val(),
                 Lastname: $("input[name='Checkout.Lastname']").val(),
@@ -92,20 +91,17 @@
                 Cvc: $("input[name='Checkout.Cvc']").val()
             };
 
-            // Event listener for when the user leaves a field (on change)
             $("input").on("change", function () {
-                var fieldName = $(this).attr('name'); // Get the field name
-                var fieldValue = $(this).val(); // Get the value of the field
+                var fieldName = $(this).attr('name');
+                var fieldValue = $(this).val(); 
 
-                // Update the corresponding field in the checkoutData model
                 checkoutData[fieldName.replace("Checkout.", "")] = fieldValue;
 
-                // Send AJAX request to save the data
                 $.ajax({
-                    url: '/Checkout/SaveCheckout', // URL for the controller action
+                    url: '/Checkout/SaveCheckout', 
                     method: 'POST',
-                    contentType: 'application/json', // Indicate we are sending JSON
-                    data: JSON.stringify(checkoutData), // Send updated data as JSON
+                    contentType: 'application/json', 
+                    data: JSON.stringify(checkoutData), 
                     success: function (response) {
                         console.log("Checkout data saved successfully!");
                     },

@@ -12,15 +12,19 @@ namespace BeerWebshop.Web.Services
             _orderAPIClient = orderAPIClient;
         }
 
-        public async Task<OrderDTO> SaveOrder(CheckoutViewModel model)
+        public async Task<OrderDTO?> GetOrderFromId(int id)
         {
+            return await _orderAPIClient.GetOrderFromId(id);
+        }
 
-            CustomerDTO customerDTO = CreateCustomerFromCheckout(model.Checkout);
+        public async Task<int> SaveOrder(Checkout checkout, ShoppingCart cart)
+        {
+            CustomerDTO customerDTO = CreateCustomerFromCheckout(checkout);
 
             OrderDTO orderDTO = new OrderDTO
             {
                 CustomerDTO = customerDTO,
-                OrderLines = model.Cart.OrderLines,
+                OrderLines = cart.OrderLines,
                 Date = DateTime.Now,
             };
 

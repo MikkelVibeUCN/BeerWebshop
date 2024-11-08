@@ -20,9 +20,19 @@ namespace BeerWebshop.Web.Controllers
         {
             ViewBag.Categories = await _beerService.GetProductCategories();
 
+            int totalProductCount = await _beerService.GetProductCount(parameters);
+            int totalPages = (int)Math.Ceiling(totalProductCount / (double)parameters.PageSize);
+
+            if(totalPages > 1)
+            {
+                totalPages--;
+            }
+
             ViewBag.CurrentSortOrder = parameters.SortBy;
             ViewBag.CurrentCategory = parameters.Category;
-            
+            ViewBag.CurrentPage = parameters.PageNumber;
+            ViewBag.TotalPages = totalPages;
+
             IEnumerable<ProductDTO> beers = await _beerService.GetProducts(parameters);
 
             return View(beers);

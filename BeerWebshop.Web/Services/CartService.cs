@@ -127,5 +127,10 @@ namespace BeerWebshop.Web.Services
         {
             _cookieService.SaveCookie<ShoppingCart>(cart, CartCookieKey);
         }
+
+        public void ClearCartCookies()
+        {
+            _cookieService.RemoveCookies<ShoppingCart>(CartCookieKey);
+        }
     }
 }
