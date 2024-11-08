@@ -24,7 +24,9 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 
             return response.Data;
         }
-        public async Task<IEnumerable<string>> GetProductCategoriesAsync()
+
+
+		public async Task<IEnumerable<string>> GetProductCategoriesAsync()
         {
             var response = await _restClient.RequestAsync<IEnumerable<string>>(Method.Get, "Products/Categories");
 
@@ -47,9 +49,11 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
-        public Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)
+        public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)
         {
             throw new NotImplementedException();
         }
-    }
+
+
+	}
 }
