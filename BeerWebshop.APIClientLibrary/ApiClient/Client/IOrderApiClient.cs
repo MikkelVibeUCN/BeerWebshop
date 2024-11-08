@@ -9,6 +9,6 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
     public interface IOrderApiClient
     {
-        Task<Order> SaveOrder(Order orderDTO);
+        Task<OrderDTO> SaveOrder(OrderDTO OrderDTO);
     }
 }
