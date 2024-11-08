@@ -1,26 +1,27 @@
 ﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.ProductDTO>
-
 @{
     ViewData["Title"] = "All Beers";
     string selectedSortOrder = ViewBag.CurrentSortOrder ?? "";
     string selectedCategory = ViewBag.CurrentCategory ?? "";
+    int currentPage = ViewBag.CurrentPage ?? 0; // Current page number, default to 1
+    int totalPages = ViewBag.TotalPages ?? 1; // Total number of pages
 }
 
 <form method="get" asp-action="Index">
     <div class="row mb-3">
         <div class="col-md-4">
-            <label for="sortOrder">Sort by:</label>
+            <label for="sortOrder">Sorter efter:</label>
             <select id="sortOrder" name="SortBy" class="form-control">
-                <option value="nameAsc" selected="@(selectedSortOrder == "nameAsc")">Name (A-Z)</option>
-                <option value="nameDesc" selected="@(selectedSortOrder == "nameDesc")">Name (Z-A)</option>
-                <option value="priceAsc" selected="@(selectedSortOrder == "priceAsc")">Price (Low to High)</option>
-                <option value="priceDesc" selected="@(selectedSortOrder == "priceDesc")">Price (High to Low)</option>
+                <option value="nameAsc" selected="@(selectedSortOrder == "nameAsc")">Navn stigende (A-Å)</option>
+                <option value="nameDesc" selected="@(selectedSortOrder == "nameDesc")">Navn faldende (Å-A)</option>
+                <option value="priceAsc" selected="@(selectedSortOrder == "priceAsc")">Pris stigende</option>
+                <option value="priceDesc" selected="@(selectedSortOrder == "priceDesc")">Pris faldene</option>
             </select>
         </div>
         <div class="col-md-4">
-            <label for="category">Category:</label>
+            <label for="category">Kategori:</label>
             <select id="category" name="Category" class="form-control">
-                <option value="">All Categories</option>
+                <option value="">Alle kategorier</option>
                 @foreach (var category in ViewBag.Categories as IEnumerable<string>)
                 {
                     <option value="@category" selected="@(category == selectedCategory)">@category</option>
@@ -49,9 +50,7 @@
                         <p class="card-text">@item.Description</p>
 
                         <ul class="list-unstyled mt-3 mb-4">
-                            <li><strong>Type:</strong> @item.Type</li>
-                            <li><strong>Alcohol:</strong> @item.ABV%</li>
-                            <li><strong>Price:</strong> @item.Price kr.</li>
+                            <li><strong>Pris:</strong> @item.Price kr.</li>
                         </ul>
                     </div>
                 </a>
@@ -59,13 +58,38 @@
                     <button type="button"
                             class="btn btn-primary add-to-cart"
                             data-product-id="@item.Id">
-                        Add to Cart
+                        Tilføj til kurv
                     </button>
                 </div>
             </div>
         </div>
     }
 </div>
+
+<!-- Pagination Section -->
+<div class="pagination d-flex justify-content-center mt-4">
+    <div class="pagination-links">
+        <!-- Previous Button -->
+        @if (currentPage > 0)
+        {
+            <a href="@Url.Action("Index", new { pageNumber = currentPage - 1, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light">Tilbage</a>
+        }
+        
+        <!-- Page Links -->
+        @for (int i = Math.Max(0, currentPage); i <= Math.Min(Math.Max(0, currentPage) + 2, totalPages); i++)
+        {
+            <a href="@Url.Action("Index", new { pageNumber = i, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light @((i == currentPage) ? "active" : "")">@i</a>
+        }
+
+        <!-- Next Button -->
+        @if (currentPage < totalPages - 1)
+        {
+            <a href="@Url.Action("Index", new { pageNumber = currentPage + 1, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light">Næste</a>
+        }
+    </div>
+</div>
+
+
 
 <div id="notification" class="notification"></div>
 
@@ -94,3 +118,4 @@
         });
     </script>
 }
+        

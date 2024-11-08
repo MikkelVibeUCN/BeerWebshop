@@ -13,6 +13,11 @@ namespace BeerWebshop.Web.Services
             _productAPIClient = restClient;
         }
 
+        public async Task<int> GetProductCount(ProductQueryParameters parameters)
+        {
+            return await _productAPIClient.GetProductCountAsync(parameters);
+        }
+
         public async Task<ProductDTO?> GetProductFromId(int id)
         {
             return await _productAPIClient.GetProductFromIdAsync(id);

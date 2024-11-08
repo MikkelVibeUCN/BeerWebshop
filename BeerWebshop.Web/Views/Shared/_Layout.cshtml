@@ -4,71 +4,186 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BeerWebshop.Web</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BeerWebshop.Web.styles.css" asp-append-version="true" />
 
     <style>
+        /* Set full height for body and html */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Helvetica Neue', sans-serif;
+            background-color: #f4f4f4; /* Light gray background for a clean look */
+            color: #333; /* Dark text for high contrast */
+        }
+
+        /* Main layout flexbox, container will fill the height */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .content {
+            flex: 1; /* Makes sure the content area grows to fill space */
+        }
+
+        /* Navbar styling */
+        header {
+            background-color: #1b1b1b; /* Dark background */
+            padding: 1rem 0;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            color: #f2a900; /* A subtle beer-yellow */
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ddd; /* Soft gray color */
+            padding: 0.8rem 1rem;
+        }
+
+            .navbar-nav .nav-item .nav-link:hover {
+                color: #f2a900; /* Highlight with beer-yellow on hover */
+            }
+
+        .navbar-toggler-icon {
+            background-color: #f2a900; /* Yellow hamburger icon for mobile */
+        }
+
+        /* Notification styling */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #4caf50; /* Green background */
-            color: white; /* White text color */
-            padding: 10px 20px;
+            background-color: #28a745; /* Green success background */
+            color: #fff;
+            padding: 12px 20px;
             border-radius: 5px;
             z-index: 1000;
-            display: none; /* Hidden by default */
-            transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition */
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
         }
 
             .notification.error {
-                background-color: #f44336; /* Red background for errors */
+                background-color: #dc3545; /* Red error background */
             }
+
+        /* Footer styling */
+        footer {
+            background-color: #1b1b1b;
+            color: #ddd;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto; /* Ensures footer stays at the bottom */
+        }
+
+            footer a {
+                color: #f2a900; /* Gold color for links */
+                text-decoration: none;
+            }
+
+                footer a:hover {
+                    text-decoration: underline;
+                }
+
+        /* Main content container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        /* Tables and other components can follow this simple style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f2a900;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BeerWebshop.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Beer" asp-action="Index">Beer</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">Cart</a>
-                        </li>
-                    </ul>
+
+    <div class="main-container">
+
+        <!-- Header / Navbar -->
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="@Url.Action("Index", "Home")">BeerWebshop</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Home")">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Beer")">Beers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Cart")">Cart</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+            </nav>
+        </header>
+
+        <!-- Main content area -->
+        <div class="content">
+            <div class="container">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024 - BeerWebshop</p>
+        </footer>
+
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - BeerWebshop.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-
+    <!-- Notification -->
     <div id="notification" class="notification"></div>
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -88,11 +203,12 @@
                 $notification.css('opacity', 0).css('transform', 'translateY(-10px)');
                 setTimeout(function () {
                     $notification.css('display', 'none');
-                }, 200); 
+                }, 200);
             }, 1500);
         }
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
