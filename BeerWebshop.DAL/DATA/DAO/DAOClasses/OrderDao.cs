@@ -64,7 +64,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             parameters.Add("@CustomerId_FK", order.CustomerId_FK);
             parameters.Add("IsDeleted", order.IsDeleted);
 
-
             try
             {
 
@@ -79,7 +78,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             }
         }
 
-        private async Task InsertOrderLinesAsync(SqlConnection connection, IDbTransaction transaction, int orderId, OrderLine orderLine)
+        public async Task InsertOrderLinesAsync(SqlConnection connection, IDbTransaction transaction, int orderId, OrderLine orderLine)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@OrderId", orderId);
@@ -102,9 +101,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 throw new Exception($"No more left of this product");
             }
-
-
-
 
         }
     }
