@@ -40,11 +40,23 @@ namespace BeerWebshop.Web.Controllers
         // POST: CheckoutController
         [HttpPost]  
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Index(CheckoutViewModel model)
+        public async Task<ActionResult> Index([FromForm] Checkout checkout)
         {
-            OrderDTO order = await _orderService.SaveOrder(model);
+            ShoppingCart cart = _cartService.GetCart();
 
-            return RedirectToAction("OrderConfirmation", "Checkout", order);
+            try
+            {
+                int id = await _orderService.SaveOrder(checkout, cart);
+
+                _cartService.ClearCartCookies();
+
+                return RedirectToAction("OrderConfirmation", "Checkout", new { orderId = id });
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost]
@@ -60,10 +72,15 @@ namespace BeerWebshop.Web.Controllers
             return BadRequest(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
-        // GET: OrderDTO Confirmation
-        public ActionResult OrderConfirmation(OrderDTO orderDTO)
+        // GET: Order Confirmation
+        public async Task<ActionResult> OrderConfirmation(int orderId)
         {
-            return View(orderDTO);
+            OrderDTO? order = await _orderService.GetOrderFromId(orderId);
+            if(order == null)
+            {
+                return BadRequest("Order not found");
+            }
+            return View(order);
         }
     }
 }

@@ -7,22 +7,22 @@ namespace BeerWebshop.Test.DALTests;
 
 public class ProductDaoTests
 {
-    private ProductDAO _productDao;    
-    private CategoryDAO _categoryDao;
+	private ProductDAO _productDao;
+	private CategoryDAO _categoryDao;
 	private BreweryDAO _breweryDao;
 	private int _createdProductId;
-    private int _createdCategoryId;
-    private int _createdBreweryId;
-    private string _testSuffix = "_Test";
+	private int _createdCategoryId;
+	private int _createdBreweryId;
+	private string _testSuffix = "_Test";
 
 	[SetUp]
-    public async Task SetUpAsync()
-    {
-        _productDao = new ProductDAO(Configuration.ConnectionString());
+	public async Task SetUpAsync()
+	{
+		_productDao = new ProductDAO(Configuration.ConnectionString());
 		_categoryDao = new CategoryDAO(Configuration.ConnectionString());
 		_breweryDao = new BreweryDAO(Configuration.ConnectionString());
 
-        
+
 		var category = new Category
 		{
 			Name = $"IPA{_testSuffix}",
@@ -55,9 +55,9 @@ public class ProductDaoTests
 		_createdProductId = await _productDao.CreateAsync(product);
 	}
 
-    [TearDown]
-    public async Task TearDownAsync()
-    {
+	[TearDown]
+	public async Task TearDownAsync()
+	{
 		if (_createdProductId != 0)
 		{
 			await _productDao.DeleteAsync(_createdProductId);
@@ -74,17 +74,17 @@ public class ProductDaoTests
 		}
 	}
 
-    [Test]
-    public async Task GetByIdAsync_WhenProductExist_ShouldReturnProduct()
-    {
-        var product = await _productDao.GetByIdAsync(_createdProductId);
+	[Test]
+	public async Task GetByIdAsync_WhenProductExist_ShouldReturnProduct()
+	{
+		var product = await _productDao.GetByIdAsync(_createdProductId);
 
-        Assert.IsNotNull(product);
-        Assert.That(product.Id, Is.EqualTo(_createdProductId));
+		Assert.IsNotNull(product);
+		Assert.That(product.Id, Is.EqualTo(_createdProductId));
 		Assert.That(product.Name, Is.EqualTo($"All that jazz{_testSuffix}"));
 	}
 
-    [Test]
+	[Test]
 	public async Task CreateAsync_WhenCreated_ShouldReturnId()
 	{
 		var product = new Product
@@ -102,7 +102,6 @@ public class ProductDaoTests
 
 		var createdProductId = await _productDao.CreateAsync(product);
 
-		// Asert
 		Assert.Greater(createdProductId, 0, "The returned product ID should be greater than 0.");
 
 		var createdProduct = await _productDao.GetByIdAsync(createdProductId);
@@ -120,14 +119,15 @@ public class ProductDaoTests
 		await _productDao.DeleteAsync(createdProductId);
 	}
 
-	//[Test]
- //   public async Task GetProductCategoriesAsync_WhenCategoriesExist_ShouldReturnAllCategories()
- //   {
+	[Test]
+	public async Task GetProductCategoriesAsync_WhenTestCategoriesExist_ShouldReturnOnlyTestCategories()
+	{
+		var categories = (await _productDao.GetProductCategoriesAsync());
 
- //       var categories = await _productDao.GetProductCategoriesAsync();
+		Assert.IsNotNull(categories, "The categories should not be null.");
+		Assert.That(categories.Count, Is.GreaterThan(0), "The number of test categories should match the expected count.");
+		Assert.That(categories, Contains.Item($"IPA{_testSuffix}"), $"The category 'IPA{_testSuffix}' should be present in the list.");
 
- //       Assert.IsNotNull(categories, "The categories should not be null.");
- //       Assert.That(categories.Count(), Is.EqualTo(1), "The number of categories should be the same as the number of categories in the database.");   
- //   }
 
+	}
 }
