@@ -13,8 +13,8 @@ namespace BeerWebshop.Web.Services
 
         void AddToCart(int productId, int quantity);
 
-        bool HasEnoughStock(Product product, int quantity);
+        bool HasEnoughStock(ProductDTO productDTO, int quantity);
 
-        Product GetProductFromOrderlines(int productId);
+        ProductDTO GetProductFromOrderlines(int productId);
     }
 }

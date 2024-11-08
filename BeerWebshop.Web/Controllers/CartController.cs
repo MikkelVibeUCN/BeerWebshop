@@ -141,7 +141,7 @@ namespace BeerWebshop.Web.Controllers
 
         private async Task<bool> HasEnoughStock(int productId, int newQuantity)
         {
-            Product? beer = await _beerService.GetProductFromId(productId);
+            ProductDTO? beer = await _beerService.GetProductFromId(productId);
             if(beer == null)
             {
                 throw new Exception("Beer not found");

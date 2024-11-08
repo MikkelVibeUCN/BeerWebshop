@@ -22,8 +22,8 @@ namespace BeerWebshop.Web.Controllers
 
             ViewBag.CurrentSortOrder = parameters.SortBy;
             ViewBag.CurrentCategory = parameters.Category;
-
-            IEnumerable<Product> beers = await _beerService.GetProducts(parameters);
+            
+            IEnumerable<ProductDTO> beers = await _beerService.GetProducts(parameters);
 
             return View(beers);
         }
@@ -31,9 +31,12 @@ namespace BeerWebshop.Web.Controllers
         // GET: BeerController/Details/5
         public ActionResult Details(int id)
         {
-            return View(_beerService.GetProductFromId(id));
+            ProductDTO? product = _beerService.GetProductFromId(id).Result;
+            if(product != null)
+            {
+                return View(product);
+            }
+            return BadRequest();
         }
-
-
     }
 }

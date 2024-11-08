@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
-    public class Customer
+    public class CustomerDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

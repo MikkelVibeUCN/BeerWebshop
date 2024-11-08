@@ -42,7 +42,7 @@ namespace BeerWebshop.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index(CheckoutViewModel model)
         {
-            Order order = await _orderService.SaveOrder(model);
+            OrderDTO order = await _orderService.SaveOrder(model);
 
             return RedirectToAction("OrderConfirmation", "Checkout", order);
         }
@@ -60,10 +60,10 @@ namespace BeerWebshop.Web.Controllers
             return BadRequest(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
         }
 
-        // GET: Order Confirmation
-        public ActionResult OrderConfirmation(Order order)
+        // GET: OrderDTO Confirmation
+        public ActionResult OrderConfirmation(OrderDTO orderDTO)
         {
-            return View(order);
+            return View(orderDTO);
         }
     }
 }

@@ -23,8 +23,8 @@ namespace BeerWebshop.Web.Services
 
         private bool HasProductInCart(int productId)
         {
-            var orderLine = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
-            return orderLine != null;
+            var orderLineDTO = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
+            return orderLineDTO != null;
         }
 
         public async void AddToCart(int productId, int quantity)
@@ -34,7 +34,7 @@ namespace BeerWebshop.Web.Services
                 quantity = 1;
             }
 
-            Product? beer = await _beerService.GetProductFromId(productId);
+            ProductDTO? beer = await _beerService.GetProductFromId(productId);
             if (beer == null)
             {
                 throw new Exception("Beer not found");
@@ -49,13 +49,13 @@ namespace BeerWebshop.Web.Services
 
             if (HasProductInCart(beer.Id))
             {
-                OrderLine orderLine = cart.OrderLines.First(ol => ol.Product.Id == beer.Id);
-                UpdateQuantity(beer.Id, orderLine.Quantity + quantity, cart);
+                OrderLineDTO orderLineDTO = cart.OrderLines.First(ol => ol.Product.Id == beer.Id);
+                UpdateQuantity(beer.Id, orderLineDTO.Quantity + quantity, cart);
             }
             else
             {
-                var orderLine = new OrderLine(quantity, beer);
-                cart.AddOrderLine(orderLine);
+                var orderLineDTO = new OrderLineDTO(quantity, beer);
+                cart.AddOrderLine(orderLineDTO);
             }
 
             SaveCartToCookies(cart);
@@ -67,7 +67,7 @@ namespace BeerWebshop.Web.Services
 
             if (!HasProductInCart(productId))
             {
-                throw new Exception("Product not found in cart");
+                throw new Exception("ProductDTO not found in cart");
             }
 
             var orderLineToRemove = cart.OrderLines.First(ol => ol.Product.Id == productId);
@@ -85,7 +85,7 @@ namespace BeerWebshop.Web.Services
 
             if (!HasProductInCart(productId))
             {
-                throw new Exception("Product not found in cart");
+                throw new Exception("ProductDTO not found in cart");
             }
 
             var orderLineToUpdate = cart.OrderLines.First(ol => ol.Product.Id == productId);
@@ -99,19 +99,19 @@ namespace BeerWebshop.Web.Services
             SaveCartToCookies(cart);
         }
 
-        public bool HasEnoughStock(Product product, int quantity)
+        public bool HasEnoughStock(ProductDTO ProductDTO, int quantity)
         {
-            return product.Stock >= quantity;
+            return ProductDTO.Stock >= quantity;
         }
 
-        public Product GetProductFromOrderlines(int productId)
+        public ProductDTO GetProductFromOrderlines(int productId)
         {
-            var orderLine = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
-            if (orderLine == null)
+            var orderLineDTO = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
+            if (orderLineDTO == null)
             {
-                throw new InvalidOperationException($"Product with ID {productId} not found in order lines.");
+                throw new InvalidOperationException($"ProductDTO with ID {productId} not found in OrderDTO lines.");
             }
-            return orderLine.Product;
+            return orderLineDTO.Product;
         }
         public ShoppingCart GetCartFromCookies()
         {

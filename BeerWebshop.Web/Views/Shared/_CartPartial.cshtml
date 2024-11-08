@@ -1,10 +1,10 @@
-﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.OrderLine>
+﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.OrderLineDTO>
 
 <table class="table">
     <thead>
         <tr>
             <th style="width: 10%"></th>
-            <th style="width: 15%;">Product Name</th>
+            <th style="width: 15%;">ProductDTO Name</th>
             <th style="width: 15%;">Brewery</th>
             <th style="width: 7.5%;">Type</th>
             <th style="width: 7.5%;">ABV</th>
@@ -15,37 +15,37 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var orderLine in Model)
+        @foreach (var orderLineDTO in Model)
         {
-            <tr data-product-id="@orderLine.Product.Id">
+            <tr data-product-id="@orderLineDTO.Product.Id">
                 <td class="align-middle">
-                    <img src="@((string.IsNullOrEmpty(orderLine.Product.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLine.Product.ImageUrl))" alt="@orderLine.Product.Name" style="width: 50px; height: auto;" />
+                    <img src="@((string.IsNullOrEmpty(orderLineDTO.Product.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLineDTO.Product.ImageUrl))" alt="@orderLineDTO.Product.Name" style="width: 50px; height: auto;" />
                 </td>
-                <td class="align-middle">@orderLine.Product.Name</td>
-                <td class="align-middle">@orderLine.Product.Brewery</td>
-                <td class="align-middle">@orderLine.Product.Type</td>
-                <td class="align-middle">@orderLine.Product.ABV %</td>
-                <td class="align-middle">@orderLine.Product.Price.ToString("F2") kr.</td>
+                <td class="align-middle">@orderLineDTO.Product.Name</td>
+                <td class="align-middle">@orderLineDTO.Product.Brewery</td>
+                <td class="align-middle">@orderLineDTO.Product.Type</td>
+                <td class="align-middle">@orderLineDTO.Product.ABV %</td>
+                <td class="align-middle">@orderLineDTO.Product.Price.ToString("F2") kr.</td>
 
                 <!-- Editable Quantity Field with Auto Update -->
                 <td class="align-middle">
                     <input type="number"
                            class="quantity-input form-control"
-                           value="@orderLine.Quantity"
+                           value="@orderLineDTO.Quantity"
                            min="1"
-                           max="@orderLine.Product.Stock"
-                           data-product-id="@orderLine.Product.Id"
+                           max="@orderLineDTO.Product.Stock"
+                           data-product-id="@orderLineDTO.Product.Id"
                            style="width: 100%;" />
                 </td>
 
                 <!-- Subtotal -->
-                <td class="align-middle subtotal">@orderLine.SubTotal.ToString("F2") kr.</td>
+                <td class="align-middle subtotal">@orderLineDTO.SubTotal.ToString("F2") kr.</td>
 
                 <!-- Remove Button -->
                 <td class="align-middle">
                     <button type="button"
                             class="remove-button btn btn-danger"
-                            data-product-id="@orderLine.Product.Id">
+                            data-product-id="@orderLineDTO.Product.Id">
                         Remove
                     </button>
                 </td>

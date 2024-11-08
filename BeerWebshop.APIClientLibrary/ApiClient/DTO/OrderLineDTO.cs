@@ -1,9 +1,9 @@
 ﻿namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
-    public class OrderLine
+    public class OrderLineDTO
     {
         public int Quantity { get; set; }
-        public Product Product { get; set; }
+        public ProductDTO Product { get; set; }
 
         public float SubTotal
         {
@@ -13,7 +13,7 @@
             }
         }
 
-        public OrderLine(int quantity, Product product)
+        public OrderLineDTO(int quantity, ProductDTO product)
         {
             Quantity = quantity;
             Product = product;

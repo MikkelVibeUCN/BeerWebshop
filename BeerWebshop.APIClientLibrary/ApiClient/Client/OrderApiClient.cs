@@ -14,13 +14,13 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
         public OrderApiClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
 
-        public async Task<Order> SaveOrder(Order orderDTO)
+        public async Task<OrderDTO> SaveOrder(OrderDTO OrderDTO)
         {   
-            var response = await _restClient.RequestAsync<Order>(Method.Post, "Orders", orderDTO);
+            var response = await _restClient.RequestAsync<OrderDTO>(Method.Post, "Orders", OrderDTO);
 
             if (!response.IsSuccessful)
             {
-                throw new Exception($"Error creating product. Message was {response.Content}");
+                throw new Exception($"Error creating ProductDTO. Message was {response.Content}");
             }
 
             return response.Data;

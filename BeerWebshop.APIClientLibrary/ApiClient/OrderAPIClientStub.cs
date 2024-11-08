@@ -10,10 +10,10 @@ namespace BeerWebshop.APIClientLibrary.ApiClient
 {
     public class OrderAPIClientStub : IOrderApiClient
     {
-        public Task<Order> SaveOrder(Order order)
+        public Task<OrderDTO> SaveOrder(OrderDTO OrderDTO)
         {
-            order.Id = 1;
-            return Task.FromResult(order);
+            OrderDTO.Id = 1;
+            return Task.FromResult(OrderDTO);
         }
     }
 }

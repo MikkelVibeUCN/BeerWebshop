@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.Product>
+﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.ProductDTO>
 
 @{
     ViewData["Title"] = "All Beers";
@@ -80,6 +80,7 @@
                     url: '/Cart/AddToCart',
                     method: 'POST',
                     data: { productId: productId, quantity: 1 },
+
                     success: function (response) {
                         $('#cart-item-count').text(response.cartItemCount);
                         window.showNotification('Product added to cart!', 'success');

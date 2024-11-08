@@ -1,11 +1,11 @@
 ﻿namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
-    public class Order
+    public class OrderDTO
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public List<OrderLine> OrderLines { get; set; }
-        public Customer Customer { get; set; }
+        public List<OrderLineDTO> OrderLines { get; set; }
+        public CustomerDTO CustomerDTO { get; set; }
         public bool IsDelivered { get; set; }
 
         public float TotalPrice
@@ -20,24 +20,24 @@
             }
         }
 
-        public Order(DateTime date, List<OrderLine> orderLines, string deliveryAddress, bool isDelivered)
+        public OrderDTO(DateTime date, List<OrderLineDTO> orderLines, string deliveryAddress, bool isDelivered)
         {
             Date = date;
             OrderLines = orderLines;
             IsDelivered = isDelivered;
         }
 
-        public Order()
+        public OrderDTO()
         {
         }
 
-        public void AddOrderLine(OrderLine orderLine)
+        public void AddOrderLine(OrderLineDTO OrderLineDTO)
         {
-            OrderLines.Add(orderLine);
+            OrderLines.Add(OrderLineDTO);
         }
-        public void RemoveOrderLine(OrderLine orderLine)
+        public void RemoveOrderLine(OrderLineDTO OrderLineDTO)
         {
-            OrderLines.Remove(orderLine);
+            OrderLines.Remove(OrderLineDTO);
         }
     }
 }

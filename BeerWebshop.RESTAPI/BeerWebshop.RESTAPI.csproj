@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BeerWebshop.APIClientLibrary\BeerWebshop.APIClientLibrary.csproj" />
     <ProjectReference Include="..\BeerWebshop.DAL\BeerWebshop.DAL.csproj" />
   </ItemGroup>
 

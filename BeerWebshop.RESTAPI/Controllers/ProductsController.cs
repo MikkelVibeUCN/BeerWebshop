@@ -1,6 +1,6 @@
-﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
-using BeerWebshop.RESTAPI.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers
@@ -29,7 +29,7 @@ namespace BeerWebshop.RESTAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] Product Product)
+        public async Task<IActionResult> CreateProductAsync([FromBody] ProductDTO Product)
         {
             if (Product == null)
             {
@@ -60,9 +60,9 @@ namespace BeerWebshop.RESTAPI.Controllers
             return Ok(result);
         }
 
-        private Product MapToDTO(Product product)
+        private ProductDTO MapToDTO(Product product)
         {
-            return new Product
+            return new ProductDTO
             {
                 Id = product.Id ?? 0, 
                 Name = product.Name,
@@ -76,7 +76,7 @@ namespace BeerWebshop.RESTAPI.Controllers
             };
         }
 
-        private async Task<Product> MapToEntity(Product Product)
+        private async Task<Product> MapToEntity(ProductDTO Product)
         {
             return new Product
             {

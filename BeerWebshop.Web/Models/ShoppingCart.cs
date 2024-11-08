@@ -4,7 +4,7 @@ namespace BeerWebshop.Web.Models
 {
     public class ShoppingCart
     {
-        public List<OrderLine> OrderLines { get; set; }
+        public List<OrderLineDTO> OrderLines { get; set; }
 
         public float TotalPrice
         {
@@ -17,18 +17,18 @@ namespace BeerWebshop.Web.Models
                 return OrderLines.Sum(ol => ol.SubTotal);
             }
         }
-        public ShoppingCart(List<OrderLine> orderLines)
+        public ShoppingCart(List<OrderLineDTO> orderLines)
         {
             OrderLines = orderLines;
         }
         public ShoppingCart()
         {
-            OrderLines = new List<OrderLine>();
+            OrderLines = new List<OrderLineDTO>();
         }
 
-        public void AddOrderLine(OrderLine orderLine)
+        public void AddOrderLine(OrderLineDTO OrderLineDTO)
         {
-            OrderLines.Add(orderLine);
+            OrderLines.Add(OrderLineDTO);
         }
     }
 }

@@ -1234,9 +1234,9 @@ class Carousel extends BaseComponent {
       return;
     }
 
-    const order = index > activeIndex ? ORDER_NEXT : ORDER_PREV;
+    const OrderDTO = index > activeIndex ? ORDER_NEXT : ORDER_PREV;
 
-    this._slide(order, this._items[index]);
+    this._slide(OrderDTO, this._items[index]);
   } // Private
 
 
@@ -1355,8 +1355,8 @@ class Carousel extends BaseComponent {
     return this._items.indexOf(element);
   }
 
-  _getItemByOrder(order, activeElement) {
-    const isNext = order === ORDER_NEXT;
+  _getItemByOrder(OrderDTO, activeElement) {
+    const isNext = OrderDTO === ORDER_NEXT;
     return getNextActiveElement(this._items, activeElement, isNext, this._config.wrap);
   }
 
@@ -1408,22 +1408,22 @@ class Carousel extends BaseComponent {
   }
 
   _slide(directionOrOrder, element) {
-    const order = this._directionToOrder(directionOrOrder);
+    const OrderDTO = this._directionToOrder(directionOrOrder);
 
     const activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
 
     const activeElementIndex = this._getItemIndex(activeElement);
 
-    const nextElement = element || this._getItemByOrder(order, activeElement);
+    const nextElement = element || this._getItemByOrder(OrderDTO, activeElement);
 
     const nextElementIndex = this._getItemIndex(nextElement);
 
     const isCycling = Boolean(this._interval);
-    const isNext = order === ORDER_NEXT;
+    const isNext = OrderDTO === ORDER_NEXT;
     const directionalClassName = isNext ? CLASS_NAME_START : CLASS_NAME_END;
     const orderClassName = isNext ? CLASS_NAME_NEXT : CLASS_NAME_PREV;
 
-    const eventDirectionName = this._orderToDirection(order);
+    const eventDirectionName = this._orderToDirection(OrderDTO);
 
     if (nextElement && nextElement.classList.contains(CLASS_NAME_ACTIVE$2)) {
       this._isSliding = false;
@@ -1503,16 +1503,16 @@ class Carousel extends BaseComponent {
     return direction === DIRECTION_LEFT ? ORDER_NEXT : ORDER_PREV;
   }
 
-  _orderToDirection(order) {
-    if (![ORDER_NEXT, ORDER_PREV].includes(order)) {
-      return order;
+  _orderToDirection(OrderDTO) {
+    if (![ORDER_NEXT, ORDER_PREV].includes(OrderDTO)) {
+      return OrderDTO;
     }
 
     if (isRTL()) {
-      return order === ORDER_PREV ? DIRECTION_LEFT : DIRECTION_RIGHT;
+      return OrderDTO === ORDER_PREV ? DIRECTION_LEFT : DIRECTION_RIGHT;
     }
 
-    return order === ORDER_PREV ? DIRECTION_RIGHT : DIRECTION_LEFT;
+    return OrderDTO === ORDER_PREV ? DIRECTION_RIGHT : DIRECTION_LEFT;
   } // Static
 
 

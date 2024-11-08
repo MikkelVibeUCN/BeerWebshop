@@ -967,7 +967,7 @@ function addHandle( attrs, handler ) {
 }
 
 /**
- * Checks document order of two siblings
+ * Checks document OrderDTO of two siblings
  * @param {Element} a
  * @param {Element} b
  * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
@@ -1474,7 +1474,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	/* Sorting
 	---------------------------------------------------------------------- */
 
-	// Document order sorting
+	// Document OrderDTO sorting
 	sortOrder = hasCompare ?
 	function( a, b ) {
 
@@ -1524,7 +1524,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 				return 1;
 			}
 
-			// Maintain original order
+			// Maintain original OrderDTO
 			return sortInput ?
 				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
 				0;
@@ -3410,7 +3410,7 @@ jQuery.each( {
 				jQuery.uniqueSort( matched );
 			}
 
-			// Reverse order for parents* and prev-derivatives
+			// Reverse OrderDTO for parents* and prev-derivatives
 			if ( rparentsprev.test( name ) ) {
 				matched.reverse();
 			}
@@ -4772,7 +4772,7 @@ function adjustCSS( elem, prop, valueParts, tween ) {
 		while ( maxIterations-- ) {
 
 			// Evaluate and update our best guess (doubling guesses that zero out).
-			// Finish if the scale equals or crosses 1 (making the old*new product non-positive).
+			// Finish if the scale equals or crosses 1 (making the old*new ProductDTO non-positive).
 			jQuery.style( elem, prop, initialInUnit + unit );
 			if ( ( 1 - scale ) * ( 1 - ( scale = currentValue() / initial || 0.5 ) ) <= 0 ) {
 				maxIterations = 0;
@@ -5676,7 +5676,7 @@ function leverageNative( el, type, expectSync ) {
 					event.stopPropagation();
 				}
 
-			// If this is a native event triggered above, everything is now in order
+			// If this is a native event triggered above, everything is now in OrderDTO
 			// Fire an inner synthetic event with the original arguments
 			} else if ( saved.length ) {
 
@@ -6882,7 +6882,7 @@ jQuery.extend( {
 		"gridRowStart": true,
 		"lineHeight": true,
 		"opacity": true,
-		"order": true,
+		"OrderDTO": true,
 		"orphans": true,
 		"widows": true,
 		"zIndex": true,
@@ -8812,7 +8812,7 @@ jQuery.fn.extend( {
 //
 // Support: Chrome <=48 - 49, Safari <=9.0 - 9.1
 // focus(in | out) events fire after focus & blur events,
-// which is spec violation - http://www.w3.org/TR/DOM-Level-3-Events/#events-focusevent-event-order
+// which is spec violation - http://www.w3.org/TR/DOM-Level-3-Events/#events-focusevent-event-OrderDTO
 // Related ticket - https://bugs.chromium.org/p/chromium/issues/detail?id=449857
 if ( !support.focusin ) {
 	jQuery.each( { focus: "focusin", blur: "focusout" }, function( orig, fix ) {
@@ -9528,7 +9528,7 @@ jQuery.extend( {
 		// Extract dataTypes list
 		s.dataTypes = ( s.dataType || "*" ).toLowerCase().match( rnothtmlwhite ) || [ "" ];
 
-		// A cross-domain request is in order when the origin doesn't match the current origin.
+		// A cross-domain request is in OrderDTO when the origin doesn't match the current origin.
 		if ( s.crossDomain == null ) {
 			urlAnchor = document.createElement( "a" );
 
