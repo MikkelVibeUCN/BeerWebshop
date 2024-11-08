@@ -21,7 +21,7 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<CookieService>();
             builder.Services.AddScoped<CheckoutService>();
             builder.Services.AddScoped<OrderService>();
-            builder.Services.AddScoped<IOrderApiClient, OrderAPIClientStub>();
+            builder.Services.AddSingleton<IOrderApiClient, OrderAPIClientStub>();
 
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
