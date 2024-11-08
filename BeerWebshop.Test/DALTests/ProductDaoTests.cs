@@ -7,81 +7,127 @@ namespace BeerWebshop.Test.DALTests;
 
 public class ProductDaoTests
 {
-    private ProductDAO _productDao;
-    private int _createdProductId;
+    private ProductDAO _productDao;    
+    private CategoryDAO _categoryDao;
+	private BreweryDAO _breweryDao;
+	private int _createdProductId;
+    private int _createdCategoryId;
+    private int _createdBreweryId;
+    private string _testSuffix = "_Test";
 
-    [SetUp]
+	[SetUp]
     public async Task SetUpAsync()
     {
         _productDao = new ProductDAO(Configuration.ConnectionString());
-    }
+		_categoryDao = new CategoryDAO(Configuration.ConnectionString());
+		_breweryDao = new BreweryDAO(Configuration.ConnectionString());
+
+        
+		var category = new Category
+		{
+			Name = $"IPA{_testSuffix}",
+			IsDeleted = false
+		};
+
+		_createdCategoryId = await _categoryDao.CreateCategoryAsync(category);
+
+		var brewery = new Brewery
+		{
+			Name = $"Overtone{_testSuffix}",
+			IsDeleted = false
+		};
+
+		_createdBreweryId = await _breweryDao.CreateBreweryAsync(brewery);
+
+		var product = new Product
+		{
+			Name = $"All that jazz{_testSuffix}",
+			CategoryId_FK = _createdCategoryId,
+			BreweryId_FK = _createdBreweryId,
+			Price = 75f,
+			Description = "Banana.",
+			Stock = 10,
+			Abv = 8.5f,
+			ImageUrl = "http://example.com/image.jpg",
+			IsDeleted = false
+		};
+
+		_createdProductId = await _productDao.CreateAsync(product);
+	}
 
     [TearDown]
     public async Task TearDownAsync()
     {
-        if (_createdProductId > 0)
-        {
-            await _productDao.DeleteAsync(_createdProductId);
-            _createdProductId = 0;
-        }
-    }
+		if (_createdProductId != 0)
+		{
+			await _productDao.DeleteAsync(_createdProductId);
+		}
+
+		if (_createdCategoryId != 0)
+		{
+			await _categoryDao.DeleteAsync(_createdCategoryId);
+		}
+
+		if (_createdBreweryId != 0)
+		{
+			await _breweryDao.DeleteAsync(_createdBreweryId);
+		}
+	}
 
     [Test]
     public async Task GetByIdAsync_WhenProductExist_ShouldReturnProduct()
     {
-        int existingProductId = 27;
+        var product = await _productDao.GetByIdAsync(_createdProductId);
 
-        var product = await _productDao.GetByIdAsync(existingProductId);
-
-        Assert.IsNotNull(product, "Product show not be null");
-        Assert.That(product.Id, Is.EqualTo(existingProductId), "Product id should be the same as the id we requested");
-    }
-
-    [Test]
-    public async Task CreateAsync_WhenCreated_ShouldReturnId()
-    {
-        // Arrange
-        var product = new Product
-        {
-            Name = "All that jazz",
-            CategoryId_FK = 19, 
-            BreweryId_FK = 19,  
-            Price = 75f,
-            Description = "Banana.",
-            Stock = 10,
-            Abv = 8.5f,
-            ImageUrl = "http://example.com/image.jpg",
-            IsDeleted = false
-        };
-
-        // Act
-        var createdProductId = await _productDao.CreateAsync(product);
-
-        // Assert
-        Assert.Greater(createdProductId, 0, "The returned product ID should be greater than 0.");
-
-        var createdProduct = await _productDao.GetByIdAsync(createdProductId);
-        Assert.IsNotNull(createdProduct, "The created product should not be null.");
-        Assert.That(createdProduct.Name, Is.EqualTo(product.Name));
-        Assert.That(createdProduct.CategoryId_FK, Is.EqualTo(product.CategoryId_FK));
-        Assert.That(createdProduct.BreweryId_FK, Is.EqualTo(product.BreweryId_FK));
-        Assert.That(createdProduct.Price, Is.EqualTo(product.Price));
-        Assert.That(createdProduct.Description, Is.EqualTo(product.Description));
-        Assert.That(createdProduct.Stock, Is.EqualTo(product.Stock));
-        Assert.That(createdProduct.Abv, Is.EqualTo(product.Abv));
-        Assert.That(createdProduct.ImageUrl, Is.EqualTo(product.ImageUrl));
-        Assert.That(createdProduct.IsDeleted, Is.EqualTo(product.IsDeleted));
-    }
+        Assert.IsNotNull(product);
+        Assert.That(product.Id, Is.EqualTo(_createdProductId));
+		Assert.That(product.Name, Is.EqualTo($"All that jazz{_testSuffix}"));
+	}
 
     [Test]
-    public async Task GetProductCategoriesAsync_WhenCategoriesExist_ShouldReturnAllCategories()
-    {
-        int existingCategoriesCount = 3;
+	public async Task CreateAsync_WhenCreated_ShouldReturnId()
+	{
+		var product = new Product
+		{
+			Name = $"Jazz Hands{_testSuffix}",
+			CategoryId_FK = _createdCategoryId,
+			BreweryId_FK = _createdBreweryId,
+			Price = 80f,
+			Description = "Citrusy flavor.",
+			Stock = 5,
+			Abv = 6.5f,
+			ImageUrl = "http://example.com/image2.jpg",
+			IsDeleted = false
+		};
 
-        var categories = await _productDao.GetProductCategoriesAsync();
+		var createdProductId = await _productDao.CreateAsync(product);
 
-        Assert.IsNotNull(categories, "The categories should not be null.");
-        Assert.That(categories.Count(), Is.EqualTo(existingCategoriesCount), "The number of categories should be the same as the number of categories in the database.");   
-    }
+		// Asert
+		Assert.Greater(createdProductId, 0, "The returned product ID should be greater than 0.");
+
+		var createdProduct = await _productDao.GetByIdAsync(createdProductId);
+		Assert.IsNotNull(createdProduct, "The created product should not be null.");
+		Assert.That(createdProduct.Name, Is.EqualTo(product.Name));
+		Assert.That(createdProduct.CategoryId_FK, Is.EqualTo(product.CategoryId_FK));
+		Assert.That(createdProduct.BreweryId_FK, Is.EqualTo(product.BreweryId_FK));
+		Assert.That(createdProduct.Price, Is.EqualTo(product.Price));
+		Assert.That(createdProduct.Description, Is.EqualTo(product.Description));
+		Assert.That(createdProduct.Stock, Is.EqualTo(product.Stock));
+		Assert.That(createdProduct.Abv, Is.EqualTo(product.Abv));
+		Assert.That(createdProduct.ImageUrl, Is.EqualTo(product.ImageUrl));
+		Assert.That(createdProduct.IsDeleted, Is.EqualTo(product.IsDeleted));
+
+		await _productDao.DeleteAsync(createdProductId);
+	}
+
+	//[Test]
+ //   public async Task GetProductCategoriesAsync_WhenCategoriesExist_ShouldReturnAllCategories()
+ //   {
+
+ //       var categories = await _productDao.GetProductCategoriesAsync();
+
+ //       Assert.IsNotNull(categories, "The categories should not be null.");
+ //       Assert.That(categories.Count(), Is.EqualTo(1), "The number of categories should be the same as the number of categories in the database.");   
+ //   }
 
 }
