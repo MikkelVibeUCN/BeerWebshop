@@ -37,7 +37,7 @@ public class ProductApiClientTest
     [Test]
     public async Task CreateProductAsync_WhenProductIsValid_ShouldReturnNewProductId()
     {
-        var newProduct = new Product
+        var newProduct = new ProductDTO
         {
             Name = "PISOGSPYT",
             Brewery = "Brewery A",
