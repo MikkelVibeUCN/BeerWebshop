@@ -21,7 +21,12 @@
                 <td class="align-middle">
                     <img src="@((string.IsNullOrEmpty(orderLineDTO.Product.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLineDTO.Product.ImageUrl))" alt="@orderLineDTO.Product.Name" style="width: 50px; height: auto;" />
                 </td>
-                <td class="align-middle">@orderLineDTO.Product.Name</td>
+                <td class="align-middle">
+                    <!-- Product Name with Link to Product Details -->
+                    <a href="@Url.Action("Details", "Beer", new { id = orderLineDTO.Product.Id })">
+                        @orderLineDTO.Product.Name
+                    </a>
+                </td>
                 <td class="align-middle">@orderLineDTO.Product.Brewery</td>
                 <td class="align-middle">@orderLineDTO.Product.Type</td>
                 <td class="align-middle">@orderLineDTO.Product.ABV %</td>

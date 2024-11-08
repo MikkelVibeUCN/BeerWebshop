@@ -5,24 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BeerWebshop.Web</title>
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BeerWebshop.Web.styles.css" asp-append-version="true" />
 
     <style>
-        /* Set full height for body and html */
         html, body {
             height: 100%;
             margin: 0;
             font-family: 'Helvetica Neue', sans-serif;
-            background-color: #f4f4f4; /* Light gray background for a clean look */
-            color: #333; /* Dark text for high contrast */
+            background-color: #f4f4f4;
+            color: #333; 
         }
 
-        /* Main layout flexbox, container will fill the height */
         .main-container {
             display: flex;
             flex-direction: column;
@@ -30,12 +26,11 @@
         }
 
         .content {
-            flex: 1; /* Makes sure the content area grows to fill space */
+            flex: 1; 
         }
 
-        /* Navbar styling */
         header {
-            background-color: #1b1b1b; /* Dark background */
+            background-color: #1b1b1b; 
             padding: 1rem 0;
         }
 
@@ -47,7 +42,7 @@
 
         .navbar-brand {
             font-size: 1.8rem;
-            color: #f2a900; /* A subtle beer-yellow */
+            color: #f2a900; 
             font-weight: bold;
             text-transform: uppercase;
         }
@@ -55,24 +50,23 @@
         .navbar-nav .nav-item .nav-link {
             font-size: 1rem;
             font-weight: 600;
-            color: #ddd; /* Soft gray color */
+            color: #ddd; 
             padding: 0.8rem 1rem;
         }
 
             .navbar-nav .nav-item .nav-link:hover {
-                color: #f2a900; /* Highlight with beer-yellow on hover */
+                color: #f2a900; 
             }
 
         .navbar-toggler-icon {
-            background-color: #f2a900; /* Yellow hamburger icon for mobile */
+            background-color: #f2a900; 
         }
 
-        /* Notification styling */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #28a745; /* Green success background */
+            background-color: #28a745; 
             color: #fff;
             padding: 12px 20px;
             border-radius: 5px;
@@ -83,20 +77,19 @@
         }
 
             .notification.error {
-                background-color: #dc3545; /* Red error background */
+                background-color: #dc3545;
             }
 
-        /* Footer styling */
         footer {
             background-color: #1b1b1b;
             color: #ddd;
             text-align: center;
             padding: 1rem;
-            margin-top: auto; /* Ensures footer stays at the bottom */
+            margin-top: auto;
         }
 
             footer a {
-                color: #f2a900; /* Gold color for links */
+                color: #f2a900;
                 text-decoration: none;
             }
 
@@ -104,14 +97,12 @@
                     text-decoration: underline;
                 }
 
-        /* Main content container */
         .container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 2rem;
         }
 
-        /* Tables and other components can follow this simple style */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -129,17 +120,14 @@
             color: #333;
         }
 
-        tr:hover {
-            background-color: #f2a900;
-            color: #fff;
-        }
     </style>
+
+
 </head>
 <body>
 
     <div class="main-container">
 
-        <!-- Header / Navbar -->
         <header>
             <nav class="navbar navbar-expand-lg navbar-dark">
                 <div class="container-fluid">
@@ -164,7 +152,6 @@
             </nav>
         </header>
 
-        <!-- Main content area -->
         <div class="content">
             <div class="container">
                 <main role="main" class="pb-3">
@@ -173,17 +160,14 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <footer>
             <p>&copy; 2024 - BeerWebshop</p>
         </footer>
 
     </div>
 
-    <!-- Notification -->
     <div id="notification" class="notification"></div>
 
-    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

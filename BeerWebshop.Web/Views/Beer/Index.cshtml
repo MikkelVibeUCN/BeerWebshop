@@ -3,8 +3,8 @@
     ViewData["Title"] = "All Beers";
     string selectedSortOrder = ViewBag.CurrentSortOrder ?? "";
     string selectedCategory = ViewBag.CurrentCategory ?? "";
-    int currentPage = ViewBag.CurrentPage ?? 0; // Current page number, default to 1
-    int totalPages = ViewBag.TotalPages ?? 1; // Total number of pages
+    int currentPage = ViewBag.CurrentPage ?? 0; 
+    int totalPages = ViewBag.TotalPages ?? 1; 
 }
 
 <form method="get" asp-action="Index">
@@ -66,22 +66,18 @@
     }
 </div>
 
-<!-- Pagination Section -->
 <div class="pagination d-flex justify-content-center mt-4">
     <div class="pagination-links">
-        <!-- Previous Button -->
         @if (currentPage > 0)
         {
             <a href="@Url.Action("Index", new { pageNumber = currentPage - 1, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light">Tilbage</a>
         }
         
-        <!-- Page Links -->
         @for (int i = Math.Max(0, currentPage); i <= Math.Min(Math.Max(0, currentPage) + 2, totalPages); i++)
         {
             <a href="@Url.Action("Index", new { pageNumber = i, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light @((i == currentPage) ? "active" : "")">@i</a>
         }
 
-        <!-- Next Button -->
         @if (currentPage < totalPages - 1)
         {
             <a href="@Url.Action("Index", new { pageNumber = currentPage + 1, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light">Næste</a>
@@ -117,5 +113,4 @@
             });
         });
     </script>
-}
-        
+}        
