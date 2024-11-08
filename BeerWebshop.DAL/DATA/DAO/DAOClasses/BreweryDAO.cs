@@ -52,7 +52,7 @@ public class BreweryDAO : IBreweryDAO
 				Id = id
 			};
 
-			var result = await connection.ExecuteAsync(_softDeleteBrewerySql, parameters);
+			var result = await connection.ExecuteAsync(_deleteBrewerySql, parameters);
 			return result > 0;
 		}
 		catch (Exception ex)

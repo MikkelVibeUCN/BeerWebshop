@@ -23,11 +23,25 @@ namespace BeerWebshop.RESTAPI
                 return new OrderDao(connectionString);
             });
 
+            builder.Services.AddScoped<ICategoryDAO>(provider =>
+			{
+				var configuration = provider.GetRequiredService<IConfiguration>();
+				var connectionString = configuration.GetConnectionString("DefaultConnection");
+				return new CategoryDAO(connectionString);
+			});
+
+			builder.Services.AddScoped<IBreweryDAO>(provider =>
+			{
+				var configuration = provider.GetRequiredService<IConfiguration>();
+				var connectionString = configuration.GetConnectionString("DefaultConnection");
+				return new BreweryDAO(connectionString);
+			});
 
 
 
 
-            builder.Services.AddControllers();
+
+			builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             
