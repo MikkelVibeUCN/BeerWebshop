@@ -56,9 +56,13 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 
         public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)
         {
-            throw new NotImplementedException();
+            var response = await _restClient.RequestAsync<IEnumerable<ProductDTO>>(Method.Get, "products", parameters);
+
+            if (!response.IsSuccessful)
+            {
+                throw new Exception($"Error retrieving Products. Message was {response.Content}");
+            }
+            return response.Data;
         }
-
-
 	}
 }

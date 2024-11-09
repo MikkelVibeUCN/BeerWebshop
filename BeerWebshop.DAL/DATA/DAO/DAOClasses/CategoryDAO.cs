@@ -62,4 +62,31 @@ public class CategoryDAO : ICategoryDAO
 			throw new Exception($"Error deleting category: {ex.Message}", ex);
 		}
 	}
+    public async Task<IEnumerable<Category>> GetAllCategories()
+    {
+        using var connection = new SqlConnection(_connectionString);
+        var categories = await connection.QueryAsync<Category>("SELECT * FROM Categories WHERE IsDeleted = 0");
+        return categories;
+    }
+
+    public async Task<int?> GetCategoryIdByName(string categoryName)
+    {
+        const string sql = "SELECT Id FROM Categories WHERE Name = @Name AND IsDeleted = 0";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = categoryName });
+    }
+
+    public async Task<Category?> GetCategoryByIdAsync(int categoryId)
+    {
+        const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = categoryId });
+    }
+
+    public Task<Category?> GetCategoryById(int id)
+    {
+		const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
+        using var connection = new SqlConnection(_connectionString);
+        return connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = id });
+    }
 }

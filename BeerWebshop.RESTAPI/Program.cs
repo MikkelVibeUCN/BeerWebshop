@@ -1,5 +1,6 @@
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
+using BeerWebshop.RESTAPI.Services;
 
 namespace BeerWebshop.RESTAPI
 {
@@ -37,11 +38,13 @@ namespace BeerWebshop.RESTAPI
 				return new BreweryDAO(connectionString);
 			});
 
+            builder.Services.AddScoped<CategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
+            builder.Services.AddScoped<BreweryService>(provider => new BreweryService(provider.GetRequiredService<IBreweryDAO>()));
+            builder.Services.AddScoped<ProductService>(provider => new ProductService(provider.GetRequiredService<IProductDAO>()));
 
 
 
-
-			builder.Services.AddControllers();
+            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             

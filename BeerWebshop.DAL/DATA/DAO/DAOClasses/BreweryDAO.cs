@@ -60,4 +60,19 @@ public class BreweryDAO : IBreweryDAO
 			throw new Exception($"Error deleting brewery: {ex.Message}", ex);
 		}
 	}
+
+
+    public async Task<Brewery?> GetBreweryById(int breweryId)
+    {
+        const string sql = "SELECT * FROM Breweries WHERE Id = @Id;";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<Brewery>(sql, new { Id = breweryId });
+    }
+
+    public async Task<int?> GetBreweryIdByName(string breweryName)
+    {
+        const string sql = "SELECT Id FROM Breweries WHERE Name = @Name AND IsDeleted = 0";
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = breweryName });
+    }
 }

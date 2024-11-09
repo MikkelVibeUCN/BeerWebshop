@@ -1,6 +1,8 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +12,12 @@ namespace BeerWebshop.RESTAPI.Controllers;
 [ApiController]
 public class CategoriesController : ControllerBase
 {
-	private readonly ICategoryDAO _categoryDao;
+	private readonly CategoryService _categoryService;
 
-	public CategoriesController(ICategoryDAO categoryDao)
+	public CategoriesController(CategoryService categoryService)
 	{
-		_categoryDao = categoryDao;
-	}
+        _categoryService = categoryService;
+    }
 
 	[HttpPost]
 	public async Task<IActionResult> CreateCategoryAsync([FromBody] CategoryDTO categoryDTO)
@@ -25,16 +27,16 @@ public class CategoriesController : ControllerBase
 			return BadRequest("Category data is required.");
 		}
 
-		var category = await MapToEntity(categoryDTO);
+		var category = MapToEntity(categoryDTO);
 
-		var categoryId = await _categoryDao.CreateCategoryAsync(category);
+		var categoryId = await _categoryService.CreateCategoryAsync(category);
 
 		categoryDTO.Id = categoryId;
 
 		return Ok();
 	}
 
-	private async Task<Category> MapToEntity(CategoryDTO categoryDTO)
+	private static Category MapToEntity(CategoryDTO categoryDTO)
 	{
 		return new Category
 		{
@@ -42,4 +44,17 @@ public class CategoriesController : ControllerBase
 			IsDeleted = false
 		};
 	}
+
+	[HttpGet]
+    public async Task<IActionResult> GetAllCategoriesAsync()
+    {
+        var categories = await _categoryService.GetAlLCategories();
+        var categoryDTOs = categories.Select(category => new CategoryDTO
+        {
+            Id = category.Id,
+            Name = category.Name
+        }).ToList();
+
+        return Ok(categoryDTOs);
+    }
 }

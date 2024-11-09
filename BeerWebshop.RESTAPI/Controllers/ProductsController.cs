@@ -1,6 +1,8 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers
@@ -9,22 +11,25 @@ namespace BeerWebshop.RESTAPI.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductDAO _productDao;
-
-        public ProductsController(IProductDAO productDAO)
+        private readonly ProductService _productService;
+        private readonly CategoryService _categoryService;
+        private readonly BreweryService _breweryService;
+        public ProductsController(ProductService productService, CategoryService categoryService, BreweryService breweryService)
         {
-            _productDao = productDAO;
+            _productService = productService;
+            _categoryService = categoryService;
+            _breweryService = breweryService;
         }
 
         [HttpGet("{id}", Name = "GetProductById")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var result = await _productDao.GetByIdAsync(id);
-            var Product = MapToDTO(result);
+            var result = await _productService.GetProductByIdAsync(id);
             if (result == null)
             {
                 return NotFound($"Product with id {id} was not found.");
             }
+            var Product = MapToDTO(result);
             return Ok(Product);
         }
 
@@ -38,58 +43,72 @@ namespace BeerWebshop.RESTAPI.Controllers
 
             var product = await MapToEntity(Product);
 
-            var productId = await _productDao.CreateAsync(product);
+            var productId = await _productService.CreateProductAsync(product);
 
             Product.Id = productId;
 
             return CreatedAtRoute("GetProductById", new { id = productId }, productId);
         }
 
-        [HttpGet("categories")]
-        public async Task<IActionResult> GetCategoriesAsync()
-        {
-            var result = await _productDao.GetProductCategoriesAsync();
-            return Ok(result);
-        }
-
-
-        [HttpGet("category/{category}")]
-        public async Task<IActionResult> GetFromCategoryAsync(string category)
-        {
-            var result = await _productDao.GetFromCategoryAsync(category);
-            return Ok(result);
-        }
-
         private ProductDTO MapToDTO(Product product)
         {
             return new ProductDTO
             {
-                Id = product.Id ?? 0, 
+                Id = product.Id ?? 0,
                 Name = product.Name,
-                Brewery = product.Brewery?.Name,
+                BreweryName = product.Brewery?.Name,
                 Price = product.Price,
                 Description = product.Description,
                 Stock = product.Stock,
                 ABV = product.Abv,
-                Type = product.Category?.Name,
+                CategoryName = product.Category?.Name,
                 ImageUrl = product.ImageUrl
             };
         }
 
-        private async Task<Product> MapToEntity(ProductDTO Product)
+        private async Task<Product> MapToEntity(ProductDTO product)
         {
+            int? categoryId = await _categoryService.GetCategoryIdByName(product.CategoryName);
+            if (categoryId == null) throw new Exception("Category not found");
+            
+            Category? category = await _categoryService.GetCategoryById((int)categoryId);
+            if (category == null) throw new Exception("Category not found");
+
+
+            int? breweryId = await _breweryService.GetBreweryIdByName(product.BreweryName);
+            if (breweryId == null) throw new Exception("Brewery not found");
+
+            Brewery? brewery = await _breweryService.GetBreweryById((int)breweryId);
+            if (brewery == null) throw new Exception("Brewery not found");
+
+
             return new Product
             {
-                Name = Product.Name,
-                CategoryId_FK = await _productDao.GetCategoryIdByName(Product.Type), 
-                BreweryId_FK = await _productDao.GetBreweryIdByName(Product.Brewery), 
-                Price = Product.Price,
-                Description = Product.Description,
-                Stock = Product.Stock,
-                Abv = Product.ABV,
-                ImageUrl = Product.ImageUrl,
-                IsDeleted = false 
+                Name = product.Name,
+                Category = category,
+                Brewery = brewery,
+                Price = product.Price,
+                Description = product.Description,
+                Stock = product.Stock,
+                Abv = product.ABV,
+                ImageUrl = product.ImageUrl,
+                IsDeleted = false
             };
+        }
+
+        [HttpGet("products")]
+        public async Task<IActionResult> GetProducts(ProductQueryParameters parameters)
+        {
+            try
+            {
+                var result = await _productService.GetProducts(parameters);
+                return Ok(result);
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

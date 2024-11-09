@@ -7,6 +7,7 @@ namespace BeerWebshop.Web.Services
     public class BeerService
     {
         private readonly IProductAPIClient _productAPIClient;
+        private readonly ICategoryAPIClient _categoryAPIClient;
 
         public BeerService(IProductAPIClient restClient)
         {
@@ -30,7 +31,8 @@ namespace BeerWebshop.Web.Services
 
         public async Task<IEnumerable<string>> GetProductCategories()
         {
-            return await _productAPIClient.GetProductCategoriesAsync();
+            IEnumerable<CategoryDTO?> categories = await _categoryAPIClient.GetAllCategories();
+            return categories.Select(c => c?.Name ?? string.Empty);
         }
     }
 }

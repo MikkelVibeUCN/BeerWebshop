@@ -1,4 +1,5 @@
-﻿using BeerWebshop.DAL.DATA.Entities;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.DAL.DATA.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -11,15 +12,10 @@ namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 public interface IProductDAO
 {
     Task<int> CreateAsync(Product Product);
-    Task<Product> GetByIdAsync(int id);
-
-    Task<IEnumerable<Product>> GetFromCategoryAsync(string category);
-
+    Task<Product?> GetByIdAsync(int id);
     Task<bool> DeleteAsync(int id);
 
     Task<IEnumerable<string>> GetProductCategoriesAsync();
-
-    Task<int?> GetCategoryIdByName(string categoryName);
-    Task<int?> GetBreweryIdByName(string breweryName);
-
+    Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
+    Task<int> GetProductCountAsync(ProductQueryParameters parameters);
 }
