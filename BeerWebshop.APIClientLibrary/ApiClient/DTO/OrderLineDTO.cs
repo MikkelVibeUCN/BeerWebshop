@@ -13,7 +13,8 @@
             }
         }
 
-        public OrderLineDTO(int quantity, ProductDTO product)
+		public OrderLineDTO() { }
+		public OrderLineDTO(int quantity, ProductDTO product)
         {
             Quantity = quantity;
             Product = product;

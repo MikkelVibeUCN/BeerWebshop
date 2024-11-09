@@ -8,7 +8,7 @@ namespace BeerWebshop.DAL.DATA.Entities
 {
     public class OrderLine
     {
-        public int? Id { get; set; }
+        public int? OrderId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public Product Product { get; set; }
@@ -23,9 +23,9 @@ namespace BeerWebshop.DAL.DATA.Entities
 		}
 
 
-		public OrderLine(int quantity, Product product, int productId, int? id = null)
+		public OrderLine(int quantity, Product product, int productId, int? orderId = null)
         {
-            Id = id;
+            OrderId = orderId;
             Quantity = quantity;
             Product = product;
             ProductId = productId;

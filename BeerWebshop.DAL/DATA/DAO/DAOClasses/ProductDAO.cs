@@ -19,6 +19,12 @@ public class ProductDAO : IProductDAO
 
 	private const string _getAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
 
+	private const string _updateStockSql = @"
+											UPDATE PRODUCTS 
+											SET Stock = Stock - @Quantity 
+											WHERE Id = @ProductId AND RowVersion = @RowVersion";
+
+
 
 
 	private readonly string _connectionString;
@@ -111,6 +117,29 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
+	public async Task<bool> UpdateStockOptimisticAsync(int productId, int quantity, byte[] rowVersion)
+	{
+		using var connection = new SqlConnection(_connectionString);
+		await connection.OpenAsync();
+
+		using var transaction = connection.BeginTransaction();
+
+		var parameters = new DynamicParameters();
+		parameters.Add("@ProductId", productId);
+		parameters.Add("@Quantity", quantity);
+		parameters.Add("@RowVersion", rowVersion, System.Data.DbType.Binary);
+
+		var rowsAffected = await connection.ExecuteAsync(_updateStockSql, parameters, transaction);
+
+		if (rowsAffected == 0)
+		{
+			transaction.Rollback();
+			return false;
+		}
+
+		transaction.Commit();
+		return true;
+	}
 
 	public async Task<bool> DeleteAsync(int id)
 	{

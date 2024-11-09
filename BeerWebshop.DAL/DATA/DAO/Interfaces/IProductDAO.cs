@@ -17,7 +17,9 @@ public interface IProductDAO
 
     Task<bool> DeleteAsync(int id);
 
-    Task<IEnumerable<string>> GetProductCategoriesAsync();
+    Task<bool> UpdateStockOptimisticAsync(int productId, int quantity, byte[] rowVersion);
+
+	Task<IEnumerable<string>> GetProductCategoriesAsync();
 
     Task<int?> GetCategoryIdByName(string categoryName);
     Task<int?> GetBreweryIdByName(string breweryName);
