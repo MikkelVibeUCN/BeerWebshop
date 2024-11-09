@@ -10,32 +10,16 @@ namespace BeerWebshop.RESTAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddScoped<IProductDAO>(provider =>
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddScoped<IOrderDAO>(_ => new OrderDAO(connectionString));
+			builder.Services.AddScoped<IProductDAO>(_ => new ProductDAO(connectionString));
+			builder.Services.AddScoped<IBreweryDAO>(_ => new BreweryDAO(connectionString));
+			builder.Services.AddScoped<ICategoryDAO>(_ => new CategoryDAO(connectionString));
+
+            builder.Services.AddScoped<IOrderService>(provider =>
             {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
-                return new ProductDAO(connectionString);
-            });
-
-            builder.Services.AddScoped<IOrderDAO>(provider =>
-            {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
-                return new OrderDao(connectionString);
-            });
-
-            builder.Services.AddScoped<ICategoryDAO>(provider =>
-			{
-				var configuration = provider.GetRequiredService<IConfiguration>();
-				var connectionString = configuration.GetConnectionString("DefaultConnection");
-				return new CategoryDAO(connectionString);
-			});
-
-			builder.Services.AddScoped<IBreweryDAO>(provider =>
-			{
-				var configuration = provider.GetRequiredService<IConfiguration>();
-				var connectionString = configuration.GetConnectionString("DefaultConnection");
-				return new BreweryDAO(connectionString);
+				return new OrderService(provider.GetRequiredService<IOrderDAO>(), provider.GetRequiredService<IProductDAO>(), connectionString);
 			});
 
             builder.Services.AddScoped<CategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));

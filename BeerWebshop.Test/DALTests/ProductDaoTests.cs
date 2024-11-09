@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace BeerWebshop.Test.DALTests;
 
+[TestFixture]
 public class ProductDaoTests
 {
 	private ProductDAO _productDao;

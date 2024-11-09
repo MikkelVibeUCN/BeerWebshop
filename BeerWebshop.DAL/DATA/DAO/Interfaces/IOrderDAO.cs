@@ -11,7 +11,8 @@ namespace BeerWebshop.DAL.DATA.DAO.Interfaces
 {
     public interface IOrderDAO
     {
-        Task<int> SaveOrderAsync(Order order);
-       
-    }
+        Task<int> InsertCompleteOrderAsync(Order order);
+        Task<Order> GetByIdAsync(int id);
+
+	}
 }

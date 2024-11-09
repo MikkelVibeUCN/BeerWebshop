@@ -13,8 +13,8 @@ namespace BeerWebshop.DAL.DATA.Entities
         public string DeliveryAddress { get; set; }
         public bool IsDelivered { get; set; }
         public int? Id { get; set; }
-        public byte IsDeleted { get; set; }
-        public int CustomerId_FK { get; set; }
+        public bool IsDeleted { get; set; }
+        public int? CustomerId_FK { get; set; }
 
         public float TotalPrice
         {
