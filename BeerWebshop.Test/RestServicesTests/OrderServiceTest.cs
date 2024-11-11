@@ -1,12 +1,7 @@
 ﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.Test.DALTests;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace BeerWebshop.Test.RestServicesTests
 {
@@ -19,16 +14,21 @@ namespace BeerWebshop.Test.RestServicesTests
 		private Product _testProduct;
 		private string _connectionString = DBConnection.ConnectionString();
 		private int _createdOrderId;
-		private int _createdProductId;
+
 
 		[SetUp]
 		public async Task SetUp()
 		{
 			var productDao = new ProductDAO(_connectionString);
 			var orderDao = new OrderDAO(_connectionString);
+			var categoryDao = new CategoryDAO(_connectionString);
+			var breweryDao = new BreweryDAO(_connectionString);
 
 			_productService = new ProductService(productDao);
 			_orderService = new OrderService(orderDao, _productService, _connectionString);
+
+			var testBrewery = await breweryDao.GetBreweryById(537);
+			var testCategory = await categoryDao.GetCategoryById(548);
 
 			_testProduct = new Product
 			{
@@ -38,14 +38,12 @@ namespace BeerWebshop.Test.RestServicesTests
 				Price = 10,
 				Stock = 10,
 				IsDeleted = false,
-				Category = new Category { Id = 268, Name = "IPA", IsDeleted = false },
-				Brewery = new Brewery { Id = 262, Name = "Overtone", IsDeleted = false },
+				Category = testCategory,
+				Brewery = testBrewery,
 				ImageUrl = "https://example.com/sample-image.jpg"
 			};
 
-			_createdProductId = await _productService.CreateProductAsync(_testProduct);
-			_testProduct = await _productService.GetProductByIdAsync(_createdProductId);
-			_testProduct.Id = _createdProductId;
+			_testProduct.Id = await _productService.CreateProductAsync(_testProduct);
 
 			_testOrder = new Order
 			{
@@ -56,7 +54,7 @@ namespace BeerWebshop.Test.RestServicesTests
 		{
 			new OrderLine
 			{
-				ProductId = _testProduct.Id ?? 0,
+				ProductId = (int)_testProduct.Id,
 				Quantity = 2,
 				Product = _testProduct
 			}
@@ -106,11 +104,6 @@ namespace BeerWebshop.Test.RestServicesTests
 			{
 				await _orderService.DeleteOrderByIdAsync(_createdOrderId);
 				_createdOrderId = 0;
-			}
-
-			if (_createdProductId > 0)
-			{
-				await _productService.DeleteProductByIdAsync(_createdProductId);
 			}
 		}
 	}

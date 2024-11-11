@@ -9,25 +9,19 @@ public static class MappingHelper
 	public static async Task<Order> MapOrderDTOToEntity(OrderDTO dto, CategoryService categoryService, BreweryService breweryService, ProductService productService)
 	{
 
-		if(categoryService == null)
-		{
-			throw new Exception("categoryService");
-		}
-		if (breweryService == null)
-		{
-			throw new Exception("breweryService");
-		}
-		if (productService == null)
-		{
-			throw new Exception("productService");
-		}
 		return new Order
 		{
 			Date = dto.Date,
 			DeliveryAddress = dto.CustomerDTO?.Address,
 			IsDelivered = dto.IsDelivered,
 			CustomerId_FK = dto.CustomerDTO?.Id,
-			OrderLines = (await Task.WhenAll(dto.OrderLines.Select(dto => MapOrderLineDtoToEntity(dto, categoryService, breweryService, productService)))).ToList()
+			OrderLines = (await Task.WhenAll(dto.OrderLines.Select(async dtoOrderLine =>
+				new OrderLine
+				{
+					ProductId = dtoOrderLine.Product.Id,
+					Quantity = dtoOrderLine.Quantity,
+					Product = await MapToEntity(dtoOrderLine.Product, categoryService, breweryService, productService)
+				}))).ToList()
 		};
 	}
 
@@ -50,13 +44,16 @@ public static class MappingHelper
 			Date = order.Date,
 			IsDelivered = order.IsDelivered,
 			OrderLines = order.OrderLines.Select(MapOrderLineEntityToDTO).ToList(),
-			CustomerDTO = new CustomerDTO
-			{
-				Id = order.CustomerId_FK ?? 0,
-				Address = order.DeliveryAddress
-			}
+			CustomerDTO = order.CustomerId_FK.HasValue
+				? new CustomerDTO
+				{
+					Id = order.CustomerId_FK.Value,
+					Address = order.DeliveryAddress
+				}
+				: null
 		};
 	}
+
 
 	private static OrderLineDTO MapOrderLineEntityToDTO(OrderLine entity)
 	{
@@ -82,4 +79,35 @@ public static class MappingHelper
 			ImageUrl = product.ImageUrl!
 		};
 	}
+
+	private static async Task<Product> MapToEntity(ProductDTO productDTO, CategoryService categoryService, BreweryService breweryService, ProductService productService)
+	{
+		int? categoryId = await categoryService.GetCategoryIdByName(productDTO.CategoryName);
+		if (categoryId == null) throw new Exception("Category not found");
+
+		Category? category = await categoryService.GetCategoryById((int)categoryId);
+		if (category == null) throw new Exception("Category not found");
+
+		int? breweryId = await breweryService.GetBreweryIdByName(productDTO.BreweryName);
+		if (breweryId == null) throw new Exception("Brewery not found");
+
+		Brewery? brewery = await breweryService.GetBreweryById((int)breweryId);
+		if (brewery == null) throw new Exception("Brewery not found");
+
+		return new Product
+		{
+			Name = productDTO.Name,
+			Category = category,
+			Brewery = brewery,
+			Price = productDTO.Price,
+			Description = productDTO.Description,
+			Stock = productDTO.Stock,
+			Abv = productDTO.ABV,
+			ImageUrl = productDTO.ImageUrl,
+			IsDeleted = false
+		};
+	}
+
+
+
 }

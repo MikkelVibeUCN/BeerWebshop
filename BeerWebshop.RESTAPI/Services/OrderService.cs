@@ -1,9 +1,6 @@
-﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
+﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
-using System;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 
 namespace BeerWebshop.RESTAPI.Services
 {
@@ -52,12 +49,14 @@ namespace BeerWebshop.RESTAPI.Services
 
 				return orderId;
 			}
-			catch
+			catch (Exception ex)
 			{
+				Console.WriteLine($"Error in CreateOrderAsync: {ex.Message}");
 				await transaction.RollbackAsync();
 				throw;
 			}
 		}
+
 
 		public async Task<Order?> GetOrderByIdAsync(int orderId)
 		{

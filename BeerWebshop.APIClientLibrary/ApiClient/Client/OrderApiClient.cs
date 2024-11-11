@@ -1,36 +1,31 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
-    public class OrderApiClient : IOrderApiClient
-    {
-        private RestClient _restClient;
-        public OrderApiClient(string uri) => _restClient = new RestClient(new Uri(uri));
+	public class OrderApiClient : IOrderApiClient
+	{
+		private RestClient _restClient;
+		public OrderApiClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
-        public Task<OrderDTO?> GetOrderFromId(int id)
-        {
-            throw new NotImplementedException();
-        }
+		public Task<OrderDTO?> GetOrderFromId(int id)
+		{
+			throw new NotImplementedException();
+		}
 
-        public async Task<int> SaveOrder(OrderDTO Order)
-        {   
-            var response = await _restClient.RequestAsync<OrderDTO>(Method.Post, "Orders", Order);
+		public async Task<int> SaveOrder(OrderDTO Order)
+		{
+			var response = await _restClient.RequestAsync<OrderDTO>(Method.Post, "Orders", Order);
 
-            if (!response.IsSuccessful)
-            {
-                throw new Exception($"Error creating ProductDTO. Message was {response.Content}");
-            }
+			if (!response.IsSuccessful)
+			{
+				throw new Exception($"Error creating Order. Message was {response.Content}");
+			}
 
-            return response.Data.Id;
-        }
+			return response.Data.Id;
+		}
 
-        public async Task<bool> DeleteOrder(int id)
+		public async Task<bool> DeleteOrder(int id)
 		{
 			var response = await _restClient.RequestAsync(Method.Delete, $"Orders/{id}");
 

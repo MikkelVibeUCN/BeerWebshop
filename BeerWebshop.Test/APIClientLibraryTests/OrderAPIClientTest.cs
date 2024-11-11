@@ -1,10 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeerWebshop.Test.APIClientLibraryTests;
 
@@ -26,34 +21,46 @@ public class OrderApiClientTests
 
 	}
 
-
 	[Test]
 	public async Task SaveOrder_WhenOrderHasNullCustomer_ShouldReturnOrderId()
 	{
-		int productId = 299;
-		var product = await _productApiClient.GetProductFromIdAsync(productId);
-
-		Assert.IsNotNull(product);
-
-		var orderDto = new OrderDTO
+		var productDto = new ProductDTO
 		{
-			Date = DateTime.Now,
-			IsDelivered = false,
-			CustomerDTO = null,
-			OrderLines = new List<OrderLineDTO>
-				{
-					new OrderLineDTO
-					{
-						Product = product,
-						Quantity = 2
-					}
-				}
+			Name = "Integration Test Product",
+			CategoryName = "IPA",
+			BreweryName = "Overtone",
+			Price = 10.0f,
+			Description = "Sample product for integration test",
+			Stock = 20,
+			ABV = 5.5f,
+			ImageUrl = "http://example.com/image.jpg"
 		};
+
+		var createdProductId = await _productApiClient.CreateProductAsync(productDto);
+
+		var retrievedProductDto = await _productApiClient.GetProductFromIdAsync(createdProductId);
+		Assert.IsNotNull(retrievedProductDto, "Product retrieval failed; product should not be null.");
+		Assert.AreEqual(productDto.Name, retrievedProductDto.Name, "Product names should match.");
+
+		OrderDTO orderDto = new OrderDTO(DateTime.Now, new List<OrderLineDTO>(), null, false);
+
+		var orderline = new OrderLineDTO
+		{
+
+			Product = retrievedProductDto,
+			Quantity = 2
+		};
+
+		orderDto.OrderLines.Add(orderline);
 
 		_createdOrderId = await _orderApiClient.SaveOrder(orderDto);
 
 		Assert.That(_createdOrderId, Is.GreaterThan(0), "Order ID should be greater than 0 for a valid order with null CustomerDTO.");
+
+		await _productApiClient.DeleteProductByIdAsync(createdProductId);
 	}
+
+
 
 
 	[Test]
