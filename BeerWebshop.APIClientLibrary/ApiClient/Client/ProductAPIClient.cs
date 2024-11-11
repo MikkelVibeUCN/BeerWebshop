@@ -25,8 +25,12 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
+        public Task EditProductAsync(ProductDTO product)
+        {
+            throw new NotImplementedException();
+        }
 
-		public async Task<IEnumerable<string>> GetProductCategoriesAsync()
+        public async Task<IEnumerable<string>> GetProductCategoriesAsync()
         {
             var response = await _restClient.RequestAsync<IEnumerable<string>>(Method.Get, "Products/Categories");
 

@@ -147,5 +147,10 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
         {
             return Task.FromResult(AddNewBeer(ProductDTO));
         }
+
+        public Task EditProductAsync(ProductDTO product)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

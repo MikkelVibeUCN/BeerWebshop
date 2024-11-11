@@ -3,30 +3,32 @@ using BeerWebshop.Web.Services;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.APIClientLibrary.ApiClient;
 using static System.Net.WebRequestMethods;
+using BeerWebshop.Web.Filter;
 
 
 namespace BeerWebshop.Web
 {
     public class Program
     {
+        private static readonly string uri = "https://localhost:7244/api/v1/";
         public static void Main(string[] args)
         {
+
+
+
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllersWithViews();
-
-            string uri = "https://localhost:7244/api/v1/";
-
-            // Register API clients with the base URI
+            
             builder.Services.AddSingleton<IProductAPIClient>(new ProductAPIClient(uri));
             builder.Services.AddSingleton<ICategoryAPIClient>(new CategoryAPIClient(uri));
 
-            // Register HttpContextAccessor for CookieService and other services
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Register application services
             builder.Services.AddScoped<BeerService>();
             builder.Services.AddScoped<CookieService>();
+            builder.Services.AddScoped<AgeVerificationFilter>();
+            builder.Services.AddScoped<AgeVerifierService>(); 
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<CheckoutService>();
             builder.Services.AddScoped<OrderService>();
@@ -34,6 +36,10 @@ namespace BeerWebshop.Web
             // Use a stub for the IOrderApiClient
             builder.Services.AddSingleton<IOrderApiClient, OrderAPIClientStub>();
 
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.AddService<AgeVerificationFilter>();
+            });
 
             var app = builder.Build();
 
