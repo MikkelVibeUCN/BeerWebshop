@@ -74,7 +74,6 @@ namespace BeerWebshop.RESTAPI.Controllers
             Category? category = await _categoryService.GetCategoryById((int)categoryId);
             if (category == null) throw new Exception("Category not found");
 
-
             int? breweryId = await _breweryService.GetBreweryIdByName(product.BreweryName);
             if (breweryId == null) throw new Exception("Brewery not found");
 
@@ -96,14 +95,35 @@ namespace BeerWebshop.RESTAPI.Controllers
             };
         }
 
-        [HttpGet("products")]
-        public async Task<IActionResult> GetProducts(ProductQueryParameters parameters)
+        [HttpGet]
+        public async Task<IActionResult> GetProducts([FromBody] ProductQueryParameters parameters)
         {
             try
             {
                 var result = await _productService.GetProducts(parameters);
-                return Ok(result);
 
+                List<ProductDTO> products = new List<ProductDTO>();
+                foreach (var product in result)
+                {
+                    products.Add(MapToDTO(product));
+                }
+
+                return Ok(products);
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("count")]
+        public async Task<IActionResult> GetProductCountFromParameters([FromBody]ProductQueryParameters parameters)
+        {
+            try
+            {
+                var result = await _productService.GetProductsCount(parameters);
+                return Ok(result);
             }
             catch (Exception e)
             {

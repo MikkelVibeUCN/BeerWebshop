@@ -38,9 +38,16 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
-        public Task<int> GetProductCountAsync(ProductQueryParameters parameters)
+        public async Task<int> GetProductCountAsync(ProductQueryParameters parameters)
         {
-            throw new NotImplementedException();
+            var response = await _restClient.RequestAsync<int>(Method.Get, "products/count", parameters);
+
+            if(!response.IsSuccessful)
+            {
+                throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
+            }
+            return response.Data;
+
         }
 
         public async Task<ProductDTO?> GetProductFromIdAsync(int id)

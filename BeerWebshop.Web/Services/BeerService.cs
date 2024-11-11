@@ -9,9 +9,10 @@ namespace BeerWebshop.Web.Services
         private readonly IProductAPIClient _productAPIClient;
         private readonly ICategoryAPIClient _categoryAPIClient;
 
-        public BeerService(IProductAPIClient restClient)
+        public BeerService(IProductAPIClient restClient, ICategoryAPIClient categoryAPIClient)
         {
             _productAPIClient = restClient;
+            _categoryAPIClient = categoryAPIClient;
         }
 
         public async Task<int> GetProductCount(ProductQueryParameters parameters)

@@ -81,8 +81,6 @@ public class ProductDAO : IProductDAO
                 queryBuilder.ToString(),
                 (product, category, brewery) =>
                 {
-                    // HACK: ANER IKKE HVORFOR DEN BYTTER RUNDT MEN JEG GIVER OP NU SÆTTER JEG DEM BARE SÅDAN
-
                     product.Category = category;
                     product.Brewery = brewery;
 
@@ -265,8 +263,6 @@ public class ProductDAO : IProductDAO
             queryBuilder.ToString(),
             new { CategoryNames = parameters.Category != null ? string.Join(",", parameters.Category) : string.Empty }
         );
-
         return count;
     }
-
 }

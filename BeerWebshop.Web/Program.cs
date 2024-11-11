@@ -2,6 +2,7 @@ using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.Web.Services;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.APIClientLibrary.ApiClient;
+using static System.Net.WebRequestMethods;
 
 
 namespace BeerWebshop.Web
@@ -14,9 +15,12 @@ namespace BeerWebshop.Web
 
             builder.Services.AddControllersWithViews();
 
-            IProductAPIClient productAPIClient = new ProductApiClientStub();
+            string uri = "https://localhost:7244/api/v1/";
 
-            builder.Services.AddScoped<BeerService>(provider => new BeerService(productAPIClient));
+            IProductAPIClient productAPIClient = new ProductAPIClient(uri);
+            ICategoryAPIClient categoryAPIClient = new CategoryAPIClient(uri);
+
+            builder.Services.AddScoped<BeerService>(provider => new BeerService(productAPIClient, categoryAPIClient));
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<CookieService>();
             builder.Services.AddScoped<CheckoutService>();
