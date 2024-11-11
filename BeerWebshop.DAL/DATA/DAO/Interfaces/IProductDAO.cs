@@ -14,6 +14,7 @@ public interface IProductDAO
     Task<int> CreateAsync(Product Product);
     Task<Product?> GetByIdAsync(int id);
     Task<bool> DeleteAsync(int id);
+    Task EditAsync(int id);
 
     Task<IEnumerable<string>> GetProductCategoriesAsync();
     Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
