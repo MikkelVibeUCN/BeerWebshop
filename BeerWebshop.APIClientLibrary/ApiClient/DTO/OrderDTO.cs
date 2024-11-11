@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public List<OrderLineDTO> OrderLines { get; set; }
-        public CustomerDTO CustomerDTO { get; set; }
+        public CustomerDTO? CustomerDTO { get; set; }
         public bool IsDelivered { get; set; }
 
         public float TotalPrice

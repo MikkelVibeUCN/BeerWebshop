@@ -83,10 +83,21 @@ public class CategoryDAO : ICategoryDAO
         return await connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = categoryId });
     }
 
-    public Task<Category?> GetCategoryById(int id)
-    {
+	public async Task<Category?> GetCategoryById(int id)
+	{
 		const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
-        using var connection = new SqlConnection(_connectionString);
-        return connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = id });
-    }
+		using var connection = new SqlConnection(_connectionString);
+
+		try
+		{
+			await connection.OpenAsync();
+			return await connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = id });
+		}
+		catch (Exception ex)
+		{
+			throw new Exception("An error occurred while retrieving the category.", ex);
+		}
+	}
+
+
 }

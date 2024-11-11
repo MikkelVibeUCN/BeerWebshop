@@ -1,5 +1,6 @@
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
+using BeerWebshop.RESTAPI.Controllers;
 using BeerWebshop.RESTAPI.Services;
 
 namespace BeerWebshop.RESTAPI
@@ -12,28 +13,33 @@ namespace BeerWebshop.RESTAPI
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services.AddScoped<IOrderDAO>(_ => new OrderDAO(connectionString));
+			builder.Services.AddScoped<IOrderDAO>(_ => new OrderDAO(connectionString));
 			builder.Services.AddScoped<IProductDAO>(_ => new ProductDAO(connectionString));
 			builder.Services.AddScoped<IBreweryDAO>(_ => new BreweryDAO(connectionString));
 			builder.Services.AddScoped<ICategoryDAO>(_ => new CategoryDAO(connectionString));
 
-            builder.Services.AddScoped<IOrderService>(provider =>
-            {
-				return new OrderService(provider.GetRequiredService<IOrderDAO>(), provider.GetRequiredService<IProductDAO>(), connectionString);
+			builder.Services.AddScoped<CategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
+			builder.Services.AddScoped<BreweryService>(provider => new BreweryService(provider.GetRequiredService<IBreweryDAO>()));
+			builder.Services.AddScoped<ProductService>(provider => new ProductService(provider.GetRequiredService<IProductDAO>()));
+
+			builder.Services.AddScoped<OrderService>(provider =>
+			{
+				return new OrderService(
+					provider.GetRequiredService<IOrderDAO>(),
+					provider.GetRequiredService<ProductService>(),
+					connectionString);
 			});
 
-            builder.Services.AddScoped<CategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
-            builder.Services.AddScoped<BreweryService>(provider => new BreweryService(provider.GetRequiredService<IBreweryDAO>()));
-            builder.Services.AddScoped<ProductService>(provider => new ProductService(provider.GetRequiredService<IProductDAO>()));
+		
 
-
-
-            builder.Services.AddControllers();
+			builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             
 
             var app = builder.Build();
+
+
 
             if (app.Environment.IsDevelopment())
             {

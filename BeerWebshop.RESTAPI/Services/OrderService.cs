@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 
 namespace BeerWebshop.RESTAPI.Services
 {
-	public class OrderService : IOrderService
+	public class OrderService
 	{
 		private readonly IOrderDAO _orderDao;
-		private readonly ProductService _productService;
+		private readonly ProductService _productService; 
 		private readonly string _connectionString;
 
-		public OrderService(IOrderDAO orderDao, IProductDAO productDao, string connectionString)
+	
+		public OrderService(IOrderDAO orderDao, ProductService productService, string connectionString)
 		{
 			_orderDao = orderDao;
 			_connectionString = connectionString;
-			_productService = new ProductService(productDao);
+			_productService = productService;
 		}
 
 		public async Task<int> CreateOrderAsync(Order order)

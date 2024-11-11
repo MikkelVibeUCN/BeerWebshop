@@ -40,7 +40,7 @@ namespace BeerWebshop.RESTAPI.Controllers
 		{
 			var order = await MappingHelper.MapOrderDTOToEntity(dto, _categoryService, _breweryService, _productService);
 			var orderId = await _orderService.CreateOrderAsync(order);
-			return CreatedAtAction(nameof(GetOrderByIdAsync), new { id = orderId }, orderId);
+			return Ok(orderId);
 		}
 	}
 }

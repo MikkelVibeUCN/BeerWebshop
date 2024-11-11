@@ -11,20 +11,18 @@ namespace BeerWebshop.Test.RestServicesTests
 	{
 		private OrderService _orderService;
 		private Mock<IOrderDAO> _orderDaoMock;
-		private Mock<IProductDAO> _productDaoMock;
+		private Mock<ProductService> _productServiceMock;
 		private Order _testOrder;
 		private Product _testProduct;
 
 		[SetUp]
 		public void SetUp()
 		{
-			// mock-objekter til IOrderDAO og IProductDAO, som giver mulighed for at teste uden  database
 			_orderDaoMock = new Mock<IOrderDAO>();
-			_productDaoMock = new Mock<IProductDAO>();
+			_productServiceMock = new Mock<ProductService>(Mock.Of<IProductDAO>()); // Use mock for ProductService
 
-			// Connection string er kun placeholder, vi bruger mocks
-			var connectionString = Configuration.ConnectionString();
-			_orderService = new OrderService(_orderDaoMock.Object, _productDaoMock.Object, connectionString);
+			// Placeholder connection string for testing
+			_orderService = new OrderService(_orderDaoMock.Object, _productServiceMock.Object, string.Empty);
 
 			// Test produk
 			_testProduct = new Product
@@ -66,12 +64,12 @@ namespace BeerWebshop.Test.RestServicesTests
 						 .ReturnsAsync(expectedOrderId);
 
 			// Mock, der simulerer at hente et produkt fra databasen
-			_productDaoMock.Setup(x => x.GetByIdAsync(_testProduct.Id ?? 0))
+			_productServiceMock.Setup(x => x.GetProductByIdAsync(_testProduct.Id ?? 0))
 						   .ReturnsAsync(_testProduct);
 
 			// Tester optimistic concurrency ved at sikre, at UpdateStockOptimisticAsync returnerer "true",
 			// hvilket betyder, at stock blev opdateret uden konflikter.
-			_productDaoMock.Setup(x => x.UpdateStockOptimisticAsync(_testProduct.Id ?? 0, 2, _testProduct.RowVersion))
+			_productServiceMock.Setup(x => x.UpdateStockAsync(_testProduct.Id ?? 0, 2, _testProduct.RowVersion))
 						   .ReturnsAsync(true);
 
 			// Act 
@@ -80,7 +78,7 @@ namespace BeerWebshop.Test.RestServicesTests
 			// Assert 
 			Assert.That(orderId, Is.EqualTo(expectedOrderId), "Det returnerede ordre ID bør matche det forventede.");
 			_orderDaoMock.Verify(x => x.InsertCompleteOrderAsync(It.IsAny<Order>()), Times.Once, "InsertCompleteOrderAsync skal kaldes præcist én gang.");
-			_productDaoMock.Verify(x => x.UpdateStockOptimisticAsync(_testProduct.Id ?? 0, 2, _testProduct.RowVersion), Times.Once);
+			_productServiceMock.Verify(x => x.UpdateStockAsync(_testProduct.Id ?? 0, 2, _testProduct.RowVersion), Times.Once);
 		}
 
 		[Test]
@@ -89,7 +87,7 @@ namespace BeerWebshop.Test.RestServicesTests
 			// Arrange
 			// Test, hvor produktets lagerbeholdning er lavere end det nødvendige
 			_testProduct.Stock = 1; // For lav stock
-			_productDaoMock.Setup(x => x.GetByIdAsync(_testProduct.Id ?? 0))
+			_productServiceMock.Setup(x => x.GetProductByIdAsync(_testProduct.Id ?? 0))
 						   .ReturnsAsync(_testProduct);
 
 			// Act & Assert
@@ -99,7 +97,7 @@ namespace BeerWebshop.Test.RestServicesTests
 			);
 
 			// Verificer, at opdatering af lagerbeholdning ikke blev forsøgt
-			_productDaoMock.Verify(x => x.UpdateStockOptimisticAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<byte[]>()), Times.Never);
+			_productServiceMock.Verify(x => x.UpdateStockAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<byte[]>()), Times.Never);
 		}
 
 		[Test]
@@ -107,11 +105,11 @@ namespace BeerWebshop.Test.RestServicesTests
 		{
 			// Arrange
 			// Mock der indikerer at produktet blev ændret af en anden transaktion
-			_productDaoMock.Setup(x => x.GetByIdAsync(_testProduct.Id ?? 0))
+			_productServiceMock.Setup(x => x.GetProductByIdAsync(_testProduct.Id ?? 0))
 						   .ReturnsAsync(_testProduct);
 
 			// UpdateStockOptimisticAsync returnerer false, hvilket betyder, at produktets stock blev ændret af en anden
-			_productDaoMock.Setup(x => x.UpdateStockOptimisticAsync(_testProduct.Id ?? 0, 2, _testProduct.RowVersion))
+			_productServiceMock.Setup(x => x.UpdateStockAsync(_testProduct.Id ?? 0, 2, _testProduct.RowVersion))
 						   .ReturnsAsync(false);
 
 			// Act & Assert
@@ -145,7 +143,7 @@ namespace BeerWebshop.Test.RestServicesTests
 		public void TearDown()
 		{
 			_orderDaoMock.Reset();
-			_productDaoMock.Reset();
+			_productServiceMock.Reset();
 		}
 	}
 }

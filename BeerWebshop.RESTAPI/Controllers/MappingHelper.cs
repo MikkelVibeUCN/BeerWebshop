@@ -8,12 +8,25 @@ public static class MappingHelper
 {
 	public static async Task<Order> MapOrderDTOToEntity(OrderDTO dto, CategoryService categoryService, BreweryService breweryService, ProductService productService)
 	{
+
+		if(categoryService == null)
+		{
+			throw new Exception("categoryService");
+		}
+		if (breweryService == null)
+		{
+			throw new Exception("breweryService");
+		}
+		if (productService == null)
+		{
+			throw new Exception("productService");
+		}
 		return new Order
 		{
 			Date = dto.Date,
-			DeliveryAddress = dto.CustomerDTO.Address,
+			DeliveryAddress = dto.CustomerDTO?.Address,
 			IsDelivered = dto.IsDelivered,
-			CustomerId_FK = dto.CustomerDTO.Id,
+			CustomerId_FK = dto.CustomerDTO?.Id,
 			OrderLines = (await Task.WhenAll(dto.OrderLines.Select(dto => MapOrderLineDtoToEntity(dto, categoryService, breweryService, productService)))).ToList()
 		};
 	}

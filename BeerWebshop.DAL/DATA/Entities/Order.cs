@@ -10,7 +10,7 @@ namespace BeerWebshop.DAL.DATA.Entities
     {
         public DateTime Date { get; set; }
         public List<OrderLine> OrderLines { get; set; }
-        public string DeliveryAddress { get; set; }
+        public string? DeliveryAddress { get; set; }
         public bool IsDelivered { get; set; }
         public int? Id { get; set; }
         public bool IsDeleted { get; set; }
@@ -24,7 +24,7 @@ namespace BeerWebshop.DAL.DATA.Entities
             }
         }
 
-        public Order(DateTime date, List<OrderLine> orderLines, string deliveryAddress, bool isDelivered, int customerId_FK, int? id = null)
+        public Order(DateTime date, List<OrderLine> orderLines, bool isDelivered, string? deliveryAddress = null, int? customerId_FK = null, int? id = null)
         {
             Date = date;
             OrderLines = orderLines;
