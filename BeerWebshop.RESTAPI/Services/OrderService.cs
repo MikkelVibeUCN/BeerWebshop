@@ -10,10 +10,10 @@ namespace BeerWebshop.RESTAPI.Services
 	public class OrderService
 	{
 		private readonly IOrderDAO _orderDao;
-		private readonly ProductService _productService; 
+		private readonly ProductService _productService;
 		private readonly string _connectionString;
 
-	
+
 		public OrderService(IOrderDAO orderDao, ProductService productService, string connectionString)
 		{
 			_orderDao = orderDao;
@@ -59,10 +59,17 @@ namespace BeerWebshop.RESTAPI.Services
 			}
 		}
 
-		public async Task<Order> GetOrderByIdAsync(int orderId)
+		public async Task<Order?> GetOrderByIdAsync(int orderId)
 		{
-			return await _orderDao.GetByIdAsync(orderId);
+			var order = await _orderDao.GetByIdAsync(orderId);
+			if (order == null)
+			{
+				throw new KeyNotFoundException($"Order with ID {orderId} was not found.");
+			}
+
+			return order;
 		}
+
 
 		public async Task<bool> DeleteOrderByIdAsync(int orderId)
 		{

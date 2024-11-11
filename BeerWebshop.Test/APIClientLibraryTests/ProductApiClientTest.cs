@@ -27,7 +27,7 @@ public class ProductAPIClientIntegrationTests
 			Price = 10.0f,
 			Description = "Sample product for integration test",
 			Stock = 20,
-			Abv = 5.5f,
+			ABV = 5.5f,
 			ImageUrl = "http://example.com/image.jpg"
 		};
 
@@ -44,9 +44,9 @@ public class ProductAPIClientIntegrationTests
 		var product = await _productApiClient.GetProductFromIdAsync(_createdProductId);
 
 		Assert.NotNull(product);
-		Assert.AreEqual("Integration Test Product", product.Name);
-		Assert.AreEqual("IPA", product.CategoryName);
-		Assert.AreEqual("Overtone", product.BreweryName);
+		Assert.That(product.Name, Is.EqualTo("Integration Test Product"));
+		Assert.That(product.CategoryName, Is.EqualTo("IPA"));
+		Assert.That(product.BreweryName, Is.EqualTo("Overtone"));
 	}
 
 	[TearDown]

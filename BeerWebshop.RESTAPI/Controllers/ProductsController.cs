@@ -50,7 +50,18 @@ namespace BeerWebshop.RESTAPI.Controllers
             return CreatedAtRoute("GetProductById", new { id = productId }, productId);
         }
 
-        private ProductDTO MapToDTO(Product product)
+        [HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteProductByIdAsync(int id)
+		{
+			var result = await _productService.DeleteProductByIdAsync(id);
+			if (!result)
+			{
+				return NotFound($"Product with id {id} was not found.");
+			}
+			return Ok();
+		}
+
+		private ProductDTO MapToDTO(Product product)
         {
             return new ProductDTO
             {

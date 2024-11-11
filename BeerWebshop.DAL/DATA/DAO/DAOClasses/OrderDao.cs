@@ -39,7 +39,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 		}
 
 
-		public async Task<Order> GetByIdAsync(int id)
+		public async Task<Order?> GetByIdAsync(int id)
 		{
 			using var connection = new SqlConnection(_connectionString);
 			await connection.OpenAsync();
@@ -49,14 +49,19 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 				var parameters = new { Id = id };
 				var order = await connection.QuerySingleOrDefaultAsync<Order>(_getOrderByIdSql, parameters);
 
+				if (order == null)
+				{
+					return null; 
+				}
+
 				return order;
 			}
 			catch (Exception ex)
 			{
-
 				throw new Exception($"Error getting order from database: {ex.Message}", ex);
 			}
 		}
+
 
 		public async Task<int> InsertCompleteOrderAsync(Order order)
 		{

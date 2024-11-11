@@ -62,7 +62,12 @@ public class ProductDAO : IProductDAO
         }
     }
 
-    public async Task<Product?> GetByIdAsync(int id)
+	public async Task EditAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+	public async Task<Product?> GetByIdAsync(int id)
     {
         try
         {

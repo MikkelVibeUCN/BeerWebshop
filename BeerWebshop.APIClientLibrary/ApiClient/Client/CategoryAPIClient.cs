@@ -29,15 +29,16 @@ public class CategoryAPIClient : ICategoryAPIClient
 		return response.Data;
 	}
 
-    public async Task<IEnumerable<CategoryDTO>> GetAllCategories()
-    {
-        var response = await _restClient.RequestAsync<IEnumerable<CategoryDTO>>(Method.Get, "categories");
+	public async Task<IEnumerable<CategoryDTO?>> GetAllCategories()
+	{
+		var response = await _restClient.RequestAsync<IEnumerable<CategoryDTO?>>(Method.Get, "categories");
 
-        if (!response.IsSuccessful)
-        {
-            throw new Exception($"Error retrieving all categories. Message was {response.Content}");
-        }
+		if (!response.IsSuccessful || response.Data == null)
+		{
+			throw new Exception($"Error retrieving all categories. Message was {response.Content}");
+		}
 
-        return response.Data;
-    }
+		return response.Data ?? Enumerable.Empty<CategoryDTO?>();
+	}
+
 }

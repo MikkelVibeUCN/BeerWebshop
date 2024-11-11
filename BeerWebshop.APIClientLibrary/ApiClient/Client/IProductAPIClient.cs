@@ -10,5 +10,6 @@ public interface IProductAPIClient
     Task<int> GetProductCountAsync(ProductQueryParameters parameters);
     Task<int> CreateProductAsync(ProductDTO Product);
     Task EditProductAsync(ProductDTO product);
+    Task<bool> DeleteProductByIdAsync(int id);
 
 }

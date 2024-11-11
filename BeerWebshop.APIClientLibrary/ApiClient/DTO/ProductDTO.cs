@@ -12,7 +12,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
         public required int Stock { get; set; }
         public float ABV { get; set; }
         public required string CategoryName { get; set; }
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
     }
 }
