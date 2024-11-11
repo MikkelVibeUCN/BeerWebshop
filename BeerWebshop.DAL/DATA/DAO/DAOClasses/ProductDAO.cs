@@ -265,4 +265,9 @@ public class ProductDAO : IProductDAO
         );
         return count;
     }
+
+    public Task EditAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
 }
