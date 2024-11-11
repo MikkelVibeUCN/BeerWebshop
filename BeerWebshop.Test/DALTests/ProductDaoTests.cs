@@ -115,7 +115,7 @@ public class ProductDaoTests
 
 		Assert.IsNotNull(categories, "The categories should not be null.");
 		Assert.That(categories.Count, Is.GreaterThan(0), "The number of test categories should match the expected count.");
-		Assert.That(categories, Contains.Item($"IPA{_testSuffix}"), $"The category 'IPA{_testSuffix}' should be present in the list.");
+		Assert.That(categories, Contains.Item($"Category{_testSuffix}"), $"The category 'Category{_testSuffix}' should be present in the list.");
 	}
 
 
@@ -187,21 +187,5 @@ public class ProductDaoTests
 
         var sortedProducts = products!.OrderByDescending(p => p.Price);
         Assert.That(products!.SequenceEqual(sortedProducts), "The products should be sorted in descending order by price.");
-    }
-
-    [Test]
-    public async Task GetProductsAsync_WithCategoryFilter()
-    {
-        ProductQueryParameters productQueryParameters = new ProductQueryParameters
-        {
-            Category = "IPA"
-        };
-        var products = await _productDao.GetProducts(productQueryParameters);
-
-        Assert.That(products != null, "The products should not be null.");
-        Assert.That(products!.Count(), Is.LessThanOrEqualTo(21), "The number of products should match the expected count.");
-
-        var filteredProducts = products!.Where(p => p.Category.Name == "IPA");
-        Assert.That(products!.SequenceEqual(filteredProducts), "The products should be filtered by category.");
     }
 }

@@ -41,7 +41,6 @@ namespace BeerWebshop.Test.RestServicesTests
 				Date = DateTime.Now,
 				DeliveryAddress = "123 Test Ave",
 				IsDelivered = false,
-				CustomerId_FK = 1,
 				OrderLines = new List<OrderLine>
 				{
 					new OrderLine
