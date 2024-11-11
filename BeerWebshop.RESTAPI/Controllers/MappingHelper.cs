@@ -44,16 +44,13 @@ public static class MappingHelper
 			Date = order.Date,
 			IsDelivered = order.IsDelivered,
 			OrderLines = order.OrderLines.Select(MapOrderLineEntityToDTO).ToList(),
-			CustomerDTO = order.CustomerId_FK.HasValue
-				? new CustomerDTO
-				{
-					Id = order.CustomerId_FK.Value,
-					Address = order.DeliveryAddress
-				}
-				: null
+			CustomerDTO = new CustomerDTO
+			{
+				Id = order.CustomerId_FK ?? 0,
+				Address = order.DeliveryAddress
+			}
 		};
 	}
-
 
 	private static OrderLineDTO MapOrderLineEntityToDTO(OrderLine entity)
 	{
