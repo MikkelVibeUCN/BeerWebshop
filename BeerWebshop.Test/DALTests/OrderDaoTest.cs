@@ -22,7 +22,7 @@ public class OrderDaoTest
 	[SetUp]
 	public async Task SetUpAsync()
 	{
-		var connectionString = Configuration.ConnectionString();
+		var connectionString = DBConnection.ConnectionString();
 		_orderDao = new OrderDAO(connectionString);
 		_productDao = new ProductDAO(connectionString);
 		_breweryDao = new BreweryDAO(connectionString);
@@ -117,7 +117,7 @@ public class OrderDaoTest
 		Assert.That(orderId, Is.GreaterThan(0), "Ordre-ID'et bør være et positivt heltal.");
 
 		// Kontrollerer at orderline blev indsat korrekt og har den forventede total
-		using var connection = new SqlConnection(Configuration.ConnectionString());
+		using var connection = new SqlConnection(DBConnection.ConnectionString());
 		var orderLineData = await connection.QuerySingleAsync<(int Count, float SumTotal)>(
 			"SELECT COUNT(1) AS Count, SUM(Total) AS SumTotal FROM OrderLines WHERE OrderId = @OrderId AND ProductId = @ProductId",
 			new { OrderId = orderId, ProductId = _createdProductId });
@@ -133,7 +133,7 @@ public class OrderDaoTest
 
 	private async Task DeleteOrderLinesByProductId(int productId)
 	{
-		using var connection = new SqlConnection(Configuration.ConnectionString());
+		using var connection = new SqlConnection(DBConnection.ConnectionString());
 		await connection.ExecuteAsync("DELETE FROM OrderLines WHERE ProductId = @ProductId", new { ProductId = productId });
 	}
 
@@ -141,13 +141,13 @@ public class OrderDaoTest
 	{
 		await DeleteOrderLinesByOrderId(orderId);
 
-		using var connection = new SqlConnection(Configuration.ConnectionString());
+		using var connection = new SqlConnection(DBConnection.ConnectionString());
 		await connection.ExecuteAsync("DELETE FROM Orders WHERE Id = @OrderId", new { OrderId = orderId });
 	}
 
 	private async Task DeleteOrderLinesByOrderId(int orderId)
 	{
-		using var connection = new SqlConnection(Configuration.ConnectionString());
+		using var connection = new SqlConnection(DBConnection.ConnectionString());
 		await connection.ExecuteAsync("DELETE FROM OrderLines WHERE OrderId = @OrderId", new { OrderId = orderId });
 	}
 }

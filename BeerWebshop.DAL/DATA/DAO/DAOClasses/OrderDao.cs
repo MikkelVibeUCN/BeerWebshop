@@ -22,10 +22,22 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 		private const string _getOrderByIdSql = @"
 			SELECT * FROM Orders WHERE Id = @Id;";
 
+		private const string _deleteOrderByIdSql = @"
+			DELETE FROM Orders WHERE Id = @Id";
+
 		public OrderDAO(string connectionString)
 		{
 			_connectionString = connectionString;
 		}
+
+		public async Task<bool> DeleteOrderByIdAsync(int orderId)
+		{
+			using var connection = new SqlConnection(_connectionString);
+			await connection.OpenAsync();
+			var rowsAffected = await connection.ExecuteAsync(_deleteOrderByIdSql, new { Id = orderId });
+			return rowsAffected > 0;
+		}
+
 
 		public async Task<Order> GetByIdAsync(int id)
 		{

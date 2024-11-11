@@ -36,5 +36,10 @@ namespace BeerWebshop.RESTAPI.Services
         {
             return await _productDAO.GetProductCountAsync(parameters);
         }
+
+        public async Task<bool> DeleteProductByIdAsync(int id)
+        {
+            return await _productDAO.DeleteAsync(id);
+		}
 	}
 }

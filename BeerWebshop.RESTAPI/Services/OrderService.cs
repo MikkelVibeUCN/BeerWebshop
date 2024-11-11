@@ -63,5 +63,10 @@ namespace BeerWebshop.RESTAPI.Services
 		{
 			return await _orderDao.GetByIdAsync(orderId);
 		}
+
+		public async Task<bool> DeleteOrderByIdAsync(int orderId)
+		{
+			return await _orderDao.DeleteOrderByIdAsync(orderId);
+		}
 	}
 }

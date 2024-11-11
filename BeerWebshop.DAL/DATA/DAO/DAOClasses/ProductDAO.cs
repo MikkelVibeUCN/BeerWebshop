@@ -114,19 +114,12 @@ public class ProductDAO : IProductDAO
 		if (rowsAffected == 0)
 		{
 			transaction.Rollback();
-			return false;
+			throw new InvalidOperationException("The product stock was modified by another transaction.");
 		}
 
 		transaction.Commit();
 		return true;
 	}
-
-
-
-
-
-
-
 
     public async Task<IEnumerable<string>> GetProductCategoriesAsync()
     {

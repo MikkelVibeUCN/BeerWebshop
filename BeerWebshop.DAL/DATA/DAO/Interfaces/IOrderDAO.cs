@@ -13,6 +13,7 @@ namespace BeerWebshop.DAL.DATA.DAO.Interfaces
     {
         Task<int> InsertCompleteOrderAsync(Order order);
         Task<Order> GetByIdAsync(int id);
+        Task<bool> DeleteOrderByIdAsync(int id);
 
 	}
 }

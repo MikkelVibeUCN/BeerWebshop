@@ -71,5 +71,16 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             }
             return response.Data;
         }
+
+        public async Task<bool> DeleteProductByIdAsync(int id)
+		{
+			var response = await _restClient.RequestAsync<bool>(Method.Delete, $"Products/{id}");
+
+			if (!response.IsSuccessful)
+			{
+				throw new Exception($"Error deleting ProductDTO. Message was {response.Content}");
+			}
+			return response.Data;
+		}
 	}
 }

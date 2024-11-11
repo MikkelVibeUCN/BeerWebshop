@@ -2,7 +2,7 @@
 
 namespace BeerWebshop.Test.DALTests;
 
-public static class Configuration
+public static class DBConnection
 {
 
     public static string ConnectionString()

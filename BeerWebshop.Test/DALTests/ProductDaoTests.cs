@@ -20,9 +20,9 @@ public class ProductDaoTests
     [SetUp]
 	public async Task SetUpAsync()
 	{
-		_productDao = new ProductDAO(Configuration.ConnectionString());
-		_categoryDao = new CategoryDAO(Configuration.ConnectionString());
-		_breweryDao = new BreweryDAO(Configuration.ConnectionString());
+		_productDao = new ProductDAO(DBConnection.ConnectionString());
+		_categoryDao = new CategoryDAO(DBConnection.ConnectionString());
+		_breweryDao = new BreweryDAO(DBConnection.ConnectionString());
 
 
         // Create a test category and a test brewery make sure to keep these ids saved so its easy to delete them once done
