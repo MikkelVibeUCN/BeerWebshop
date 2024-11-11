@@ -1,4 +1,5 @@
-﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
+﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using System;
 using System.Data.SqlClient;
@@ -9,14 +10,14 @@ namespace BeerWebshop.RESTAPI.Services
 	public class OrderService : IOrderService
 	{
 		private readonly IOrderDAO _orderDao;
-		private readonly IProductDAO _productDao;
+		private readonly ProductService _productService;
 		private readonly string _connectionString;
 
 		public OrderService(IOrderDAO orderDao, IProductDAO productDao, string connectionString)
 		{
 			_orderDao = orderDao;
-			_productDao = productDao;
 			_connectionString = connectionString;
+			_productService = new ProductService(productDao);
 		}
 
 		public async Task<int> CreateOrderAsync(Order order)
@@ -29,7 +30,7 @@ namespace BeerWebshop.RESTAPI.Services
 			{
 				foreach (var orderLine in order.OrderLines)
 				{
-					var product = await _productDao.GetByIdAsync(orderLine.ProductId);
+					var product = await _productService.GetProductByIdAsync(orderLine.ProductId);
 					if (product == null || product.IsDeleted || product.Stock < orderLine.Quantity)
 					{
 						throw new InvalidOperationException("Invalid product details or insufficient stock.");
@@ -37,7 +38,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 					orderLine.Product = product;
 
-					var success = await _productDao.UpdateStockOptimisticAsync(orderLine.ProductId, orderLine.Quantity, product.RowVersion);
+					var success = await _productService.UpdateStockAsync(orderLine.ProductId, orderLine.Quantity, product.RowVersion);
 					if (!success)
 					{
 						throw new InvalidOperationException("The product stock was modified by another transaction.");
@@ -57,7 +58,7 @@ namespace BeerWebshop.RESTAPI.Services
 			}
 		}
 
-		public async Task<Order?> GetOrderByIdAsync(int orderId)
+		public async Task<Order> GetOrderByIdAsync(int orderId)
 		{
 			return await _orderDao.GetByIdAsync(orderId);
 		}

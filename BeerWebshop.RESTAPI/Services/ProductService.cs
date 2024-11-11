@@ -26,5 +26,11 @@ namespace BeerWebshop.RESTAPI.Services
         {
             return await _productDAO.GetProducts(parameters);
         }
-    }
+
+		public async Task<bool> UpdateStockAsync(int productId, int quantity, byte[] rowVersion)
+        {
+            return await _productDAO.UpdateStockOptimisticAsync(productId, quantity, rowVersion);
+		}
+
+	}
 }

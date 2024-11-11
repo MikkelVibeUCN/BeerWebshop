@@ -134,7 +134,7 @@ public class ProductDaoTests
         var products = await _productDao.GetProducts(productQueryParameters);
 
         Assert.That(products != null, "The products should not be null.");
-        Assert.That(products.Count() <= 21, "The number of products should match the expected count.");
+        Assert.That(products?.Count() <= 21, "The number of products should match the expected count.");
 
         var sortedProducts = products.OrderBy(p => p.Name);
         Assert.That(products.SequenceEqual(sortedProducts), "The products should be sorted in ascending order by name.");
@@ -151,10 +151,10 @@ public class ProductDaoTests
         var products = await _productDao.GetProducts(productQueryParameters);
 
         Assert.That(products != null, "The products should not be null.");
-        Assert.That(products.Count() <= 21, "The number of products should match the expected count.");
+        Assert.That(products!.Count(), Is.LessThanOrEqualTo(21), "The number of products should match the expected count.");
 
-        var sortedProducts = products.OrderByDescending(p => p.Name);
-        Assert.That(products.SequenceEqual(sortedProducts), "The products should be sorted in descending order by name.");
+        var sortedProducts = products!.OrderByDescending(p => p.Name);
+        Assert.That(products!.SequenceEqual(sortedProducts), "The products should be sorted in descending order by name.");
     }
 
     [Test]
@@ -167,10 +167,10 @@ public class ProductDaoTests
         var products = await _productDao.GetProducts(productQueryParameters);
 
         Assert.That(products != null, "The products should not be null.");
-        Assert.That(products.Count() <= 21, "The number of products should match the expected count.");
+        Assert.That(products!.Count(), Is.LessThanOrEqualTo(21), "The number of products should match the expected count.");
 
-        var sortedProducts = products.OrderBy(p => p.Price);
-        Assert.That(products.SequenceEqual(sortedProducts), "The products should be sorted in ascending order by price.");
+        var sortedProducts = products!.OrderBy(p => p.Price);
+        Assert.That(products!.SequenceEqual(sortedProducts), "The products should be sorted in ascending order by price.");
     }
 
     [Test]
@@ -183,10 +183,10 @@ public class ProductDaoTests
         var products = await _productDao.GetProducts(productQueryParameters);
 
         Assert.That(products != null, "The products should not be null.");
-        Assert.That(products.Count() <= 21, "The number of products should match the expected count.");
+        Assert.That(products!.Count(), Is.LessThanOrEqualTo(21), "The number of products should match the expected count.");
 
-        var sortedProducts = products.OrderByDescending(p => p.Price);
-        Assert.That(products.SequenceEqual(sortedProducts), "The products should be sorted in descending order by price.");
+        var sortedProducts = products!.OrderByDescending(p => p.Price);
+        Assert.That(products!.SequenceEqual(sortedProducts), "The products should be sorted in descending order by price.");
     }
 
     [Test]
@@ -199,9 +199,9 @@ public class ProductDaoTests
         var products = await _productDao.GetProducts(productQueryParameters);
 
         Assert.That(products != null, "The products should not be null.");
-        Assert.That(products.Count() <= 21, "The number of products should match the expected count.");
+        Assert.That(products!.Count(), Is.LessThanOrEqualTo(21), "The number of products should match the expected count.");
 
-        var filteredProducts = products.Where(p => p.Category.Name == "IPA");
-        Assert.That(products.SequenceEqual(filteredProducts), "The products should be filtered by category.");
+        var filteredProducts = products!.Where(p => p.Category.Name == "IPA");
+        Assert.That(products!.SequenceEqual(filteredProducts), "The products should be filtered by category.");
     }
 }

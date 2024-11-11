@@ -26,7 +26,7 @@ public class BreweriesController : ControllerBase
 			return BadRequest();
 		}
 
-		var product = await MapToEntity(breweryDTO);
+		var product = MapToEntity(breweryDTO);
 
 		var productId = await _breweryDao.CreateBreweryAsync(product);
 
@@ -35,7 +35,7 @@ public class BreweriesController : ControllerBase
 		return Ok();
 	}
 
-	private async Task<Brewery> MapToEntity(BreweryDTO breweryDTO)
+	private Brewery MapToEntity(BreweryDTO breweryDTO)
 	{
 		return new Brewery
 		{

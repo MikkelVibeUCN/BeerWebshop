@@ -35,6 +35,7 @@ public class OrderDaoTest
 			IsDeleted = false,
 		};
 		_createdBreweryId = await _breweryDao.CreateBreweryAsync(brewery);
+		brewery.Id = _createdBreweryId;
 
 		// Test category
 		var category = new Category
@@ -43,13 +44,14 @@ public class OrderDaoTest
 			IsDeleted = false,
 		};
 		_createdCategoryId = await _categoryDao.CreateCategoryAsync(category);
+		category.Id = _createdCategoryId;
 
 		// Test produkt, hvor Id bruges i orderlines
 		var product = new Product
 		{
 			Name = "Tuborg pilsner",
-			CategoryId_FK = _createdCategoryId,
-			BreweryId_FK = _createdBreweryId,
+			Category = category,
+			Brewery = brewery,
 			Price = 5.99f,
 			Description = "En forfriskende pilsner med et strejf af citrus.",
 			Stock = 10,
@@ -88,7 +90,7 @@ public class OrderDaoTest
 		var product = await _productDao.GetByIdAsync(_createdProductId);
 
 		var quantity = 2;
-		var expectedTotal = quantity * product.Price;
+		var expectedTotal = quantity * product!.Price;
 
 		// OrderLine, der indeholder referencen til produkt og antal
 		var orderLine = new OrderLine

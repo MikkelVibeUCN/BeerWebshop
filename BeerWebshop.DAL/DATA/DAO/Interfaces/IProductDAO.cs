@@ -18,4 +18,6 @@ public interface IProductDAO
     Task<IEnumerable<string>> GetProductCategoriesAsync();
     Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
     Task<int> GetProductCountAsync(ProductQueryParameters parameters);
+
+    Task<bool> UpdateStockOptimisticAsync(int productId, int quantity, byte[] rowVersion);
 }
