@@ -42,5 +42,16 @@ namespace BeerWebshop.RESTAPI.Controllers
 			var orderId = await _orderService.CreateOrderAsync(order);
 			return Ok(orderId);
 		}
+
+		[HttpDelete("{id}")]
+		public async Task<ActionResult<bool>> DeleteOrderAsync(int id)
+		{
+			var order = await _orderService.GetOrderByIdAsync(id);
+			if (order == null)
+				return NotFound();
+
+			await _orderService.DeleteOrderByIdAsync(id);
+			return Ok(true);
+		}
 	}
 }

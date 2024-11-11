@@ -29,5 +29,17 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 
             return response.Data.Id;
         }
-    }
+
+        public async Task<bool> DeleteOrder(int id)
+		{
+			var response = await _restClient.RequestAsync(Method.Delete, $"Orders/{id}");
+
+			if (!response.IsSuccessful)
+			{
+				throw new Exception($"Error deleting OrderDTO. Message was {response.Content}");
+			}
+
+			return true;
+		}
+	}
 }
