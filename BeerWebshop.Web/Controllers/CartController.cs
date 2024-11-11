@@ -124,11 +124,18 @@ namespace BeerWebshop.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddToCart(int productId, int quantity)
+        public async Task<IActionResult> AddToCart(int productId, int quantity)
         {
             try
             {
-                _cartService.AddToCart(productId, quantity);
+                ProductDTO? product = await _beerService.GetProductFromId(productId);
+
+                if(product == null)
+                {
+                    throw new Exception("Product not found");
+                }
+
+                _cartService.AddToCart(product, quantity);
 
                 return Ok();
             }

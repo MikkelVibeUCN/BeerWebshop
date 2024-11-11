@@ -11,8 +11,8 @@ namespace BeerWebshop.Web.Services
 
         void UpdateQuantity(int productId, int quantity, ShoppingCart? cart = null);
 
-        void AddToCart(int productId, int quantity);
-
+        void AddToCart(ProductDTO product, int quantity);
+            
         bool HasEnoughStock(ProductDTO productDTO, int quantity);
 
         ProductDTO GetProductFromOrderlines(int productId);

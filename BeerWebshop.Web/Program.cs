@@ -2,6 +2,7 @@ using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.Web.Services;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.APIClientLibrary.ApiClient;
+using static System.Net.WebRequestMethods;
 
 
 namespace BeerWebshop.Web
@@ -14,16 +15,25 @@ namespace BeerWebshop.Web
 
             builder.Services.AddControllersWithViews();
 
-            IProductAPIClient productAPIClient = new ProductApiClientStub();
+            string uri = "https://localhost:7244/api/v1/";
 
-            builder.Services.AddScoped<BeerService>(provider => new BeerService(productAPIClient));
-            builder.Services.AddScoped<ICartService, CartService>();
+            // Register API clients with the base URI
+            builder.Services.AddSingleton<IProductAPIClient>(new ProductAPIClient(uri));
+            builder.Services.AddSingleton<ICategoryAPIClient>(new CategoryAPIClient(uri));
+
+            // Register HttpContextAccessor for CookieService and other services
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            // Register application services
+            builder.Services.AddScoped<BeerService>();
             builder.Services.AddScoped<CookieService>();
+            builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<CheckoutService>();
             builder.Services.AddScoped<OrderService>();
+
+            // Use a stub for the IOrderApiClient
             builder.Services.AddSingleton<IOrderApiClient, OrderAPIClientStub>();
 
-            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var app = builder.Build();
 

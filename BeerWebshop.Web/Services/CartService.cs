@@ -6,13 +6,11 @@ namespace BeerWebshop.Web.Services
 {
     public class CartService : ICartService
     {
-        private readonly BeerService _beerService;
         private readonly CookieService _cookieService;
         private const string CartCookieKey = "Cart";
 
-        public CartService(BeerService beerService, CookieService cookieService)
+        public CartService(CookieService cookieService)
         {
-            _beerService = beerService;
             _cookieService = cookieService;
         }
 
@@ -27,34 +25,28 @@ namespace BeerWebshop.Web.Services
             return orderLineDTO != null;
         }
 
-        public async void AddToCart(int productId, int quantity)
+        public void AddToCart(ProductDTO product, int quantity)
         {
             if (quantity == 0)
             {
                 quantity = 1;
             }
 
-            ProductDTO? beer = await _beerService.GetProductFromId(productId);
-            if (beer == null)
-            {
-                throw new Exception("Beer not found");
-            }
-
-            if (!HasEnoughStock(beer, quantity))
+            if (!HasEnoughStock(product, quantity))
             {
                 throw new Exception("Not enough stock");
             }
 
             var cart = GetCart();
 
-            if (HasProductInCart(beer.Id))
+            if (HasProductInCart(product.Id))
             {
-                OrderLineDTO orderLineDTO = cart.OrderLines.First(ol => ol.Product.Id == beer.Id);
-                UpdateQuantity(beer.Id, orderLineDTO.Quantity + quantity, cart);
+                OrderLineDTO orderLineDTO = cart.OrderLines.First(ol => ol.Product.Id == product.Id);
+                UpdateQuantity(product.Id, orderLineDTO.Quantity + quantity, cart);
             }
             else
             {
-                var orderLineDTO = new OrderLineDTO(quantity, beer);
+                var orderLineDTO = new OrderLineDTO(quantity, product);
                 cart.AddOrderLine(orderLineDTO);
             }
 
