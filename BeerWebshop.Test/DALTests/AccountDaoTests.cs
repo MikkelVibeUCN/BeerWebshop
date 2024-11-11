@@ -17,9 +17,9 @@ public class AccountDaoTests
     [SetUp]
     public async Task SetUpAsync()
     {
-        var connectionString = Configuration.ConnectionString();
+        string connectionString = Configuration.ConnectionString();
         _accountDAO = new AccountDAO(connectionString);
-
+        Console.WriteLine(connectionString);
         var customer = new Customer()
         {
             Id = _testId,
