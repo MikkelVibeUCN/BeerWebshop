@@ -28,7 +28,7 @@ namespace BeerWebshop.Test.RestServicesTests
             _orderService = new OrderService(orderDao, _productService, _connectionString);
 
             var testBrewery = await breweryDao.GetBreweryById(15);
-            var testCategory = await categoryDao.GetCategoryById(15);
+            var testCategory = await categoryDao.GetCategoryByIdAsync(15);
 
             _testProduct = new Product
             {
