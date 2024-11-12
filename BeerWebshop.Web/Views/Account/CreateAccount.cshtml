@@ -8,7 +8,9 @@
     <div class="card p-4 shadow" style="max-width: 500px; width: 100%;">
         <div class="card-body">
             <h3 class="card-title text-center mb-4">Create an Account</h3>
-            <form asp-action="CreateAccount">
+            <form asp-action="CreateAccount" asp-controller="Account" method="post">
+                @Html.AntiForgeryToken()
+
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="form-group">
@@ -60,11 +62,13 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </form>
+
 
                 <div class="text-center mt-3">
-                    <a href="@Url.Action("index", "Home")">Already have an account? Log in</a>
+                    <a href="@Url.Action("Index", "Home")">Already have an account? Log in</a>
                 </div>
-            </form>
+            
         </div>
     </div>
 </div>

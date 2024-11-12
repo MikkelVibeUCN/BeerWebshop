@@ -5,15 +5,16 @@ namespace BeerWebshop.Web.Services
 {
     public class AccountService
     {
-        private ICustomerpiClient _accountApiClient;
+        private ICustomerAPIClient _customerApiClient;
 
-        public AccountService(IAccountAPIClient accountApiClient)
+        public AccountService(ICustomerAPIClient customerApiClient)
         {
-            _accountApiClient = accountApiClient;
+            _customerApiClient = customerApiClient;
         }
-        public async Task<CustomerDTO> CreateCustomer(CustomerDTO customer)
-        {
 
+        public async Task<int> CreateCustomerAsync(CustomerDTO customer)
+        {
+            return await _customerApiClient.CreateCustomer(customer);
         }
     }
 }

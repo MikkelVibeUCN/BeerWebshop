@@ -77,7 +77,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 Street = customer.Address,
                 StreetNumber = "69", // Add real value if available
                 ApartmentNumber = "x", // Add real value if available
-                Postalcode = customer.ZipCode, // Using postal code as a unique identifier
+                Postalcode =  int.Parse(customer.ZipCode), //HACK parse this to an int// Using postal code as a unique identifier
                 Age = customer.Age,
                 Email = customer.Email
             };

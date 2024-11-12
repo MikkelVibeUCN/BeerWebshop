@@ -17,11 +17,13 @@ namespace BeerWebshop.RESTAPI
 			builder.Services.AddScoped<IProductDAO>(_ => new ProductDAO(connectionString));
 			builder.Services.AddScoped<IBreweryDAO>(_ => new BreweryDAO(connectionString));
 			builder.Services.AddScoped<ICategoryDAO>(_ => new CategoryDAO(connectionString));
+            builder.Services.AddScoped<IAccountDAO>(_ => new AccountDAO(connectionString));
 
-			builder.Services.AddScoped<CategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
+
+            builder.Services.AddScoped<CategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
 			builder.Services.AddScoped<BreweryService>(provider => new BreweryService(provider.GetRequiredService<IBreweryDAO>()));
 			builder.Services.AddScoped<ProductService>(provider => new ProductService(provider.GetRequiredService<IProductDAO>()));
-
+            builder.Services.AddScoped<AccountService>(provider => new AccountService(provider.GetRequiredService<IAccountDAO>()));
 			builder.Services.AddScoped<OrderService>(provider =>
 			{
 				return new OrderService(
