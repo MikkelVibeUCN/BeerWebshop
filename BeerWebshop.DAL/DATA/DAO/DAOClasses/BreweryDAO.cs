@@ -6,23 +6,18 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
 public class BreweryDAO : IBreweryDAO
 {
-	private const string _insertBrewerySql = @"INSERT INTO Breweries (Name, IsDeleted)
-												VALUES (@Name, @IsDeleted);
-												SELECT CAST(SCOPE_IDENTITY() AS int);";
-
-	private const string _softDeleteBrewerySql = @"UPDATE Breweries
-												SET IsDeleted = 1
-												WHERE Id = @Id";
-	private const string _deleteBrewerySql = @"DELETE FROM Breweries
-												WHERE Id = @Id";
+	private const string InsertBrewerySql = @"INSERT INTO Breweries (Name, IsDeleted) VALUES (@Name, @IsDeleted) SELECT CAST(SCOPE_IDENTITY() AS int);";
+	private const string DeleteBrewerySql = @"DELETE FROM Breweries WHERE Id = @Id";
+	private const string GetBreweryByIdSql = @"SELECT * FROM Breweries WHERE Id = @Id;";
+	private const string GetBreweryIdByNameSql = @"SELECT Id FROM Breweries WHERE Name = @Name AND IsDeleted = 0";
 
 	private readonly string _connectionString;
 
-    public BreweryDAO(string connectionString)
-    {
+	public BreweryDAO(string connectionString)
+	{
 		_connectionString = connectionString;
 	}
-    public async Task<int> CreateBreweryAsync(Brewery brewery)
+	public async Task<int> CreateBreweryAsync(Brewery brewery)
 	{
 		using var connection = new SqlConnection(_connectionString);
 		try
@@ -33,7 +28,7 @@ public class BreweryDAO : IBreweryDAO
 				brewery.IsDeleted
 			};
 
-			var newBreweryId = await connection.QuerySingleAsync<int>(_insertBrewerySql, parameters);
+			var newBreweryId = await connection.QuerySingleAsync<int>(InsertBrewerySql, parameters);
 			return newBreweryId;
 		}
 		catch (Exception ex)
@@ -52,7 +47,7 @@ public class BreweryDAO : IBreweryDAO
 				Id = id
 			};
 
-			var result = await connection.ExecuteAsync(_deleteBrewerySql, parameters);
+			var result = await connection.ExecuteAsync(DeleteBrewerySql, parameters);
 			return result > 0;
 		}
 		catch (Exception ex)
@@ -61,18 +56,29 @@ public class BreweryDAO : IBreweryDAO
 		}
 	}
 
+	public async Task<Brewery?> GetBreweryById(int breweryId)
+	{
+		using var connection = new SqlConnection(_connectionString);
+		try
+		{
+			return await connection.QuerySingleOrDefaultAsync<Brewery>(GetBreweryByIdSql, new { Id = breweryId });
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error retrieving brewery with Id: {breweryId}: {ex.Message}", ex);
+		}
+	}
 
-    public async Task<Brewery?> GetBreweryById(int breweryId)
-    {
-        const string sql = "SELECT * FROM Breweries WHERE Id = @Id;";
-        using var connection = new SqlConnection(_connectionString);
-        return await connection.QuerySingleOrDefaultAsync<Brewery>(sql, new { Id = breweryId });
-    }
-
-    public async Task<int?> GetBreweryIdByName(string breweryName)
-    {
-        const string sql = "SELECT Id FROM Breweries WHERE Name = @Name AND IsDeleted = 0";
-        using var connection = new SqlConnection(_connectionString);
-        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = breweryName });
-    }
+	public async Task<int?> GetBreweryIdByName(string breweryName)
+	{
+		using var connection = new SqlConnection(_connectionString);
+		try
+		{
+			return await connection.QuerySingleOrDefaultAsync<int?>(GetBreweryIdByNameSql, new { Name = breweryName });
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error retrieving brewery with: {breweryName}: {ex.Message}", ex);
+		}
+	}
 }

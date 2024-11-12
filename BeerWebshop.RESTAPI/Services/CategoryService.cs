@@ -29,7 +29,7 @@ namespace BeerWebshop.RESTAPI.Services
 
         public async Task<Category?> GetCategoryById(int id)
         {
-            return await _categoryDAO.GetCategoryById(id);
+            return await _categoryDAO.GetCategoryByIdAsync(id);
         }
 
 

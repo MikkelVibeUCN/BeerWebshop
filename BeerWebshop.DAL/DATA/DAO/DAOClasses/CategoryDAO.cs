@@ -6,16 +6,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
 public class CategoryDAO : ICategoryDAO
 {
-	private const string _insertCategorySql = @"INSERT INTO Categories (Name, IsDeleted)
-													VALUES (@Name, @IsDeleted);
-													SELECT CAST(SCOPE_IDENTITY() AS int);";
-
-	private const string _softDeleteCategorySql = @"UPDATE Categories
-												SET IsDeleted = 1
-												WHERE Id = @Id";
-
-	private const string _deleteCategorySql = @"DELETE FROM Categories
-												WHERE Id = @Id";
+	private const string InsertCategorySql = @"INSERT INTO Categories (Name, IsDeleted) VALUES (@Name, @IsDeleted) SELECT CAST(SCOPE_IDENTITY() AS int);";
+	private const string DeleteCategorySql = @"DELETE FROM Categories WHERE Id = @Id";
+	private const string GetAllCategoriesSql = @"SELECT * FROM Categories WHERE IsDeleted = 0";
+	private const string GetCategoryIdByNameSql = @"SELECT Id FROM Categories WHERE Name = @Name AND IsDeleted = 0";
+	private const string GetCategoryByIdSql = @"SELECT * FROM Categories WHERE Id = @Id";
 
 	private readonly string _connectionString;
 
@@ -35,7 +30,8 @@ public class CategoryDAO : ICategoryDAO
 				category.Name,
 				category.IsDeleted
 			};
-			var newCategoryId = await connection.QuerySingleAsync<int>(_insertCategorySql, parameters);
+
+			var newCategoryId = await connection.QuerySingleAsync<int>(InsertCategorySql, parameters);
 			return newCategoryId;
 		}
 		catch (Exception ex)
@@ -47,6 +43,7 @@ public class CategoryDAO : ICategoryDAO
 	public async Task<bool> DeleteAsync(int id)
 	{
 		using var connection = new SqlConnection(_connectionString);
+
 		try
 		{
 			var parameters = new
@@ -54,7 +51,7 @@ public class CategoryDAO : ICategoryDAO
 				Id = id
 			};
 
-			var result = await connection.ExecuteAsync(_deleteCategorySql, parameters);
+			var result = await connection.ExecuteAsync(DeleteCategorySql, parameters);
 			return result > 0;
 		}
 		catch (Exception ex)
@@ -65,39 +62,44 @@ public class CategoryDAO : ICategoryDAO
     public async Task<IEnumerable<Category>> GetAllCategories()
     {
         using var connection = new SqlConnection(_connectionString);
-        var categories = await connection.QueryAsync<Category>("SELECT * FROM Categories WHERE IsDeleted = 0");
-        return categories;
+
+		try
+		{
+			var categories = await connection.QueryAsync<Category>(GetAllCategoriesSql);
+			return categories;
+		}
+		catch (Exception ex)
+		{
+
+			throw new Exception($"Error retrieving categories: {ex.Message}", ex);
+		}
     }
 
     public async Task<int?> GetCategoryIdByName(string categoryName)
     {
-        const string sql = "SELECT Id FROM Categories WHERE Name = @Name AND IsDeleted = 0";
         using var connection = new SqlConnection(_connectionString);
-        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = categoryName });
+
+		try
+		{
+			return await connection.QuerySingleOrDefaultAsync<int?>(GetCategoryIdByNameSql, new { Name = categoryName });
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error retrieving category {categoryName}: {ex.Message}", ex);
+		}
     }
 
     public async Task<Category?> GetCategoryByIdAsync(int categoryId)
     {
-        const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
         using var connection = new SqlConnection(_connectionString);
-        return await connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = categoryId });
-    }
-
-	public async Task<Category?> GetCategoryById(int id)
-	{
-		const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
-		using var connection = new SqlConnection(_connectionString);
 
 		try
 		{
-			await connection.OpenAsync();
-			return await connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = id });
+			return await connection.QuerySingleOrDefaultAsync<Category>(GetCategoryByIdSql, new { Id = categoryId });
 		}
 		catch (Exception ex)
 		{
-			throw new Exception("An error occurred while retrieving the category.", ex);
+			throw new Exception($"Error retrieving category with Id: {categoryId}: {ex.Message}", ex);
 		}
-	}
-
-
+    }
 }
