@@ -92,8 +92,6 @@ public class OrderApiClientTests
 
         _createdOrderId = await _orderApiClient.SaveOrder(orderDto);
 
-        Assume.That(_createdOrderId, Is.GreaterThan(0), "A valid order ID must be created in the SaveOrder test.");
-
 		orderDto = await _orderApiClient.GetOrderFromId(_createdOrderId);
 
 		Assert.IsNotNull(orderDto, $"Order with ID {_createdOrderId} should exist.");

@@ -25,9 +25,9 @@ public class ProductDAO : IProductDAO
 	private const string _updateStockSql = @"
 											UPDATE PRODUCTS 
 											SET Stock = Stock - @Quantity 
-											WHERE Id = @ProductId AND RowVersion = @RowVersion";
+											WHERE Id = @ProductId";
 
-
+    //TODO Update til køb + inventory management.
 
 
     private readonly string _connectionString;
@@ -102,7 +102,7 @@ public class ProductDAO : IProductDAO
         }
     }
 
-	public async Task<bool> UpdateStockOptimisticAsync(int productId, int quantity, byte[] rowVersion)
+	public async Task<bool> UpdateStockAsync(int productId, int quantity) //TODO Timeout ved deadlock.
 	{
 		using var connection = new SqlConnection(_connectionString);
 		await connection.OpenAsync();
@@ -112,14 +112,19 @@ public class ProductDAO : IProductDAO
 		var parameters = new DynamicParameters();
 		parameters.Add("@ProductId", productId);
 		parameters.Add("@Quantity", quantity);
-		parameters.Add("@RowVersion", rowVersion, System.Data.DbType.Binary);
 
-		var rowsAffected = await connection.ExecuteAsync(_updateStockSql, parameters, transaction);
-
-		if (rowsAffected == 0)
+        var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction);
+        if(stock < quantity)
 		{
 			transaction.Rollback();
-			throw new InvalidOperationException("The product stock was modified by another transaction.");
+			throw new InvalidOperationException("Insufficient stock.");
+		}
+
+		var rowsAffected = await connection.ExecuteAsync(_updateStockSql, parameters, transaction);
+        if(rowsAffected < 0) 
+        {
+			transaction.Rollback();
+			throw new InvalidOperationException("Error updating stock.");
 		}
 
 		transaction.Commit();

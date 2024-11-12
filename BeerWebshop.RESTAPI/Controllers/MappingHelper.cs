@@ -34,6 +34,7 @@ public static class MappingHelper
 		};
 	}
 
+
 	public static OrderDTO MapOrderEntityToDTO(Order order)
 	{
 		return new OrderDTO
@@ -41,12 +42,14 @@ public static class MappingHelper
 			Id = order.Id ?? 0,
 			Date = order.Date,
 			IsDelivered = order.IsDelivered,
-			OrderLines = order.OrderLines.Select(MapOrderLineEntityToDTO).ToList(),
-			CustomerDTO = new CustomerDTO
+			OrderLines = order.OrderLines != null
+				? order.OrderLines.Select(MapOrderLineEntityToDTO).ToList()
+				: new List<OrderLineDTO>(),
+			CustomerDTO = order.CustomerId_FK.HasValue ? new CustomerDTO
 			{
-				Id = order.CustomerId_FK ?? 0,
+				Id = order.CustomerId_FK.Value,
 				Address = order.DeliveryAddress
-			}
+			} : null
 		};
 	}
 
@@ -58,6 +61,7 @@ public static class MappingHelper
 			Product = MapToDTO(entity.Product)
 		};
 	}
+
 
 	private static ProductDTO MapToDTO(Product product)
 	{

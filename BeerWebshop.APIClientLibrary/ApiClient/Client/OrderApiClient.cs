@@ -32,6 +32,8 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 			return response.Data;
 		}
 
+
+
 		public async Task<bool> DeleteOrder(int id)
 		{
 			var response = await _restClient.RequestAsync(Method.Delete, $"Orders/{id}");

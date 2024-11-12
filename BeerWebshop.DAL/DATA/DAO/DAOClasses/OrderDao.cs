@@ -20,7 +20,16 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             VALUES (@OrderId, @ProductId, @Quantity, @Total);";
 
 		private const string _getOrderByIdSql = @"
-			SELECT * FROM Orders WHERE Id = @Id;";
+			SELECT o.Id AS Id, o.CreatedAt, o.IsDelivered, o.CustomerId_FK AS CustomerId, o.IsDeleted AS OrderIsDeleted,
+			ol.OrderId, ol.ProductId, ol.Quantity, ol.Total AS OrderLineTotal,
+			p.Id AS ProductId, p.Name AS ProductName, p.CategoryId_FK AS CategoryId, p.BreweryId_FK AS BreweryId,
+			p.Price AS ProductPrice, p.Description AS ProductDescription, p.Stock AS ProductStock, p.Abv, 
+			p.RowVersion, p.ImageUrl, p.IsDeleted AS ProductIsDeleted
+			FROM Orders o
+			LEFT JOIN Orderlines ol ON o.Id = ol.OrderId
+			LEFT JOIN Products p ON ol.ProductId = p.Id
+			WHERE o.Id = @Id;";
+
 
 		private const string _deleteOrderByIdSql = @"
 			DELETE FROM Orders WHERE Id = @Id";
@@ -47,11 +56,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			try
 			{
 				var parameters = new { Id = id };
-				var order = await connection.QuerySingleOrDefaultAsync<Order>(_getOrderByIdSql, parameters);
+				var order = await connection.QueryAsync<Order, Product, OrderLine>(_getOrderByIdSql, parameters);
 
 				if (order == null)
 				{
-					return null; 
+					return null;
 				}
 
 				return order;
@@ -82,7 +91,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
 				return orderId;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				await transaction.RollbackAsync();
 				throw new Exception($"Error inserting order: {ex.Message}");

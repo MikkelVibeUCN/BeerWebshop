@@ -20,5 +20,5 @@ public interface IProductDAO
     Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
     Task<int> GetProductCountAsync(ProductQueryParameters parameters);
 
-    Task<bool> UpdateStockOptimisticAsync(int productId, int quantity, byte[] rowVersion);
+    Task<bool> UpdateStockAsync(int productId, int quantity);
 }

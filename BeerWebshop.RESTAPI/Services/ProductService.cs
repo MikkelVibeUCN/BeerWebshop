@@ -29,7 +29,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<bool> UpdateStockAsync(int productId, int quantity, byte[] rowVersion)
 		{
-			return await _productDAO.UpdateStockOptimisticAsync(productId, quantity, rowVersion);
+			return await _productDAO.UpdateStockAsync(productId, quantity);
 		}
 
 
