@@ -17,9 +17,11 @@ namespace BeerWebshop.Web
 			// Register API clients with the base URI
 			builder.Services.AddSingleton<IProductAPIClient>(new ProductAPIClient(uri));
 			builder.Services.AddSingleton<ICategoryAPIClient>(new CategoryAPIClient(uri));
+            builder.Services.AddSingleton<IOrderApiClient>(new OrderApiClient(uri));
 
-			// Register HttpContextAccessor for CookieService and other services
-			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            // Register HttpContextAccessor for CookieService and other services
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 			// Register application services
 			builder.Services.AddScoped<BeerService>();
@@ -29,7 +31,6 @@ namespace BeerWebshop.Web
 			builder.Services.AddScoped<OrderService>();
 
 			// Use a stub for the IOrderApiClient
-			builder.Services.AddSingleton<IOrderApiClient, OrderApiClient>();
 
 
 			var app = builder.Build();
