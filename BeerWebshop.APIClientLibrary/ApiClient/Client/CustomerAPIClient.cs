@@ -15,7 +15,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
         
         public async Task<int> CreateCustomer(CustomerDTO customer)
         {
-            var response = await _restClient.RequestAsync<int>(Method.Post, "customers", customer);
+            var response = await _restClient.RequestAsync<int>(Method.Post, "Account", customer);
 
             if (!response.IsSuccessful)
             {
