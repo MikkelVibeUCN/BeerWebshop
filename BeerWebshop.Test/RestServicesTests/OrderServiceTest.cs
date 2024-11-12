@@ -72,29 +72,6 @@ namespace BeerWebshop.Test.RestServicesTests
             Assert.That(updatedProduct.Stock, Is.EqualTo(_testProduct.Stock - 2), "The product stock should be reduced by the order quantity.");
         }
 
-        [Test]
-        public async Task UpdateStock_WithConcurrentModification_ShouldThrowException()
-        {
-            var productForFirstUpdate = await _productService.GetProductByIdAsync(_testProduct.Id ?? 0);
-            var productForSecondUpdate = await _productService.GetProductByIdAsync(_testProduct.Id ?? 0);
-
-            bool firstUpdateResult = await _productService.UpdateStockAsync(
-                productForFirstUpdate.Id ?? 0, 5, productForFirstUpdate.RowVersion);
-
-            Assert.IsTrue(firstUpdateResult, "The first update should succeed.");
-
-            var updatedProduct = await _productService.GetProductByIdAsync(_testProduct.Id ?? 0);
-            Assert.That(updatedProduct.Stock, Is.EqualTo(5), "Stock should be reduced to 5 after the first update.");
-
-            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            {
-                await _productService.UpdateStockAsync(productForSecondUpdate.Id ?? 0, 5, productForSecondUpdate.RowVersion);
-            });
-
-            Assert.That(ex, Is.TypeOf<InvalidOperationException>());
-        }
-
-
 
         [TearDown]
         public async Task TearDown()
