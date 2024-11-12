@@ -190,7 +190,7 @@ public class ProductDAO : IProductDAO
             FROM Products p
             INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
             INNER JOIN Categories c ON p.CategoryId_FK = c.Id
-            WHERE p.IsDeleted = 0");
+            WHERE p.IsDeleted = 0 AND p.Stock > 0");
 
         if (!string.IsNullOrEmpty(parameters.Category))
         {
