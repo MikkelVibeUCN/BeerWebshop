@@ -18,7 +18,6 @@ public static class MappingHelper
 			OrderLines = (await Task.WhenAll(dto.OrderLines.Select(async dtoOrderLine =>
 				new OrderLine
 				{
-					ProductId = dtoOrderLine.Product.Id,
 					Quantity = dtoOrderLine.Quantity,
 					Product = await MapToEntity(dtoOrderLine.Product, categoryService, breweryService, productService)
 				}))).ToList()
@@ -30,7 +29,6 @@ public static class MappingHelper
 		var product = await productService.GetProductByIdAsync(dto.Product.Id);
 		return new OrderLine
 		{
-			ProductId = dto.Product.Id,
 			Quantity = dto.Quantity,
 			Product = product!
 		};
@@ -93,6 +91,7 @@ public static class MappingHelper
 
 		return new Product
 		{
+			Id = productDTO.Id,
 			Name = productDTO.Name,
 			Category = category,
 			Brewery = brewery,

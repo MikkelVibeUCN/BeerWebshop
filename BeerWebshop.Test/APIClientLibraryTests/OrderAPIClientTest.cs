@@ -60,15 +60,41 @@ public class OrderApiClientTests
 
 	}
 
-
-
-
 	[Test]
 	public async Task GetOrderFromId_WhenOrderExists_ShouldReturnOrder()
 	{
-		Assume.That(_createdOrderId, Is.GreaterThan(0), "A valid order ID must be created in the SaveOrder test.");
+        var productDto = new ProductDTO
+        {
+            Name = "Integration Test Product",
+            CategoryName = "IPA",
+            BreweryName = "Overtone",
+            Price = 10.0f,
+            Description = "Sample product for integration test",
+            Stock = 20,
+            ABV = 5.5f,
+            ImageUrl = "http://example.com/image.jpg"
+        };
 
-		var orderDto = await _orderApiClient.GetOrderFromId(_createdOrderId);
+        _createdProductId = await _productApiClient.CreateProductAsync(productDto);
+
+        var retrievedProductDto = await _productApiClient.GetProductFromIdAsync(_createdProductId);
+
+        OrderDTO orderDto = new OrderDTO(DateTime.Now, new List<OrderLineDTO>(), null, false);
+
+        var orderline = new OrderLineDTO
+        {
+
+            Product = retrievedProductDto,
+            Quantity = 2
+        };
+
+        orderDto.OrderLines.Add(orderline);
+
+        _createdOrderId = await _orderApiClient.SaveOrder(orderDto);
+
+        Assume.That(_createdOrderId, Is.GreaterThan(0), "A valid order ID must be created in the SaveOrder test.");
+
+		orderDto = await _orderApiClient.GetOrderFromId(_createdOrderId);
 
 		Assert.IsNotNull(orderDto, $"Order with ID {_createdOrderId} should exist.");
 		Assert.That(orderDto.Id, Is.EqualTo(_createdOrderId), "Returned Order ID should match the created order ID.");

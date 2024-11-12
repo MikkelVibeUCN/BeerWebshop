@@ -50,7 +50,6 @@ public class OrderDaoTest
 		// OrderLine, der indeholder referencen til produkt og antal
 		var orderLine = new OrderLine
 		{
-			ProductId = _productId,
 			Quantity = quantity,
 			Product = product
 		};

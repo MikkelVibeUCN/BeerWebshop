@@ -24,8 +24,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 			_breweryService = breweryService;
 		}
 
-		[HttpGet("{id}")]
-		public async Task<ActionResult<OrderDTO>> GetOrderByIdAsync(int id)
+		[HttpGet("{id}", Name = "GetOrderId")]
+		public async Task<ActionResult> GetOrderByIdAsync(int id)
 		{
 			var order = await _orderService.GetOrderByIdAsync(id);
 			if (order == null)
@@ -36,7 +36,7 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<int>> CreateOrderAsync([FromBody] OrderDTO dto)
+		public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
 		{
 			var order = await MappingHelper.MapOrderDTOToEntity(dto, _categoryService, _breweryService, _productService);
 			var orderId = await _orderService.CreateOrderAsync(order);
@@ -44,7 +44,7 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<ActionResult<bool>> DeleteOrderAsync(int id)
+		public async Task<ActionResult> DeleteOrderAsync(int id)
 		{
 			var order = await _orderService.GetOrderByIdAsync(id);
 			if (order == null)

@@ -28,7 +28,7 @@ namespace BeerWebshop.RESTAPI.Services
 			{
 				foreach (var orderLine in order.OrderLines)
 				{
-					var product = await _productService.GetProductByIdAsync(orderLine.ProductId);
+					var product = await _productService.GetProductByIdAsync((int)orderLine.Product.Id);
 					if (product == null || product.IsDeleted || product.Stock < orderLine.Quantity)
 					{
 						throw new InvalidOperationException("Invalid product details or insufficient stock.");
@@ -36,7 +36,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 					orderLine.Product = product;
 
-					var success = await _productService.UpdateStockAsync(orderLine.ProductId, orderLine.Quantity, product.RowVersion);
+					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity, product.RowVersion);
 					if (!success)
 					{
 						throw new InvalidOperationException("The product stock was modified by another transaction.");

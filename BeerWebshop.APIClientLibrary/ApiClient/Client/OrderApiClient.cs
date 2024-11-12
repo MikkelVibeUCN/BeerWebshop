@@ -8,21 +8,28 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 		private RestClient _restClient;
 		public OrderApiClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
-		public Task<OrderDTO?> GetOrderFromId(int id)
+		public async Task<OrderDTO?> GetOrderFromId(int id)
 		{
-			throw new NotImplementedException();
+			var response = await _restClient.RequestAsync<OrderDTO>(Method.Get, $"Orders/{id}");
+
+
+            if(!response.IsSuccessful)
+			{
+				throw new Exception("Error getting order");
+			}
+			return response.Data;
 		}
 
 		public async Task<int> SaveOrder(OrderDTO Order)
 		{
-			var response = await _restClient.RequestAsync<OrderDTO>(Method.Post, "Orders", Order);
+			var response = await _restClient.RequestAsync<int>(Method.Post, "Orders", Order);
 
 			if (!response.IsSuccessful)
 			{
 				throw new Exception($"Error creating Order. Message was {response.Content}");
 			}
 
-			return response.Data.Id;
+			return response.Data;
 		}
 
 		public async Task<bool> DeleteOrder(int id)

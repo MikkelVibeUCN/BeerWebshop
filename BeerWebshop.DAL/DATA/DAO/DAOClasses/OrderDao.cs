@@ -11,9 +11,9 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 		private readonly string _connectionString;
 
 		private const string _insertOrderSql = @"
-            INSERT INTO Orders (CreatedAt, IsDelivered, CustomerId_FK, IsDeleted)
+            INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted)
             OUTPUT INSERTED.Id 
-            VALUES (@CreatedAt, @IsDelivered, @CustomerId_FK, @IsDeleted);";
+            VALUES (@CreatedAt, @IsDelivered, @IsDeleted);";
 
 		private const string _insertOrderLineSql = @"
             INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total)
@@ -95,7 +95,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			{
 				CreatedAt = order.Date,
 				IsDelivered = order.IsDelivered,
-				CustomerId_FK = order.CustomerId_FK,
 				IsDeleted = order.IsDeleted
 			};
 
@@ -107,7 +106,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			var parameters = new
 			{
 				OrderId = orderId,
-				ProductId = orderLine.ProductId,
+				ProductId = orderLine.Product.Id,
 				Quantity = orderLine.Quantity,
 				Total = orderLine.SubTotal
 			};
