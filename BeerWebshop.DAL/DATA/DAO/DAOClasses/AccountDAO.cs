@@ -73,11 +73,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 FirstName = firstName,
                 LastName = lastName,
                 Phone = customer.Phone,
-                PasswordHash = customer.Password, // Ensure this is a hashed password
+                PasswordHash = customer.Password,
                 Street = customer.Address,
-                StreetNumber = "69", // Add real value if available
-                ApartmentNumber = "x", // Add real value if available
-                Postalcode = customer.ZipCode, // Using postal code as a unique identifier
+                StreetNumber = "69",
+                ApartmentNumber = "x", 
+                Postalcode = customer.ZipCode, 
                 Age = customer.Age,
                 Email = customer.Email
             };
