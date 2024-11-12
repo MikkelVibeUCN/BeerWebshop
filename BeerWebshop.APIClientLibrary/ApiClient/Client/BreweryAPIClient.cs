@@ -1,10 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client;
 
@@ -27,7 +22,9 @@ public class BreweryAPIClient : IBreweryAPIClient
 	public async Task<bool> DeleteAsync(int id)
 	{
 		var response = await _restClient.RequestAsync<bool>(Method.Delete, $"Breweries/{id}");
-		if (!response.IsSuccessful) {
+
+		if (!response.IsSuccessful)
+		{
 			throw new Exception($"Error deleting Brewery. Message was {response.Content}");
 		}
 		return response.Data;

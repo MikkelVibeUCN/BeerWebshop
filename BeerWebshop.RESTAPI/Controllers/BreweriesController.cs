@@ -1,9 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
-using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Tools;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers;
@@ -35,6 +32,17 @@ public class BreweriesController : ControllerBase
 		breweryDTO.Id = breweryId;
 
 		return Ok(breweryId);
+	}
+
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteBreweryAsync(int id)
+	{
+		var result = await _breweryDao.DeleteAsync(id);
+		if (!result)
+		{
+			return NotFound($"Brewery with id {id} was not found.");
+		}
+		return Ok();
 	}
 
 }
