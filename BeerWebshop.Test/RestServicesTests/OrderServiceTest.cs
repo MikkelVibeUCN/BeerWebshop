@@ -27,8 +27,8 @@ namespace BeerWebshop.Test.RestServicesTests
             _productService = new ProductService(productDao);
             _orderService = new OrderService(orderDao, _productService, _connectionString);
 
-            var testBrewery = await breweryDao.GetBreweryById(537);
-            var testCategory = await categoryDao.GetCategoryById(548);
+            var testBrewery = await breweryDao.GetBreweryById(15);
+            var testCategory = await categoryDao.GetCategoryById(15);
 
             _testProduct = new Product
             {
@@ -47,7 +47,7 @@ namespace BeerWebshop.Test.RestServicesTests
 
             _testOrder = new Order
             {
-                Date = DateTime.Now,
+                CreatedAt = DateTime.Now,
                 DeliveryAddress = "123 Test Ave",
                 IsDelivered = false,
                 OrderLines = new List<OrderLine>

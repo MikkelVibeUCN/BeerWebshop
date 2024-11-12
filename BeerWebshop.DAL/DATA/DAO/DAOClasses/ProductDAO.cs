@@ -10,27 +10,35 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
 public class ProductDAO : IProductDAO
 {
-    private const string _insertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
-                                            VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
-                                            SELECT CAST(SCOPE_IDENTITY() AS int);";
+    private const string InsertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
+        VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
+        SELECT CAST(SCOPE_IDENTITY() AS int);";
+    private const string GetByIdSql = @"
+                SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.Stock, p.Abv, p.RowVersion, p.IsDeleted, 
+                       c.Id as Id, c.Name AS Name, 
+                       b.Id as Id, b.Name AS Name
+                FROM Products p
+                INNER JOIN Categories c ON p.CategoryId_FK = c.Id
+                INNER JOIN Breweries b ON p.BreweryId_FK = b.Id                
+                WHERE p.IsDeleted = 0 AND p.Id = @Id";
 
-    private const string _getByIdSql = @"SELECT * FROM Products WHERE Id = @Id;";
+	private const string GetFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
+    private const string DeleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
+    private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
+	private const string UpdateStockSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
+	private const string BaseProductSql = @"
+        SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, 
+               c.Id AS CategoryId, c.Name AS Name, 
+               b.Id AS BreweryId, b.Name AS Name
+        FROM Products p
+        INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
+        INNER JOIN Categories c ON p.CategoryId_FK = c.Id
+        WHERE p.IsDeleted = 0 AND p.Stock > 0";
 
-    private const string _getFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
-
-    private const string _deleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
-
-    private const string _getAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
-
-	private const string _updateStockSql = @"
-											UPDATE PRODUCTS 
-											SET Stock = Stock - @Quantity 
-											WHERE Id = @ProductId";
-
-    //TODO Update til køb + inventory management.
+	//TODO Update til køb + inventory management.
 
 
-    private readonly string _connectionString;
+	private readonly string _connectionString;
 
     public ProductDAO(string connectionString)
     {
@@ -53,7 +61,7 @@ public class ProductDAO : IProductDAO
                 product.ImageUrl,
                 product.IsDeleted
             };
-            var newProductId = await connection.QuerySingleAsync<int>(_insertProductSql, parameters);
+            var newProductId = await connection.QuerySingleAsync<int>(InsertProductSql, parameters);
             return newProductId;
         }
         catch (Exception ex)
@@ -73,17 +81,8 @@ public class ProductDAO : IProductDAO
         {
             using var connection = new SqlConnection(_connectionString);
 
-            StringBuilder queryBuilder = new StringBuilder(@"
-                SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.Stock, p.Abv, p.RowVersion, p.IsDeleted, 
-                       c.Id as Id, c.Name AS Name, 
-                       b.Id as Id, b.Name AS Name
-                FROM Products p
-                INNER JOIN Categories c ON p.CategoryId_FK = c.Id
-                INNER JOIN Breweries b ON p.BreweryId_FK = b.Id                
-                WHERE p.IsDeleted = 0 AND p.Id = @Id");
-
             var result = await connection.QueryAsync<Product, Category, Brewery, Product>(
-                queryBuilder.ToString(),
+                GetByIdSql,
                 (product, category, brewery) =>
                 {
                     product.Category = category;
@@ -120,7 +119,7 @@ public class ProductDAO : IProductDAO
 			throw new InvalidOperationException("Insufficient stock.");
 		}
 
-		var rowsAffected = await connection.ExecuteAsync(_updateStockSql, parameters, transaction);
+		var rowsAffected = await connection.ExecuteAsync(UpdateStockSql, parameters, transaction);
         if(rowsAffected < 0) 
         {
 			transaction.Rollback();
@@ -138,7 +137,7 @@ public class ProductDAO : IProductDAO
 
             try
             {
-                return await connection.QueryAsync<string>(_getAllProductCategoriesSql);
+                return await connection.QueryAsync<string>(GetAllProductCategoriesSql);
             }
             catch (Exception ex)
             {
@@ -153,7 +152,7 @@ public class ProductDAO : IProductDAO
         try
         {
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<Product>(_getFromCategorySql, new { Category = category });
+            return await connection.QueryAsync<Product>(GetFromCategorySql, new { Category = category });
         }
         catch (Exception ex)
         {
@@ -167,7 +166,7 @@ public class ProductDAO : IProductDAO
         try
         {
             using var connection = new SqlConnection(_connectionString);
-            var rowsAffected = await connection.ExecuteAsync(_deleteByIdSql, new { Id = id });
+            var rowsAffected = await connection.ExecuteAsync(DeleteByIdSql, new { Id = id });
             return rowsAffected > 0;
         }
         catch (Exception ex)
@@ -183,14 +182,7 @@ public class ProductDAO : IProductDAO
     {
         IEnumerable<Product> products = new List<Product>();
 
-        StringBuilder queryBuilder = new StringBuilder(@"
-            SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, 
-                   c.Id AS CategoryId, c.Name AS Name, 
-                   b.Id AS BreweryId, b.Name AS Name
-            FROM Products p
-            INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
-            INNER JOIN Categories c ON p.CategoryId_FK = c.Id
-            WHERE p.IsDeleted = 0 AND p.Stock > 0");
+        StringBuilder queryBuilder = new StringBuilder(BaseProductSql);
 
         if (!string.IsNullOrEmpty(parameters.Category))
         {
