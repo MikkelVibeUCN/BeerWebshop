@@ -18,35 +18,18 @@ namespace BeerWebshop.Web.Controllers
 
         public IActionResult Index()
         {
-            ViewData["ShowAgeVerificationModal"] = !_ageVerifierService.HasUserConfirmedAge();
-
-            if (!_ageVerifierService.IsUserAbove18() && _ageVerifierService.HasUserConfirmedAge())
-            {
-                return RedirectToPage("www.google.com");
-            }
+            ViewData["ShowAgeVerificationModal"] = !_ageVerifierService.IsUserAbove18();
 
             return View();
         }
 
         [HttpPost]
-        public IActionResult ConfirmedAge()
+        public IActionResult ConfirmAge()
         {
-            _ageVerifierService.SetUserHasConfirmedAgeBool(true);
-            _ageVerifierService.SetUserAgeBool(true);
+            _ageVerifierService.SetUserAgeBool();
 
             return Ok();
         }
-
-        [HttpPost] 
-        public IActionResult DenyAge()
-        {
-            _ageVerifierService.SetUserHasConfirmedAgeBool(true);
-            _ageVerifierService.SetUserAgeBool(false);
-
-            return Ok();
-        }
-
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

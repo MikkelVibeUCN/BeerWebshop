@@ -11,12 +11,6 @@ namespace BeerWebshop.Web.Services
         {
             this._cookieService = cookieService;
         }
-        public bool HasUserConfirmedAge()
-        {
-            AgeCookie ageCookie = GetAgeCookie();
-            
-            return ageCookie.HasSelected;
-        }
 
         public AgeCookie GetAgeCookie()
         {
@@ -26,7 +20,6 @@ namespace BeerWebshop.Web.Services
             {
                 ageCookie = new AgeCookie()
                 {
-                    HasSelected = false,
                     IsOver18 = false
                 };
                 SaveCookie(ageCookie);
@@ -45,20 +38,11 @@ namespace BeerWebshop.Web.Services
             _cookieService.SaveCookie<AgeCookie>(ageCookie, _ageCookieKey);
         }
 
-        public void SetUserAgeBool(bool value)
+        public void SetUserAgeBool()
         {
             AgeCookie ageCookie = GetAgeCookie();
 
-            ageCookie.IsOver18 = value;
-
-            SaveCookie(ageCookie);
-        }
-
-        public void SetUserHasConfirmedAgeBool(bool value)
-        {
-            AgeCookie ageCookie = GetAgeCookie();
-
-            ageCookie.HasSelected = value;
+            ageCookie.IsOver18 = true;
 
             SaveCookie(ageCookie);
         }

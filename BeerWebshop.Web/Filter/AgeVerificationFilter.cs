@@ -16,7 +16,8 @@ namespace BeerWebshop.Web.Filter
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if(filterContext.Controller is HomeController) { return; }
-            if (!_ageVerifierService.HasUserConfirmedAge())
+
+            if (!_ageVerifierService.IsUserAbove18())
             {
                 filterContext.Result = new RedirectResult("/Home/Index");
             }
