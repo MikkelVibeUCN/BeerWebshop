@@ -53,7 +53,7 @@ public class AccountDaoTests
         var newCustomer = new Customer
         {
             Name = "Mads Stigers",
-            Address = "Sthomasgadsasae",
+            Address = "Sthomasgadsaass123123ae",
             ZipCode = "6969",
             City = "Test City",
             Email = "testuser@example.com",
@@ -74,7 +74,6 @@ public class AccountDaoTests
         // Assert
         Assert.That(customerId, Is.GreaterThan(0), "Customer ID should be greater than 0 indicating successful save.");
 
-        // Additional check to verify customer is in the database (optional)
         var savedCustomer = await _accountDAO.GetCustomerByIdAsync(customerId);
         Assert.IsNotNull(savedCustomer, "Saved customer should not be null.");
         Assert.That(firstName, Is.EqualTo("Mads"));
