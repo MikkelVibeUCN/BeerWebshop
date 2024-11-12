@@ -11,6 +11,7 @@ public class OrderApiClientTests
 
 	private string _baseUri = "https://localhost:7244/api/v1/";
 	private int _createdOrderId;
+	private int _createdProductId;
 
 	[SetUp]
 	public void SetUp()
@@ -36,9 +37,9 @@ public class OrderApiClientTests
 			ImageUrl = "http://example.com/image.jpg"
 		};
 
-		var createdProductId = await _productApiClient.CreateProductAsync(productDto);
+		_createdProductId = await _productApiClient.CreateProductAsync(productDto);
 
-		var retrievedProductDto = await _productApiClient.GetProductFromIdAsync(createdProductId);
+		var retrievedProductDto = await _productApiClient.GetProductFromIdAsync(_createdProductId);
 		Assert.IsNotNull(retrievedProductDto, "Product retrieval failed; product should not be null.");
 		Assert.AreEqual(productDto.Name, retrievedProductDto.Name, "Product names should match.");
 
@@ -57,7 +58,6 @@ public class OrderApiClientTests
 
 		Assert.That(_createdOrderId, Is.GreaterThan(0), "Order ID should be greater than 0 for a valid order with null CustomerDTO.");
 
-		await _productApiClient.DeleteProductByIdAsync(createdProductId);
 	}
 
 
@@ -80,6 +80,7 @@ public class OrderApiClientTests
 		if (_createdOrderId > 0)
 		{
 			await _orderApiClient.DeleteOrder(_createdOrderId);
+			await _productApiClient.DeleteProductByIdAsync(_createdProductId);
 		}
 	}
 }
