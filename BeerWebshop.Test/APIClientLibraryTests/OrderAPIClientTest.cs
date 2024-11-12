@@ -105,6 +105,7 @@ public class OrderApiClientTests
 		{
 			await _orderApiClient.DeleteOrder(_createdOrderId);
 			await _productApiClient.DeleteProductByIdAsync(_createdProductId);
+
 		}
 	}
 }
