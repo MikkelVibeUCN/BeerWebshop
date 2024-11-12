@@ -2,6 +2,7 @@
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ public class BreweriesController : ControllerBase
 		_breweryDao = breweryDao;
 	}
 
+
 	[HttpPost]
 	public async Task<IActionResult> CreateBreweryAsync([FromBody] BreweryDTO breweryDTO)
 	{
@@ -26,22 +28,13 @@ public class BreweriesController : ControllerBase
 			return BadRequest();
 		}
 
-		var product = MapToEntity(breweryDTO);
+		var brewery = MappingHelper.MapBreweryDTOToEntity(breweryDTO);
 
-		var productId = await _breweryDao.CreateBreweryAsync(product);
+		var breweryId = await _breweryDao.CreateBreweryAsync(brewery);
 
-		breweryDTO.Id = productId;
+		breweryDTO.Id = breweryId;
 
-		return Ok();
-	}
-
-	private Brewery MapToEntity(BreweryDTO breweryDTO)
-	{
-		return new Brewery
-		{
-			Name = breweryDTO.Name,
-			IsDeleted = false
-		};
+		return Ok(breweryId);
 	}
 
 }

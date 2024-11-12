@@ -35,10 +35,7 @@ namespace BeerWebshop.RESTAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateProductAsync([FromBody] ProductDTO Product)
 		{
-			if (Product == null)
-			{
-				return BadRequest("Product data is required.");
-			}
+			if (!ModelState.IsValid) return BadRequest();
 
 			var product = await MapToEntity(Product);
 

@@ -3,6 +3,7 @@ using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
+using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,22 +28,13 @@ public class CategoriesController : ControllerBase
 			return BadRequest("Category data is required.");
 		}
 
-		var category = MapToEntity(categoryDTO);
+		var category = MappingHelper.MapCategoryDTOToEntity(categoryDTO);
 
 		var categoryId = await _categoryService.CreateCategoryAsync(category);
 
 		categoryDTO.Id = categoryId;
 
 		return Ok();
-	}
-
-	private static Category MapToEntity(CategoryDTO categoryDTO)
-	{
-		return new Category
-		{
-			Name = categoryDTO.Name,
-			IsDeleted = false
-		};
 	}
 
 	[HttpGet]
@@ -57,4 +49,5 @@ public class CategoriesController : ControllerBase
 
         return Ok(categoryDTOs);
     }
+
 }
