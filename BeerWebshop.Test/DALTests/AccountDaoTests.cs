@@ -1,4 +1,5 @@
-﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.Entities;
 using Castle.Core.Resource;
 using Dapper;
@@ -17,6 +18,7 @@ public class AccountDaoTests
 {
     private AccountDAO _accountDAO;
     private int _testId = 1;
+    private List<int> _customersCreated = new List<int>();
     [SetUp]
     public async Task SetUpAsync()
     {
@@ -78,5 +80,19 @@ public class AccountDaoTests
         Assert.That(firstName, Is.EqualTo("Mads"));
         Assert.That(lastName, Is.EqualTo("Stigers"));
         Assert.That(savedCustomer.Email, Is.EqualTo("testuser@example.com"));
+    }
+
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        await DeleteAllCustomersMade();
+    }
+
+    private async Task DeleteAllCustomersMade()
+    {
+        foreach (var id in _customersCreated)
+        {
+            await _accountDAO.DeleteCustomerAsync(id);
+        }
     }
 }

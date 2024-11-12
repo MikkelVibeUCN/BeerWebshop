@@ -12,5 +12,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         Task<int> SaveCustomerAsync(Customer customer);
         Task<Customer?> GetCustomerByIdAsync(int id);
 
+        Task<bool> DeleteCustomerAsync(int id);
+
     }
 }

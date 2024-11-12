@@ -29,6 +29,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0);
 ";
 
+        private const string _deleteCustomerById = @" 
+    DELETE FROM Address WHERE Id = (SELECT AddressId_FK FROM Customers WHERE Id = @Id);
+
+    DELETE FROM Customers WHERE Id = @Id";
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
@@ -57,10 +61,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
+            // Deler navnet op i to variable som i databasen, og gemmer dem begge i name
             var nameParts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
             string firstName = nameParts.Length > 0 ? nameParts[0] : "";
             string lastName = nameParts.Length > 1
-                ? string.Join(" ", nameParts.Skip(1))  // Join remaining parts as LastName if available
+                ? string.Join(" ", nameParts.Skip(1))
                 : "";
 
             var parameters = new
@@ -79,5 +84,21 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             return await connection.QuerySingleAsync<int>(_saveCustomer, parameters);
         }
 
+        public async Task<bool> DeleteCustomerAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            try
+            {
+                var parameters = new { Id = id };
+                await connection.ExecuteAsync(_deleteCustomerById, parameters);
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception($"Error deleting the customer: {ex.Message}");
+            }
+        }
     }
 }
