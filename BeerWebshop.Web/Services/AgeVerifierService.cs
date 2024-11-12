@@ -50,6 +50,8 @@ namespace BeerWebshop.Web.Services
             AgeCookie ageCookie = GetAgeCookie();
 
             ageCookie.IsOver18 = value;
+
+            SaveCookie(ageCookie);
         }
 
         public void SetUserHasConfirmedAgeBool(bool value)
@@ -57,6 +59,8 @@ namespace BeerWebshop.Web.Services
             AgeCookie ageCookie = GetAgeCookie();
 
             ageCookie.HasSelected = value;
+
+            SaveCookie(ageCookie);
         }
     }
 }
