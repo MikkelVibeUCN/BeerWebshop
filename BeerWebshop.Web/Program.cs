@@ -1,4 +1,5 @@
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
+using BeerWebshop.Web.Filter;
 using BeerWebshop.Web.Services;
 
 
