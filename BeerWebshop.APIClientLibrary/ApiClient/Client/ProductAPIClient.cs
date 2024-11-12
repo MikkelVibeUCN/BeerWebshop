@@ -25,6 +25,10 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
+        public Task EditProductAsync(ProductDTO product)
+        {
+            throw new NotImplementedException();
+        }
 
 		public async Task<IEnumerable<string>> GetProductCategoriesAsync()
 		{
@@ -84,11 +88,6 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 				throw new Exception($"Error deleting ProductDTO. Message was {response.Content}");
 			}
 			return response.Data;
-		}
-
-		public Task EditProductAsync(ProductDTO product)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

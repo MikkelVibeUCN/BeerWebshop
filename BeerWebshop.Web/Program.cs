@@ -1,4 +1,5 @@
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
+using BeerWebshop.Web.Filter;
 using BeerWebshop.Web.Services;
 
 
@@ -20,7 +21,6 @@ namespace BeerWebshop.Web
             builder.Services.AddSingleton<IOrderApiClient>(new OrderApiClient(uri));
 
 
-            // Register HttpContextAccessor for CookieService and other services
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 			// Register application services
@@ -29,9 +29,15 @@ namespace BeerWebshop.Web
 			builder.Services.AddScoped<ICartService, CartService>();
 			builder.Services.AddScoped<CheckoutService>();
 			builder.Services.AddScoped<OrderService>();
+            builder.Services.AddScoped<AgeVerificationFilter>();
+            builder.Services.AddScoped<AgeVerifierService>();
 
-			// Use a stub for the IOrderApiClient
+            // Use a stub for the IOrderApiClient
 
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.AddService<AgeVerificationFilter>();
+            });
 
 			var app = builder.Build();
 
