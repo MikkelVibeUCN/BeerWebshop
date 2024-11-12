@@ -27,9 +27,12 @@ namespace BeerWebshop.Web
 			builder.Services.AddScoped<ICartService, CartService>();
 			builder.Services.AddScoped<CheckoutService>();
 			builder.Services.AddScoped<OrderService>();
+			// Add this line to register AgeVerifierService
+			builder.Services.AddScoped<AgeVerifierService>();
+
 
 			// Use a stub for the IOrderApiClient
-			builder.Services.AddSingleton<IOrderApiClient, OrderApiClient>();
+			builder.Services.AddScoped<IOrderApiClient>(provider => new OrderApiClient(uri));
 
 
 			var app = builder.Build();
