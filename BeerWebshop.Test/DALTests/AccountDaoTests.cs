@@ -53,7 +53,7 @@ public class AccountDaoTests
         var newCustomer = new Customer
         {
             Name = "Mads Stigers",
-            Address = "Sthomasgadsaass123123ae",
+            Address = "herborthomas",
             ZipCode = "6969",
             City = "Test City",
             Email = "testuser@example.com",

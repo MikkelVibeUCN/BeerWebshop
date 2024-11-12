@@ -1,4 +1,4 @@
-﻿using BeerWebshop.DAL.DATA.Entities;
+﻿    using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -18,8 +18,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string _getCustomerById = @"SELECT * FROM Customers WHERE Id = @Id;";
         private const string _saveCustomer = @"
     DECLARE @AddressId INT;
+    DECLARE @CustomerId INT;
     INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK)
-    OUTPUT INSERTED.Id
     VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode);
 
     SET @AddressId = SCOPE_IDENTITY();
@@ -28,7 +28,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     OUTPUT INSERTED.Id
     VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0);
     SELECT @CustomerId = SCOPE_IDENTITY();
-    SELECT @CustomerId;
 ";
 
         private const string _deleteCustomerById = @" 
@@ -79,7 +78,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 Street = customer.Address,
                 StreetNumber = "",
                 ApartmentNumber = "", 
-                Postalcode = customer.ZipCode, 
+                Postalcode = int.Parse(customer.ZipCode), 
                 Age = customer.Age,
                 Email = customer.Email
             };
