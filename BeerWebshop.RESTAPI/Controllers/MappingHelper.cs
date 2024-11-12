@@ -11,7 +11,7 @@ public static class MappingHelper
 
 		return new Order
 		{
-			Date = dto.Date,
+			CreatedAt = dto.Date,
 			DeliveryAddress = dto.CustomerDTO?.Address,
 			IsDelivered = dto.IsDelivered,
 			CustomerId_FK = dto.CustomerDTO?.Id,
@@ -40,7 +40,7 @@ public static class MappingHelper
 		return new OrderDTO
 		{
 			Id = order.Id ?? 0,
-			Date = order.Date,
+			Date = order.CreatedAt,
 			IsDelivered = order.IsDelivered,
 			OrderLines = order.OrderLines != null
 				? order.OrderLines.Select(MapOrderLineEntityToDTO).ToList()

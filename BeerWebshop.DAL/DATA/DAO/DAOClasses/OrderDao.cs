@@ -120,7 +120,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 		{
 			var parameters = new
 			{
-				CreatedAt = order.Date,
+				CreatedAt = order.CreatedAt,
 				IsDelivered = order.IsDelivered,
 				IsDeleted = order.IsDeleted
 			};
