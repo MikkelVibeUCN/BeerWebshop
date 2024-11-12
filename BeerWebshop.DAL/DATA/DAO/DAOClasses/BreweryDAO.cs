@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.DAL.DATA.Entities;
 using System.Data.SqlClient;
 using Dapper;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 

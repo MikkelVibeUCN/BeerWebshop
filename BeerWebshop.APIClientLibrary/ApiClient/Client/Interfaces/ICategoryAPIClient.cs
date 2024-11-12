@@ -1,6 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
-namespace BeerWebshop.APIClientLibrary.ApiClient.Client;
+namespace BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 
 public interface ICategoryAPIClient
 {

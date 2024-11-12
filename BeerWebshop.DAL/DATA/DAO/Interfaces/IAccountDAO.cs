@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
+namespace BeerWebshop.DAL.DATA.DAO.Interfaces
 {
     public interface IAccountDAO
     {

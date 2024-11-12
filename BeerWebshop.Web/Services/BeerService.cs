@@ -1,5 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary;
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
+using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.Web.Services

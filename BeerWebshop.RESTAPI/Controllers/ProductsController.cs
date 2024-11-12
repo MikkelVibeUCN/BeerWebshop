@@ -1,6 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,27 +22,40 @@ namespace BeerWebshop.RESTAPI.Controllers
 		[HttpGet("{id}", Name = "GetProductById")]
 		public async Task<IActionResult> GetByIdAsync(int id)
 		{
-			var result = await _productService.GetProductByIdAsync(id);
-			if (result == null)
+			try
 			{
-				return NotFound($"Product with id {id} was not found.");
+				var productDTO = await _productService.GetProductByIdAsync(id);
+				if (productDTO == null)
+				{
+					return NotFound($"Product with id {id} was not found.");
+				}
+
+				return Ok(productDTO);
 			}
-			var product = MapToDTO(result);
-			return Ok(product);
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateProductAsync([FromBody] ProductDTO Product)
+		public async Task<IActionResult> CreateProductAsync([FromBody] ProductDTO productDTO)
 		{
 			if (!ModelState.IsValid) return BadRequest();
 
-			var product = await MapToEntity(Product);
+			try
+			{
+				var productId = await _productService.CreateProductAsync(productDTO);
 
-			var productId = await _productService.CreateProductAsync(product);
+				productDTO.Id = productId;
 
-			Product.Id = productId;
+				return CreatedAtRoute("GetProductById", new { id = productId }, productId);
+			}
+			catch (Exception ex)
+			{
 
-			return CreatedAtRoute("GetProductById", new { id = productId }, productId);
+				return StatusCode(500, ex.Message);
+			}
 		}
 
 		[HttpDelete("{id}")]
@@ -57,66 +69,13 @@ namespace BeerWebshop.RESTAPI.Controllers
 			return Ok();
 		}
 
-		private ProductDTO MapToDTO(Product product)
-		{
-			return new ProductDTO
-			{
-				Id = product.Id ?? 0,
-				Name = product.Name,
-				BreweryName = product.Brewery?.Name,
-				Price = product.Price,
-				Description = product.Description,
-				Stock = product.Stock,
-				ABV = product.Abv,
-				CategoryName = product.Category?.Name,
-				ImageUrl = product.ImageUrl
-			};
-		}
-
-		private async Task<Product> MapToEntity(ProductDTO product)
-		{
-			int? categoryId = await _categoryService.GetCategoryIdByName(product.CategoryName);
-			if (categoryId == null) throw new Exception("Category not found");
-
-			Category? category = await _categoryService.GetCategoryById((int)categoryId);
-			if (category == null) throw new Exception("Category not found");
-
-			int? breweryId = await _breweryService.GetBreweryIdByName(product.BreweryName);
-			if (breweryId == null) throw new Exception("Brewery not found");
-
-			Brewery? brewery = await _breweryService.GetBreweryById((int)breweryId);
-			if (brewery == null) throw new Exception("Brewery not found");
-
-
-			return new Product
-			{
-				Name = product.Name,
-				Category = category,
-				Brewery = brewery,
-				Price = product.Price,
-				Description = product.Description,
-				Stock = product.Stock,
-				Abv = product.ABV,
-				ImageUrl = product.ImageUrl,
-				IsDeleted = false
-			};
-		}
-
 		[HttpGet]
 		public async Task<IActionResult> GetProducts([FromBody] ProductQueryParameters parameters)
 		{
 			try
 			{
-				var result = await _productService.GetProducts(parameters);
-
-				List<ProductDTO> products = new List<ProductDTO>();
-				foreach (var product in result)
-				{
-					products.Add(MapToDTO(product));
-				}
-
-				return Ok(products);
-
+				var productDTOs = await _productService.GetProductsAsync(parameters);
+				return Ok(productDTOs);
 			}
 			catch (Exception e)
 			{

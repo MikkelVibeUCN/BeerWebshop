@@ -1,130 +1,118 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.Entities;
-using BeerWebshop.RESTAPI.Services;
 
 namespace BeerWebshop.RESTAPI.Tools;
 
 public static class MappingHelper
 {
-    public static async Task<Order> MapOrderDTOToEntity(OrderDTO dto, CategoryService categoryService, BreweryService breweryService, ProductService productService)
-    {
+	public static Order MapOrderDTOToEntity(OrderDTO dto, List<OrderLine> orderLines)
+	{
+		return new Order
+		{
+			CreatedAt = dto.Date,
+			DeliveryAddress = dto.CustomerDTO?.Address,
+			IsDelivered = dto.IsDelivered,
+			CustomerId_FK = dto.CustomerDTO?.Id,
+			OrderLines = orderLines
+		};
+	}
 
-        return new Order
-        {
-            CreatedAt = dto.Date,
-            DeliveryAddress = dto.CustomerDTO?.Address,
-            IsDelivered = dto.IsDelivered,
-            CustomerId_FK = dto.CustomerDTO?.Id,
-            OrderLines = (await Task.WhenAll(dto.OrderLines.Select(async dtoOrderLine =>
-                new OrderLine
-                {
-                    Quantity = dtoOrderLine.Quantity,
-                    Product = await MapToEntity(dtoOrderLine.Product, categoryService, breweryService, productService)
-                }))).ToList()
-        };
-    }
-
-    private static async Task<OrderLine> MapOrderLineDtoToEntity(OrderLineDTO dto, CategoryService categoryService, BreweryService breweryService, ProductService productService)
-    {
-        var product = await productService.GetProductByIdAsync(dto.Product.Id);
-        return new OrderLine
-        {
-            Quantity = dto.Quantity,
-            Product = product!
-        };
-    }
+	public static OrderLine MapOrderLineDtoToEntity(OrderLineDTO dto, Product product)
+	{
+		return new OrderLine
+		{
+			Quantity = dto.Quantity,
+			Product = product
+		};
+	}
 
 
-    public static OrderDTO MapOrderEntityToDTO(Order order)
-    {
-        return new OrderDTO
-        {
-            Id = order.Id ?? 0,
-            Date = order.CreatedAt,
-            IsDelivered = order.IsDelivered,
-            OrderLines = order.OrderLines != null
-                ? order.OrderLines.Select(MapOrderLineEntityToDTO).ToList()
-                : new List<OrderLineDTO>(),
-            CustomerDTO = order.CustomerId_FK.HasValue ? new CustomerDTO
-            {
-                Id = order.CustomerId_FK.Value,
-                Address = order.DeliveryAddress
-            } : null
-        };
-    }
+	public static OrderDTO MapOrderEntityToDTO(Order order)
+	{
+		return new OrderDTO
+		{
+			Id = order.Id ?? 0,
+			Date = order.CreatedAt,
+			IsDelivered = order.IsDelivered,
+			OrderLines = order.OrderLines != null
+				? order.OrderLines.Select(MapOrderLineEntityToDTO).ToList()
+				: new List<OrderLineDTO>(),
+			CustomerDTO = order.CustomerId_FK.HasValue ? new CustomerDTO
+			{
+				Id = order.CustomerId_FK.Value,
+				Address = order.DeliveryAddress
+			} : null
+		};
+	}
 
-    private static OrderLineDTO MapOrderLineEntityToDTO(OrderLine entity)
-    {
-        return new OrderLineDTO
-        {
-            Quantity = entity.Quantity,
-            Product = MapToDTO(entity.Product)
-        };
-    }
+	public static OrderLineDTO MapOrderLineEntityToDTO(OrderLine entity)
+	{
+		return new OrderLineDTO
+		{
+			Quantity = entity.Quantity,
+			Product = MapProductEntityToDTO(entity.Product)
+		};
+	}
 
 
-    private static ProductDTO MapToDTO(Product product)
-    {
-        return new ProductDTO
-        {
-            Id = product.Id ?? 0,
-            Name = product.Name,
-            BreweryName = product.Brewery?.Name!,
-            Price = product.Price,
-            Description = product.Description,
-            Stock = product.Stock,
-            ABV = product.Abv,
-            CategoryName = product.Category?.Name!,
-            ImageUrl = product.ImageUrl!
-        };
-    }
+	public static ProductDTO MapProductEntityToDTO(Product product)
+	{
+		return new ProductDTO
+		{
+			Id = product.Id ?? 0,
+			Name = product.Name,
+			BreweryName = product.Brewery?.Name!,
+			Price = product.Price,
+			Description = product.Description,
+			Stock = product.Stock,
+			ABV = product.Abv,
+			CategoryName = product.Category?.Name!,
+			ImageUrl = product.ImageUrl!
+		};
+	}
 
-    public static async Task<Product> MapProductDTOToEntity(ProductDTO productDTO, CategoryService categoryService, BreweryService breweryService, ProductService productService)
-    {
-        int? categoryId = await categoryService.GetCategoryIdByName(productDTO.CategoryName);
-        if (categoryId == null) throw new Exception("Category not found");
+	public static Product MapProductDTOToEntity(ProductDTO productDTO, Category category, Brewery brewery)
+	{
+		return new Product
+		{
+			Id = productDTO.Id,
+			Name = productDTO.Name,
+			Category = category,
+			Brewery = brewery,
+			Price = productDTO.Price,
+			Description = productDTO.Description,
+			Stock = productDTO.Stock,
+			Abv = productDTO.ABV,
+			ImageUrl = productDTO.ImageUrl,
+			IsDeleted = false
+		};
+	}
 
-        Category? category = await categoryService.GetCategoryById((int)categoryId);
-        if (category == null) throw new Exception("Category not found");
+	public static Category MapCategoryDTOToEntity(CategoryDTO categoryDTO)
+	{
+		return new Category
+		{
+			Name = categoryDTO.Name,
+			IsDeleted = false
+		};
+	}
 
-        int? breweryId = await breweryService.GetBreweryIdByName(productDTO.BreweryName);
-        if (breweryId == null) throw new Exception("Brewery not found");
+	public static Brewery MapBreweryDTOToEntity(BreweryDTO breweryDTO)
+	{
 
-        Brewery? brewery = await breweryService.GetBreweryById((int)breweryId);
-        if (brewery == null) throw new Exception("Brewery not found");
+		return new Brewery
+		{
+			Name = breweryDTO.Name,
+			IsDeleted = false
+		};
+	}
 
-        return new Product
-        {
-            Id = productDTO.Id,
-            Name = productDTO.Name,
-            Category = category,
-            Brewery = brewery,
-            Price = productDTO.Price,
-            Description = productDTO.Description,
-            Stock = productDTO.Stock,
-            Abv = productDTO.ABV,
-            ImageUrl = productDTO.ImageUrl,
-            IsDeleted = false
-        };
-    }
-
-    public static Category MapCategoryDTOToEntity(CategoryDTO categoryDTO)
-    {
-        return new Category
-        {
-            Name = categoryDTO.Name,
-            IsDeleted = false
-        };
-    }
-
-    public static Brewery MapBreweryDTOToEntity(BreweryDTO breweryDTO)
-    {
-
-        return new Brewery
-        {
-            Name = breweryDTO.Name,
-            IsDeleted = false
-        };
-    }
-
+	public static BreweryDTO MapBreweryEntityToDTO(Brewery brewery)
+	{
+		return new BreweryDTO
+		{
+			Id = brewery.Id,
+			Name = brewery.Name
+		};
+	}
 }

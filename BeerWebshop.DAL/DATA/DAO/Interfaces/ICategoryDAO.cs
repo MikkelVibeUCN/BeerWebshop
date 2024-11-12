@@ -1,7 +1,6 @@
 ﻿using BeerWebshop.DAL.DATA.Entities;
-using System.Data.SqlClient;
 
-namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
+namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 
 public interface ICategoryDAO
 {

@@ -1,4 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.Client;
+using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using System;
 using System.Collections.Generic;

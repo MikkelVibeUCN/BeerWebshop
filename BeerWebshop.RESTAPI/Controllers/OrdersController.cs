@@ -1,14 +1,11 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.RESTAPI.Services;
-using BeerWebshop.DAL.DATA.Entities;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System.Linq;
 using BeerWebshop.RESTAPI.Tools;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers
 {
-    [Route("api/v1/[controller]")]
+	[Route("api/v1/[controller]")]
 	[ApiController]
 	public class OrdersController : ControllerBase
 	{
@@ -28,31 +25,59 @@ namespace BeerWebshop.RESTAPI.Controllers
 		[HttpGet("{id}", Name = "GetOrderId")]
 		public async Task<ActionResult> GetOrderByIdAsync(int id)
 		{
-			var order = await _orderService.GetOrderByIdAsync(id);
-			if (order == null)
-				return NotFound();
+			try
+			{
+				var order = await _orderService.GetOrderByIdAsync(id);
+				if (order == null)
+					return NotFound();
 
-			var orderDTO = MappingHelper.MapOrderEntityToDTO(order);
-			return Ok(orderDTO);
+				var orderDTO = MappingHelper.MapOrderEntityToDTO(order);
+				return Ok(orderDTO);
+			}
+			catch (Exception ex)
+			{
+
+				return StatusCode(statusCode: 500, ex.Message);
+			}
 		}
 
+		//New
 		[HttpPost]
 		public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
 		{
-			var order = await MappingHelper.MapOrderDTOToEntity(dto, _categoryService, _breweryService, _productService);
-			var orderId = await _orderService.CreateOrderAsync(order);
-			return Ok(orderId);
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			try
+			{
+				var orderId = await _orderService.CreateOrderFromDTOAsync(dto);
+				return Ok(orderId);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<ActionResult> DeleteOrderAsync(int id)
 		{
-			var order = await _orderService.GetOrderByIdAsync(id);
-			if (order == null)
-				return NotFound();
+			try
+			{
+				var order = await _orderService.GetOrderByIdAsync(id);
+				if (order == null)
+					return NotFound();
 
-			await _orderService.DeleteOrderByIdAsync(id);
-			return Ok(true);
+				await _orderService.DeleteOrderByIdAsync(id);
+				return Ok(true);
+			}
+			catch (Exception ex)
+			{
+
+				return StatusCode(500, ex.Message);
+			}
 		}
 	}
 }

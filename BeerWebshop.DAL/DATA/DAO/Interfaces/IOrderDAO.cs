@@ -1,6 +1,6 @@
 ﻿using BeerWebshop.DAL.DATA.Entities;
 
-namespace BeerWebshop.DAL.DATA.DAO.Interface;
+namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 
 public interface IOrderDAO
 {

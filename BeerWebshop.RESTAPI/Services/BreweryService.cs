@@ -1,4 +1,4 @@
-﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
+﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 
 namespace BeerWebshop.RESTAPI.Services
@@ -10,7 +10,10 @@ namespace BeerWebshop.RESTAPI.Services
 		{
 			_breweryDAO = breweryDAO;
 		}
-
+		public async Task<int> CreateBreweryAsync(Brewery brewery)
+		{
+			return await _breweryDAO.CreateBreweryAsync(brewery);
+		}
 		public async Task<int?> GetBreweryIdByName(string name)
 		{
 			return await _breweryDAO.GetBreweryIdByName(name);

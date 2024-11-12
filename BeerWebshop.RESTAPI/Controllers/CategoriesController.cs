@@ -1,10 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
-using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers;
@@ -17,37 +13,51 @@ public class CategoriesController : ControllerBase
 
 	public CategoriesController(CategoryService categoryService)
 	{
-        _categoryService = categoryService;
-    }
+		_categoryService = categoryService;
+	}
 
 	[HttpPost]
 	public async Task<IActionResult> CreateCategoryAsync([FromBody] CategoryDTO categoryDTO)
 	{
-		if (categoryDTO == null)
+		if (!ModelState.IsValid)
 		{
 			return BadRequest("Category data is required.");
 		}
 
-		var category = MappingHelper.MapCategoryDTOToEntity(categoryDTO);
+		try
+		{
+			var category = MappingHelper.MapCategoryDTOToEntity(categoryDTO);
 
-		var categoryId = await _categoryService.CreateCategoryAsync(category);
+			var categoryId = await _categoryService.CreateCategoryAsync(category);
 
-		categoryDTO.Id = categoryId;
+			categoryDTO.Id = categoryId;
 
-		return Ok();
+			return Ok();
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, ex.Message);
+		}
 	}
 
 	[HttpGet]
-    public async Task<IActionResult> GetAllCategoriesAsync()
-    {
-        var categories = await _categoryService.GetAlLCategories();
-        var categoryDTOs = categories.Select(category => new CategoryDTO
-        {
-            Id = category.Id,
-            Name = category.Name
-        }).ToList();
+	public async Task<IActionResult> GetAllCategoriesAsync()
+	{
+		try
+		{
+			var categories = await _categoryService.GetAlLCategories();
+			var categoryDTOs = categories.Select(category => new CategoryDTO
+			{
+				Id = category.Id,
+				Name = category.Name
+			}).ToList();
 
-        return Ok(categoryDTOs);
-    }
+			return Ok(categoryDTOs);
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, ex.Message);
+		}
+	}
 
 }

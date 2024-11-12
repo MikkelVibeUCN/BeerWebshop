@@ -1,6 +1,7 @@
-﻿using BeerWebshop.DAL.DATA.Entities;
-using System.Data.SqlClient;
+﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
+using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
+using System.Data.SqlClient;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
@@ -8,9 +9,6 @@ public class CategoryDAO : ICategoryDAO
 {
 	private const string InsertCategorySql = @"INSERT INTO Categories (Name, IsDeleted) VALUES (@Name, @IsDeleted) SELECT CAST(SCOPE_IDENTITY() AS int);";
 	private const string DeleteCategorySql = @"DELETE FROM Categories WHERE Id = @Id";
-	private const string GetAllCategoriesSql = @"SELECT * FROM Categories WHERE IsDeleted = 0";
-	private const string GetCategoryIdByNameSql = @"SELECT Id FROM Categories WHERE Name = @Name AND IsDeleted = 0";
-	private const string GetCategoryByIdSql = @"SELECT * FROM Categories WHERE Id = @Id";
 
 	private readonly string _connectionString;
 
@@ -30,7 +28,6 @@ public class CategoryDAO : ICategoryDAO
 				category.Name,
 				category.IsDeleted
 			};
-
 			var newCategoryId = await connection.QuerySingleAsync<int>(InsertCategorySql, parameters);
 			return newCategoryId;
 		}
@@ -43,7 +40,6 @@ public class CategoryDAO : ICategoryDAO
 	public async Task<bool> DeleteAsync(int id)
 	{
 		using var connection = new SqlConnection(_connectionString);
-
 		try
 		{
 			var parameters = new
@@ -59,47 +55,42 @@ public class CategoryDAO : ICategoryDAO
 			throw new Exception($"Error deleting category: {ex.Message}", ex);
 		}
 	}
-    public async Task<IEnumerable<Category>> GetAllCategories()
-    {
-        using var connection = new SqlConnection(_connectionString);
+	public async Task<IEnumerable<Category>> GetAllCategories()
+	{
+		using var connection = new SqlConnection(_connectionString);
+		var categories = await connection.QueryAsync<Category>("SELECT * FROM Categories WHERE IsDeleted = 0");
+		return categories;
+	}
+
+	public async Task<int?> GetCategoryIdByName(string categoryName)
+	{
+		const string sql = "SELECT Id FROM Categories WHERE Name = @Name AND IsDeleted = 0";
+		using var connection = new SqlConnection(_connectionString);
+		return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = categoryName });
+	}
+
+	public async Task<Category?> GetCategoryByIdAsync(int categoryId)
+	{
+		const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
+		using var connection = new SqlConnection(_connectionString);
+		return await connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = categoryId });
+	}
+
+	public async Task<Category?> GetCategoryById(int id)
+	{
+		const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
+		using var connection = new SqlConnection(_connectionString);
 
 		try
 		{
-			var categories = await connection.QueryAsync<Category>(GetAllCategoriesSql);
-			return categories;
+			await connection.OpenAsync();
+			return await connection.QuerySingleOrDefaultAsync<Category>(sql, new { Id = id });
 		}
 		catch (Exception ex)
 		{
-
-			throw new Exception($"Error retrieving categories: {ex.Message}", ex);
+			throw new Exception("An error occurred while retrieving the category.", ex);
 		}
-    }
+	}
 
-    public async Task<int?> GetCategoryIdByName(string categoryName)
-    {
-        using var connection = new SqlConnection(_connectionString);
 
-		try
-		{
-			return await connection.QuerySingleOrDefaultAsync<int?>(GetCategoryIdByNameSql, new { Name = categoryName });
-		}
-		catch (Exception ex)
-		{
-			throw new Exception($"Error retrieving category {categoryName}: {ex.Message}", ex);
-		}
-    }
-
-    public async Task<Category?> GetCategoryByIdAsync(int categoryId)
-    {
-        using var connection = new SqlConnection(_connectionString);
-
-		try
-		{
-			return await connection.QuerySingleOrDefaultAsync<Category>(GetCategoryByIdSql, new { Id = categoryId });
-		}
-		catch (Exception ex)
-		{
-			throw new Exception($"Error retrieving category with Id: {categoryId}: {ex.Message}", ex);
-		}
-    }
 }

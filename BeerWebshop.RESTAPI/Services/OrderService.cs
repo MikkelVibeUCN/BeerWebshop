@@ -1,5 +1,7 @@
-﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.Tools;
 using System.Data.SqlClient;
 
 namespace BeerWebshop.RESTAPI.Services
@@ -18,6 +20,29 @@ namespace BeerWebshop.RESTAPI.Services
 			_productService = productService;
 		}
 
+		//new
+		public async Task<int> CreateOrderFromDTOAsync(OrderDTO dto)
+		{
+			var orderLines = new List<OrderLine>();
+
+			foreach (var dtoOrderLine in dto.OrderLines)
+			{
+				var product = await _productService.GetProductEntityByIdAsync((int)dtoOrderLine.Product.Id);
+				if (product == null || product.IsDeleted || product.Stock < dtoOrderLine.Quantity)
+				{
+					throw new InvalidOperationException("Invalid product details or insufficient stock.");
+				}
+
+				var orderLine = MappingHelper.MapOrderLineDtoToEntity(dtoOrderLine, product);
+				orderLines.Add(orderLine);
+			}
+
+			var order = MappingHelper.MapOrderDTOToEntity(dto, orderLines);
+
+			return await CreateOrderAsync(order);
+		}
+
+		//new
 		public async Task<int> CreateOrderAsync(Order order)
 		{
 			using var connection = new SqlConnection(_connectionString);
@@ -28,15 +53,7 @@ namespace BeerWebshop.RESTAPI.Services
 			{
 				foreach (var orderLine in order.OrderLines)
 				{
-					var product = await _productService.GetProductByIdAsync((int)orderLine.Product.Id);
-					if (product == null || product.IsDeleted || product.Stock < orderLine.Quantity)
-					{
-						throw new InvalidOperationException("Invalid product details or insufficient stock.");
-					}
-
-					orderLine.Product = product;
-
-					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity, product.RowVersion);
+					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity, orderLine.Product.RowVersion);
 					if (!success)
 					{
 						throw new InvalidOperationException("The product stock was modified by another transaction.");
@@ -44,9 +61,7 @@ namespace BeerWebshop.RESTAPI.Services
 				}
 
 				var orderId = await _orderDao.InsertCompleteOrderAsync(order);
-
 				await transaction.CommitAsync();
-
 				return orderId;
 			}
 			catch (Exception ex)

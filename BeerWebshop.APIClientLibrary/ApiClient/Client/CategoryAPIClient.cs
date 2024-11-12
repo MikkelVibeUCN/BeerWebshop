@@ -1,4 +1,5 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using RestSharp;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client;

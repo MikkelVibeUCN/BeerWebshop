@@ -1,4 +1,5 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using RestSharp;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
@@ -12,8 +13,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 		{
 			var response = await _restClient.RequestAsync<OrderDTO>(Method.Get, $"Orders/{id}");
 
-
-            if(!response.IsSuccessful)
+			if (!response.IsSuccessful)
 			{
 				throw new Exception("Error getting order");
 			}

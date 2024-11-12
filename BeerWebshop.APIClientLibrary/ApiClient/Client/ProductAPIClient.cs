@@ -1,34 +1,30 @@
-﻿using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using RestSharp;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
-    public class ProductAPIClient : IProductAPIClient
-    {
-        private RestClient _restClient;
-        public ProductAPIClient(string uri) => _restClient = new RestClient(new Uri(uri));
+	public class ProductAPIClient : IProductAPIClient
+	{
+		private RestClient _restClient;
+		public ProductAPIClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
-        public async Task<int> CreateProductAsync(ProductDTO ProductDTO)
-        {
-            var response = await _restClient.RequestAsync<int>(Method.Post, "Products", ProductDTO);
+		public async Task<int> CreateProductAsync(ProductDTO ProductDTO)
+		{
+			var response = await _restClient.RequestAsync<int>(Method.Post, "Products", ProductDTO);
 
-            if (!response.IsSuccessful)
-            {
-                throw new Exception($"Error creating ProductDTO. Message was {response.Content}");
-            }
+			if (!response.IsSuccessful)
+			{
+				throw new Exception($"Error creating ProductDTO. Message was {response.Content}");
+			}
 
-            return response.Data;
-        }
+			return response.Data;
+		}
 
-        public Task EditProductAsync(ProductDTO product)
-        {
-            throw new NotImplementedException();
-        }
+		public Task EditProductAsync(ProductDTO product)
+		{
+			throw new NotImplementedException();
+		}
 
 		public async Task<IEnumerable<string>> GetProductCategoriesAsync()
 		{
@@ -44,27 +40,27 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 
 
 		public async Task<int> GetProductCountAsync(ProductQueryParameters parameters)
-        {
-            var response = await _restClient.RequestAsync<int>(Method.Get, "products/count", parameters);
+		{
+			var response = await _restClient.RequestAsync<int>(Method.Get, "products/count", parameters);
 
-            if(!response.IsSuccessful)
-            {
-                throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
-            }
-            return response.Data;
+			if (!response.IsSuccessful)
+			{
+				throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
+			}
+			return response.Data;
 
-        }
+		}
 
-        public async Task<ProductDTO?> GetProductFromIdAsync(int id)
-        {
-            var response = await _restClient.RequestAsync<ProductDTO>(Method.Get, $"Products/{id}");
+		public async Task<ProductDTO?> GetProductFromIdAsync(int id)
+		{
+			var response = await _restClient.RequestAsync<ProductDTO>(Method.Get, $"Products/{id}");
 
-            if (!response.IsSuccessful)
-            {
-                throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
-            }
-            return response.Data;
-        }
+			if (!response.IsSuccessful)
+			{
+				throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
+			}
+			return response.Data;
+		}
 
 		public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)
 		{
