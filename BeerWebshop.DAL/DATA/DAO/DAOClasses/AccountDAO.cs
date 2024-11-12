@@ -27,6 +27,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
     OUTPUT INSERTED.Id
     VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0);
+    SELECT @CustomerId = SCOPE_IDENTITY();
+    SELECT @CustomerId;
 ";
 
         private const string _deleteCustomerById = @" 
@@ -75,8 +77,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 Phone = customer.Phone,
                 PasswordHash = customer.Password,
                 Street = customer.Address,
-                StreetNumber = "69",
-                ApartmentNumber = "x", 
+                StreetNumber = "",
+                ApartmentNumber = "", 
                 Postalcode = customer.ZipCode, 
                 Age = customer.Age,
                 Email = customer.Email
