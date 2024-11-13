@@ -22,7 +22,7 @@ public class AccountDaoTests
     [SetUp]
     public async Task SetUpAsync()
     {
-        _accountDAO = new AccountDAO(Configuration.ConnectionString());
+        _accountDAO = new AccountDAO(DBConnection.ConnectionString());
         var customer = new Customer()
         {
             Id = 1,

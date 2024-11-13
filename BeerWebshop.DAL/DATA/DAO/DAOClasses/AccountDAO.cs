@@ -1,4 +1,5 @@
 ﻿using BeerWebshop.DAL.BCrypt;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
 using Microsoft.Extensions.Configuration;
@@ -87,8 +88,9 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             try
             {
-                var parameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCodeId };
-                int? id = 
+                //var parameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCodeId };
+                //int? id = 
+                throw new NotImplementedException();
             }
             catch (Exception)
             {

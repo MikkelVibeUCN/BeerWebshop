@@ -21,7 +21,7 @@ namespace BeerWebshop.Web
             // Register API clients with the base URI
             builder.Services.AddSingleton<IProductAPIClient>(new ProductAPIClient(uri));
             builder.Services.AddSingleton<ICategoryAPIClient>(new CategoryAPIClient(uri));
-            builder.Services.AddSingleton<ICustomerAPIClient>(new CustomerAPIClient(uri));
+            builder.Services.AddSingleton<IAccountAPIClient>(new CustomerAPIClient(uri));
 
             // Register HttpContextAccessor for CookieService and other services
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

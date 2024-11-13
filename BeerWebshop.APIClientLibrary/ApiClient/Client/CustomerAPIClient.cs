@@ -1,4 +1,5 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -8,26 +9,8 @@ using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
-    public class CustomerAPIClient : ICustomerAPIClient
+    public class CustomerAPIClient : BaseClient<CustomerDTO>, IAccountAPIClient
     {
-        private readonly RestClient _restClient;
-        public CustomerAPIClient(string uri) => _restClient = new RestClient(new Uri(uri));
-        
-        public async Task<int> CreateCustomer(CustomerDTO customer)
-        {
-            var response = await _restClient.RequestAsync<int>(Method.Post, "Account", customer);
-
-            if (!response.IsSuccessful)
-            {
-                throw new Exception($"Error creating Customer. Message was {response.Content}");
-            }
-
-            return response.Data;
-        }
-
-        public Task<CustomerDTO?> GetCustomer(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public CustomerAPIClient(string uri) : base(uri, "Accounts") { }
     }
 }
