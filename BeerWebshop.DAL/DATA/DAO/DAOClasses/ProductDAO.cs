@@ -100,7 +100,12 @@ public class ProductDAO : IProductDAO
 				product.RowVersion
 			});
 
-			return rowsAffected > 0;
+			if(rowsAffected == 0)
+			{
+				throw new Exception("Concurrency conflict detected.");
+			}
+
+			return true;
 		}
 		catch (Exception ex)
 		{

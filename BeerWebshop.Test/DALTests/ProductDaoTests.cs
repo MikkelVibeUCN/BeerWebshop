@@ -223,6 +223,31 @@ public class ProductDaoTests
 	[Test]
 	public async Task UpdateAsync_WhenRowVersionIsModified_ShouldThrowConcurrencyException()
 	{
+		var createdProductId = await _productDao.CreateAsync(new Product
+		{
+			Name = $"Original Name{_testSuffix}",
+			Category = new Category { Id = _createdCategoryId },
+			Brewery = new Brewery { Id = _createdBreweryId },
+			Price = 50f,
+			Description = "Original description.",
+			Stock = 10,
+			Abv = 5.0f,
+			ImageUrl = "http://example.com/original.jpg",
+			IsDeleted = false
+		});
+		_productIdsCreated.Add(createdProductId);
+
+		var product = await _productDao.GetByIdAsync(createdProductId);
+		var originalRowVersion = product.RowVersion;
+
+		product.Name = $"Updated Name{_testSuffix}";
+		product.Price = 60f;
+		await _productDao.UpdateAsync(product);
+
+		product.RowVersion = originalRowVersion;
+
+		var ex = Assert.ThrowsAsync<Exception>(async () => await _productDao.UpdateAsync(product));
+		Assert.That(ex.Message, Is.EqualTo("Error updating product: Concurrency conflict detected."));
 	}
 
 
