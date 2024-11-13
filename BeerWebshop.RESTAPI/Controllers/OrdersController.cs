@@ -41,7 +41,6 @@ namespace BeerWebshop.RESTAPI.Controllers
 			}
 		}
 
-		//New
 		[HttpPost]
 		public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
 		{

@@ -51,7 +51,7 @@ namespace BeerWebshop.RESTAPI.Services
 			return products.Select(MappingHelper.MapProductEntityToDTO).ToList();
 		}
 
-		public async Task<bool> UpdateStockAsync(int productId, int quantity, byte[] rowVersion)
+		public async Task<bool> UpdateStockAsync(int productId, int quantity)
 		{
 			return await _productDAO.UpdateStockAsync(productId, quantity);
 		}
@@ -61,6 +61,19 @@ namespace BeerWebshop.RESTAPI.Services
 			return await _productDAO.GetProductCountAsync(parameters);
 		}
 
+		public async Task<bool> UpdateProductAsync(ProductDTO productDTO)
+		{
+			var categoryId = await _categoryService.GetCategoryIdByName(productDTO.CategoryName);
+			var category = await _categoryService.GetCategoryById(categoryId!.Value);
+			var breweryId = await _breweryService.GetBreweryIdByName(productDTO.BreweryName);
+			var brewery = await _breweryService.GetBreweryById(breweryId!.Value);
+
+			var product = MappingHelper.MapProductDTOToEntity(productDTO, category, brewery);
+
+			return await _productDAO.UpdateAsync(product);
+
+
+		}
 
 
 		public async Task<bool> DeleteProductByIdAsync(int id)

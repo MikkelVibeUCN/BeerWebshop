@@ -67,7 +67,8 @@ public static class MappingHelper
 			Stock = product.Stock,
 			ABV = product.Abv,
 			CategoryName = product.Category?.Name!,
-			ImageUrl = product.ImageUrl!
+			ImageUrl = product.ImageUrl!,
+			RowVersion = Convert.ToBase64String(product.RowVersion)
 		};
 	}
 
@@ -84,7 +85,8 @@ public static class MappingHelper
 			Stock = productDTO.Stock,
 			Abv = productDTO.ABV,
 			ImageUrl = productDTO.ImageUrl,
-			IsDeleted = false
+			IsDeleted = false,
+			RowVersion = Convert.FromBase64String(productDTO.RowVersion)
 		};
 	}
 

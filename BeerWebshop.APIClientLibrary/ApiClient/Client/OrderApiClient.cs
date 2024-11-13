@@ -20,9 +20,9 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 			return response.Data;
 		}
 
-		public async Task<int> SaveOrder(OrderDTO Order)
+		public async Task<int> SaveOrder(OrderDTO orderDTO)
 		{
-			var response = await _restClient.RequestAsync<int>(Method.Post, "Orders", Order);
+			var response = await _restClient.RequestAsync<int>(Method.Post, "Orders/", orderDTO);
 
 			if (!response.IsSuccessful)
 			{
