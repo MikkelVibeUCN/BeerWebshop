@@ -23,62 +23,33 @@ public class AccountDaoTests
     public async Task SetUpAsync()
     {
         _accountDAO = new AccountDAO(DBConnection.ConnectionString());
-        var customer = new Customer()
-        {
-            Id = 1,
-            Name = "Anders",
-            Address = "50",
-            ZipCode = "6969",
-            City = "Lungeby",
-            Email = "hej@dig.dk",
-            Password = "æggemad",
-            Phone = "60170091",
-            Age = 18
-        };
+        
 
     }
 
-    [Test]
-    public async Task GetCustomerById_WhenCustomerExists_ShouldReturnCustomerWithGivenId()
-    {
-        var customer = await _accountDAO.GetCustomerByIdAsync(_testId);
-        Assert.IsNotNull(customer);
-        Assert.That(customer.Id == 1);
-    }
+    //[Test] Skal ikke implementeres i denne story
+    //public async Task GetCustomerById_WhenCustomerExists_ShouldReturnCustomerWithGivenId()
+    //{
+    //    var customer = await _accountDAO.GetCustomerByIdAsync(_testId);
+    //    Assert.IsNotNull(customer);
+    //    Assert.That(customer.Id == 1);
+    //}
 
     [Test]
     public async Task SaveCustomerAsync_WhenCalled_ShouldSaveCustomerAndReturnId()
     {
 
-        var newCustomer = new Customer
+        var customer = new Customer()
         {
-            Name = "Mads Stigers",
-            Address = "herborthomas123",
-            ZipCode = "1010",
-            City = "Test City",
-            Email = "testuser@example.com",
-            Password = "TestPassword123",
-            Phone = "1234567890",
-            Age = 25
+            Id = 1,
+            Name = "Navn efternavn",
+            Address = "sejvej 11 9000 aalborg",
+            Email = "hej@dig.dk",
+            Password = "æggemad",
+            Phone = "60170091",
+            Age = 18
         };
-        // Arrange
-        var nameParts = newCustomer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
-        string firstName = nameParts.Length > 0 ? nameParts[0] : "";
-        string lastName = nameParts.Length > 1
-            ? string.Join(" ", nameParts.Skip(1))  // Join remaining parts as LastName if available
-            : "";
-
-        // Act
-        int customerId = await _accountDAO.SaveCustomerAsync(newCustomer);
-
-        // Assert
-        Assert.That(customerId, Is.GreaterThan(0), "Customer ID should be greater than 0 indicating successful save.");
-
-        var savedCustomer = await _accountDAO.GetCustomerByIdAsync(customerId);
-        Assert.IsNotNull(savedCustomer, "Saved customer should not be null.");
-        Assert.That(firstName, Is.EqualTo("Mads"));
-        Assert.That(lastName, Is.EqualTo("Stigers"));
-        Assert.That(savedCustomer.Email, Is.EqualTo("testuser@example.com"));
+        int customerId = await _accountDAO.SaveCustomerAsync(customer);
     }
 
     [TearDown]

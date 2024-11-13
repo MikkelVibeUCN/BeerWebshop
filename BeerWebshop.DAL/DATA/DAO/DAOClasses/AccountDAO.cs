@@ -10,7 +10,26 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     {
         private readonly string _connectionString;
 
-        private const string _getCustomerById = @"SELECT * FROM Customers WHERE Id = @Id;";
+        private const string _getCustomerById = @"SELECT 
+                c.id AS Id, 
+                CONCAT(c.firstName, ' ', c.lastName) AS Name, 
+                c.phone as Phone, 
+                c.passwordHash AS Password, 
+                c.isDeleted AS IsDeleted, 
+                c.age AS Age, 
+                c.email AS Email,
+                -- Combine address components into a single string in SQL
+                CONCAT(a.street, ' ', a.streetNumber, 
+                       CASE WHEN a.apartmentNumber IS NOT NULL THEN CONCAT(' ', a.apartmentNumber) ELSE '' END, 
+                       ', ', p.city, ' ', p.postalCode) AS Address
+                FROM 
+                    Customers c
+                JOIN 
+                    Address a ON c.addressId_FK = a.id
+                JOIN 
+                    PostalCode p ON a.postalCode_FK = p.postalCode
+                WHERE 
+                    c.id = @Id";
         private const string _saveCustomer = @"
             INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
             VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0) SELECT CAST(SCOPE_IDENTITY() AS int);";
@@ -76,7 +95,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 var addressParameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCode };
-                
+
                 var id = await connection.QuerySingleAsync<int>(_createAddress, addressParameters);
 
                 return id;
@@ -100,7 +119,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
 
                 throw;
-            }   
+            }
         }
 
         public async Task<bool> GetZipExistsAsync(int zipCode)
@@ -131,8 +150,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 var parameters = new { Id = id };
-                var customer = await connection.QuerySingleOrDefaultAsync<Customer>(_getCustomerById, parameters);
-                return customer;
+                return await connection.QuerySingleOrDefaultAsync<Customer>(_getCustomerById, parameters);
             }
             catch (Exception ex)
             {

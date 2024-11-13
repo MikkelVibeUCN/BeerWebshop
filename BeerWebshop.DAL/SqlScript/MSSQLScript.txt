@@ -16,25 +16,26 @@ CREATE TABLE Postalcode (
 );
 
 CREATE TABLE Address (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY IDENTITY,
     Street NVARCHAR(255) NOT NULL,
     StreetNumber NVARCHAR(50) NOT NULL,
-    ApartmentNumber NVARCHAR(50),
-    Postalcode_FK INT,
+    ApartmentNumber NVARCHAR(50) NOT NULL,
+    Postalcode_FK INT NOT NULL,
     UNIQUE (Street, StreetNumber, ApartmentNumber, Postalcode_FK),
     FOREIGN KEY (Postalcode_FK) REFERENCES Postalcode (Postalcode)
 );
 
 CREATE TABLE Customers (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY IDENTITY,
     FirstName NVARCHAR(255) NOT NULL,
     LastName NVARCHAR(255) NOT NULL,
-    Phone NVARCHAR(50),
+    Phone NVARCHAR(50) NOT NULL,
     PasswordHash NVARCHAR(255) NOT NULL,
-    AddressId_FK INT,
-    IsDeleted BIT DEFAULT 0,
+    AddressId_FK INT NOT NULL,
+    IsDeleted BIT NOT NULL DEFAULT 0,
     FOREIGN KEY (AddressId_FK) REFERENCES Address (Id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE Products (
     Id INT PRIMARY KEY,
