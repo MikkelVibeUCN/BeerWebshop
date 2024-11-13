@@ -1,8 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
-using BeerWebshop.DAL.DATA.Entities;
-using Microsoft.AspNetCore.Http;
+using BeerWebshop.RESTAPI.Services;
+using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers;
@@ -11,37 +9,51 @@ namespace BeerWebshop.RESTAPI.Controllers;
 [ApiController]
 public class BreweriesController : ControllerBase
 {
-	private readonly IBreweryDAO _breweryDao;
+	private readonly BreweryService _breweryService;
 
-	public BreweriesController(IBreweryDAO breweryDao)
+	public BreweriesController(BreweryService breweryService)
 	{
-		_breweryDao = breweryDao;
+		_breweryService = breweryService;
 	}
 
 	[HttpPost]
 	public async Task<IActionResult> CreateBreweryAsync([FromBody] BreweryDTO breweryDTO)
 	{
-		if (breweryDTO == null)
+		if (!ModelState.IsValid)
 		{
-			return BadRequest();
+			return BadRequest(ModelState);
 		}
 
-		var product = MapToEntity(breweryDTO);
-
-		var productId = await _breweryDao.CreateBreweryAsync(product);
-
-		breweryDTO.Id = productId;
-
-		return Ok();
-	}
-
-	private Brewery MapToEntity(BreweryDTO breweryDTO)
-	{
-		return new Brewery
+		try
 		{
-			Name = breweryDTO.Name,
-			IsDeleted = false
-		};
+			var brewery = MappingHelper.MapBreweryDTOToEntity(breweryDTO);
+			var breweryId = await _breweryService.CreateBreweryAsync(brewery);
+			breweryDTO.Id = breweryId;
+			return Ok(breweryId);
+
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, ex.Message);
+		}
 	}
 
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteBreweryAsync(int id)
+	{
+		try
+		{
+			var result = await _breweryService.DeleteBreweryAsync(id);
+			if (!result)
+			{
+				return NotFound($"Brewery with id {id} was not found.");
+			}
+			return Ok();
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, ex.Message);
+		}
+	}
 }
+

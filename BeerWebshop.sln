@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeerWebshop.RESTAPI", "Beer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeerWebshop.APIClientLibrary", "BeerWebshop.APIClientLibrary\BeerWebshop.APIClientLibrary.csproj", "{DD7C7DA0-3AB8-47E4-B59A-3CFF793EC357}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerWebshop.DAL", "BeerWebshop.DAL\BeerWebshop.DAL.csproj", "{FF2B8186-BC9F-4C1D-990D-DCCE5C6AC09A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeerWebshop.DAL", "BeerWebshop.DAL\BeerWebshop.DAL.csproj", "{FF2B8186-BC9F-4C1D-990D-DCCE5C6AC09A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

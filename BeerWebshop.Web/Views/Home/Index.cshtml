@@ -1,8 +1,65 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Hjem";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<!-- Modal HTML -->
+<div class="modal fade" id="ageVerificationModal" tabindex="-1" role="dialog" aria-labelledby="ageVerificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ageVerificationModalLabel">Er du fyldt 18 år?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success" id="confirmAgeBtn">Ja</button>
+                    <button type="button" class="btn btn-danger" id="rejectAgeBtn">Nej</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add JavaScript to control modal visibility -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Check if the modal should be shown based on the ViewData flag
+            var showModal = '@ViewData["ShowAgeVerificationModal"]';
+
+            if (showModal === 'True') {
+                $('#ageVerificationModal').modal('show');
+            }
+
+            // When the user confirms age (Yes button)
+            $('#confirmAgeBtn').on('click', function () {
+                // Send AJAX request to the ConfirmedAge action
+                $.ajax({
+                    url: '@Url.Action("ConfirmAge", "Home")', // Action URL
+                    type: 'POST', // POST request
+                    success: function (response) {
+                        // On success, hide the modal
+                        $('#ageVerificationModal').modal('hide');
+                    },
+                    error: function () {
+                        alert('An error occurred while confirming age.');
+                    }
+                });
+            });
+
+            $('#rejectAgeBtn').on('click', function () {
+                // Redirect the user to google.com
+                window.location.href = "https://www.google.com";
+            });
+
+
+        });
+    </script>
+}

@@ -33,5 +33,5 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
         [MinAge(18)]
         public int Age { get; set; }
 
-    }
+	}
 }

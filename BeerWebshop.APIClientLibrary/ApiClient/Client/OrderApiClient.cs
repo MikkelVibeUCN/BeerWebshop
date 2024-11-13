@@ -1,33 +1,11 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
-    public class OrderApiClient : IOrderApiClient
-    {
-        private RestClient _restClient;
-        public OrderApiClient(string uri) => _restClient = new RestClient(new Uri(uri));
-
-        public Task<OrderDTO?> GetOrderFromId(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<int> SaveOrder(OrderDTO Order)
-        {   
-            var response = await _restClient.RequestAsync<OrderDTO>(Method.Post, "Orders", Order);
-
-            if (!response.IsSuccessful)
-            {
-                throw new Exception($"Error creating ProductDTO. Message was {response.Content}");
-            }
-
-            return response.Data.Id;
-        }
-    }
+	public class OrderApiClient : BaseClient<OrderDTO>, IOrderApiClient
+	{
+		public OrderApiClient(string uri) : base(uri, "Orders") { }
+	}
 }
