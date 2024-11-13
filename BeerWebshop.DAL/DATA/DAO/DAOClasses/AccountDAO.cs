@@ -105,9 +105,25 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             }
         }
 
-        public Task<bool> UpdatePasswordAsync(string email, string oldPassword, string newPassword)
+        public async Task<bool> UpdatePasswordAsync(string email, string oldPassword, string newPassword)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var query = "UPDATE Customer SET PasswordHash=@NewPasswordHash WHERE Id=@Id;";
+                var id = await LoginAsync(email, oldPassword);
+                if (id > 0)
+                {
+                    var newPasswordHash = BCryptTool.HashPassword(newPassword);
+                    using var connection = new SqlConnection(_connectionString);
+                    await connection.OpenAsync();
+                    return await connection.ExecuteAsync(query, new { Id = id, NewPasswordHash = newPasswordHash }) > 0;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating account: '{ex.Message}'.", ex);
+            }
         }
 
         public async Task<int> LoginAsync(string email, string password)
