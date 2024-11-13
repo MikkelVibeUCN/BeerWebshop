@@ -21,10 +21,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string _getCustomerById = @"SELECT * FROM Customers WHERE Id = @Id;";
         private const string _saveCustomer = @"
             INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
-            OUTPUT INSERTED.Id
-            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0);
-            SELECT @CustomerId = SCOPE_IDENTITY();
-        ";
+            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0) OUTPUT INSERTED.Id;";
 
         private const string _createAddress = @"INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK)
             VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode) OUTPUT INSERTED.Id";
@@ -50,7 +47,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             // Initialize variables
             string street = parts[0];
             string streetNumber = parts[1];
-            string apartmentNumber = null;
+            string? apartmentNumber = null;
             int zipCode;
             string city;
 
@@ -88,16 +85,16 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             try
             {
-                //var parameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCodeId };
-                //int? id = 
-                throw new NotImplementedException();
+                var addressParameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCodeId };
+                
+                int? id = await connection.QuerySingleOrDefaultAsync<int?>(_createAddress, addressParameters);
+
+                return id;
             }
             catch (Exception)
             {
-
                 throw;
             }
-
         }
 
         public async Task<int?> CreateZip(int zipCode, string city, SqlConnection connection)
@@ -155,21 +152,24 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // Split name into first and last names as required by the database
-            var nameParts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
-            string firstName = nameParts.Length > 0 ? nameParts[0] : "";
-            string lastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : "";
+            int? addressId = await CreateAddress(customer, connection);
+
+            if (addressId == null)
+            {
+                throw new Exception("Error creating address");
+            }
+            var parts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            string firstName = parts[0];
+            string lastName = parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "";
 
             var parameters = new
             {
                 FirstName = firstName,
                 LastName = lastName,
                 Phone = customer.Phone,
-                PasswordHash = customer.Password,
-                Street = customer.Address,
-                StreetNumber = "",
-                ApartmentNumber = "",
-                Postalcode = int.Parse(customer.ZipCode),
+                PasswordHash = BCryptTool.HashPassword(customer.Password),
+                AddressId = addressId,
                 Age = customer.Age,
                 Email = customer.Email
             };
