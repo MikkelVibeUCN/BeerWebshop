@@ -27,8 +27,9 @@ namespace BeerWebshop.RESTAPI
 					provider.GetRequiredService<CategoryService>(),
 					provider.GetRequiredService<BreweryService>()
 				));
+			builder.Services.AddScoped<AccountService>(provider => new AccountService(provider.GetRequiredService<IAccountDAO>()));
 
-			builder.Services.AddScoped<OrderService>(provider =>
+            builder.Services.AddScoped<OrderService>(provider =>
 			{
 				return new OrderService(
 					provider.GetRequiredService<IOrderDAO>(),

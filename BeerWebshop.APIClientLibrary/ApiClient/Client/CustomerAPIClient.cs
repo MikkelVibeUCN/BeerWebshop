@@ -11,6 +11,6 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
     public class CustomerAPIClient : BaseClient<CustomerDTO>, IAccountAPIClient
     {
-        public CustomerAPIClient(string uri) : base(uri, "Accounts") { }
+        public CustomerAPIClient(string uri) : base(uri, "Account") { }
     }
 }
