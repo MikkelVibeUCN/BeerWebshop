@@ -67,7 +67,8 @@ public static class MappingHelper
 			Stock = product.Stock,
 			ABV = product.Abv,
 			CategoryName = product.Category?.Name!,
-			ImageUrl = product.ImageUrl!
+			ImageUrl = product.ImageUrl!,
+			RowVersion = product.RowVersion
 		};
 	}
 

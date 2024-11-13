@@ -298,4 +298,9 @@ public class ProductDAO : IProductDAO
 		}
 		return productCount;
 	}
+
+    public Task<bool> EditAsync(Product product, byte[]? rowVersion)
+    {
+        throw new NotImplementedException();
+    }
 }

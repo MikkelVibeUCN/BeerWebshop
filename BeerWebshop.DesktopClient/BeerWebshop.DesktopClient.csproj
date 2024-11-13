@@ -13,4 +13,8 @@
     <Folder Include="Windows\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BeerWebshop.APIClientLibrary\BeerWebshop.APIClientLibrary.csproj" />
+  </ItemGroup>
+
 </Project>
