@@ -17,26 +17,117 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private readonly string _connectionString;
         private const string _getCustomerById = @"SELECT * FROM Customers WHERE Id = @Id;";
         private const string _saveCustomer = @"
-    DECLARE @AddressId INT;
-    DECLARE @CustomerId INT;
-    INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK)
-    VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode);
+            INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
+            OUTPUT INSERTED.Id
+            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0);
+            SELECT @CustomerId = SCOPE_IDENTITY();
+        ";
 
-    SET @AddressId = SCOPE_IDENTITY();
+        private const string _createAddress = @"INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK)
+            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode) OUTPUT INSERTED.Id";
 
-    INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
-    OUTPUT INSERTED.Id
-    VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0);
-    SELECT @CustomerId = SCOPE_IDENTITY();
-";
+        private const string _createZipCode = @"INSERT INTO Postalcode (Postalcode, City) VALUES (@ZipCode, @City);";
 
         private const string _deleteCustomerById = @" 
-    DELETE FROM Address WHERE Id = (SELECT AddressId_FK FROM Customers WHERE Id = @Id);
+            DELETE FROM Address WHERE Id = (SELECT AddressId_FK FROM Customers WHERE Id = @Id);
 
-    DELETE FROM Customers WHERE Id = @Id";
+            DELETE FROM Customers WHERE Id = @Id";
+
+        private const string _doesZipExist = @"SELECT COUNT(*) FROM Postalcode WHERE Postalcode = @ZipCode;";
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
+        }
+
+        public async Task<int?> CreateAddress(Customer customer, SqlConnection connection)
+        {
+            // Split the string by spaces
+            string[] parts = customer.Address.Split(' ');
+
+            // Initialize variables
+            string street = parts[0];
+            string streetNumber = parts[1];
+            string apartmentNumber = null;
+            int zipCode;
+            string city;
+
+            if (parts.Length == 5)
+            {
+                apartmentNumber = parts[2];
+                zipCode = int.Parse(parts[3]);
+                city = parts[4];
+            }
+            else if (parts.Length == 4)
+            {
+                zipCode = int.Parse(parts[2]);
+                city = parts[3];
+            }
+            else
+            {
+                throw new FormatException("Address format is incorrect.");
+            }
+
+            var parameters = new
+            {
+                Street = street,
+                StreetNumber = streetNumber,
+                ApartmentNumber = apartmentNumber,
+                City = city,
+                Postalcode = zipCode,
+            };
+
+            int? zipCodeId = await GetZip(zipCode);
+
+            if (zipCodeId == null)
+            {
+                zipCodeId = await CreateZip(zipCode, city, connection);
+            }
+
+            try
+            {
+                var parameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCodeId };
+                int? id = 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        public async Task<int?> CreateZip(int zipCode, string city, SqlConnection connection)
+        {
+            try
+            {
+                var parameters = new { ZipCode = zipCode, City = city };
+                int? id = await connection.QuerySingleOrDefaultAsync<int?>(_createZipCode, parameters);
+
+                return id;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }   
+        }
+
+        public async Task<int?> GetZip(int zipCode)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var parameters = new { ZipCode = zipCode };
+                int? id = await connection.QuerySingleOrDefaultAsync<int?>(_doesZipExist, parameters);
+
+                return id;
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error getting zip");
+            }
         }
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
@@ -82,6 +173,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 Age = customer.Age,
                 Email = customer.Email
             };
+
             return await connection.QuerySingleAsync<int>(_saveCustomer, parameters);
         }
 
@@ -100,6 +192,16 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 throw new Exception($"Error deleting the customer: {ex.Message}");
             }
+        }
+
+        public Task<bool> UpdatePasswordAsync(string email, string oldPassword, string newPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> LoginAsync(string email, string password)
+        {
+            throw new NotImplementedException();
         }
     }
 }
