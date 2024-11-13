@@ -3,6 +3,7 @@ using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace BeerWebshop.Test.DALTests;
 
@@ -188,4 +189,67 @@ public class ProductDaoTests
         var sortedProducts = products!.OrderByDescending(p => p.Price);
         Assert.That(products!.SequenceEqual(sortedProducts), "The products should be sorted in descending order by price.");
     }
+
+	[Test]
+	public async Task UpdateAsync_WhenProductIsUpdated_ShouldReturnTrueAndUpdateFields()
+	{
+		var createdProductId = await _productDao.CreateAsync(new Product
+		{
+			Name = $"Original Name{_testSuffix}",
+			Category = new Category { Id = _createdCategoryId },
+			Brewery = new Brewery { Id = _createdBreweryId },
+			Price = 50f,
+			Description = "Original description.",
+			Stock = 10,
+			Abv = 5.0f,
+			ImageUrl = "http://example.com/original.jpg",
+			IsDeleted = false
+		});
+		_productIdsCreated.Add(createdProductId);
+
+		var product = await _productDao.GetByIdAsync(createdProductId);
+		Assert.IsNotNull(product);
+
+		product.Name = $"Updated Name{_testSuffix}";
+		product.Price = 60f;
+		var updateResult = await _productDao.UpdateAsync(product);
+
+		Assert.IsTrue(updateResult, "The product update should return true.");
+		var updatedProduct = await _productDao.GetByIdAsync(createdProductId);
+		Assert.That(updatedProduct.Name, Is.EqualTo(product.Name), "The product name should be updated.");
+		Assert.That(updatedProduct.Price, Is.EqualTo(product.Price), "The product price should be updated.");
+	}
+
+	[Test]
+	public async Task UpdateAsync_WhenRowVersionIsModified_ShouldThrowConcurrencyException()
+	{
+		var createdProductId = await _productDao.CreateAsync(new Product
+		{
+			Name = $"Original Name{_testSuffix}",
+			Category = new Category { Id = _createdCategoryId },
+			Brewery = new Brewery { Id = _createdBreweryId },
+			Price = 50f,
+			Description = "Original description.",
+			Stock = 10,
+			Abv = 5.0f,
+			ImageUrl = "http://example.com/original.jpg",
+			IsDeleted = false
+		});
+		_productIdsCreated.Add(createdProductId);
+
+		var product = await _productDao.GetByIdAsync(createdProductId);
+		var originalRowVersion = product.RowVersion;
+
+		product.Name = $"Updated Name{_testSuffix}";
+		product.Price = 60f;
+		await _productDao.UpdateAsync(product);
+
+		product.RowVersion = originalRowVersion;
+
+		var ex = Assert.ThrowsAsync<Exception>(async () => await _productDao.UpdateAsync(product));
+		Assert.That(ex.Message, Is.EqualTo("Error updating product: Concurrency conflict detected."));
+	}
+
+
+
 }
