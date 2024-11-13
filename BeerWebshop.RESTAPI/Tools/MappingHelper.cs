@@ -68,7 +68,7 @@ public static class MappingHelper
 			ABV = product.Abv,
 			CategoryName = product.Category?.Name!,
 			ImageUrl = product.ImageUrl!,
-			RowVersion = Convert.ToBase64String(product.RowVersion)
+			RowVersion = product.RowVersion != null ? Convert.ToBase64String(product.RowVersion) : string.Empty
 		};
 	}
 
