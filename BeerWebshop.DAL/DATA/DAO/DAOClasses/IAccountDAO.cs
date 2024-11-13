@@ -14,5 +14,9 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         Task<bool> DeleteCustomerAsync(int id);
 
+        //methods relating to handling security
+        Task<bool> UpdatePasswordAsync(string email, string oldPassword, string newPassword);
+        Task<int> LoginAsync(string email, string password);
+
     }
 }
