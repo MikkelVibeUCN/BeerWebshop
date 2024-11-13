@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BeerWebshop.APIClientLibrary.Validation;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
@@ -29,6 +30,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
         [Required]
+        [MinAge(18)]
         public int Age { get; set; }
 
     }
