@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
         public string Email { get; set; }
         [Required]
         [DataType(DataType.Password)]
+        [RegularExpression(@"^(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?])(?=.*\d)(?=.*[A-Za-z]).{8,}$", ErrorMessage = "Password must contain 8 letters, one special character and a number")]
         public string Password { get; set; }
         [Required]
         [DataType(DataType.PhoneNumber)]
