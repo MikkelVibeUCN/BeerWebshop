@@ -1,4 +1,5 @@
-﻿    using BeerWebshop.DAL.DATA.Entities;
+﻿using BeerWebshop.DAL.BCrypt;
+using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -34,6 +35,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     DELETE FROM Address WHERE Id = (SELECT AddressId_FK FROM Customers WHERE Id = @Id);
 
     DELETE FROM Customers WHERE Id = @Id";
+
+        private const string _loginAsync = "SELECT Id, PasswordHash FROM Customers WHERE Email=@Email";
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
@@ -100,6 +103,38 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 throw new Exception($"Error deleting the customer: {ex.Message}");
             }
+        }
+
+        public Task<bool> UpdatePasswordAsync(string email, string oldPassword, string newPassword)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> LoginAsync(string email, string password)
+        {
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var customerTuple = await connection.QueryFirstOrDefaultAsync<CustomerTuple>(_loginAsync, new { Email = email });
+                if (customerTuple != null && BCryptTool.ValidatePassword(password, customerTuple.PasswordHash))
+                {
+                    return customerTuple.Id;
+                }
+                return -1;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error logging in for author with email {email}: '{ex.Message}'.", ex);
+            }
+
+        }
+        internal class CustomerTuple
+        {
+            public int Id;
+            public string PasswordHash;
         }
     }
 }
