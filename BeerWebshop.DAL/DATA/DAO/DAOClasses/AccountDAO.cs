@@ -37,6 +37,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     DELETE FROM Customers WHERE Id = @Id";
 
         private const string _loginAsync = "SELECT Id, PasswordHash FROM Customers WHERE Email=@Email";
+
+        private const string _updatePasswordAsync = "UPDATE Customer SET PasswordHash=@NewPasswordHash WHERE Id=@Id";
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
@@ -109,14 +111,13 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         {
             try
             {
-                var query = "UPDATE Customer SET PasswordHash=@NewPasswordHash WHERE Id=@Id;";
                 var id = await LoginAsync(email, oldPassword);
                 if (id > 0)
                 {
                     var newPasswordHash = BCryptTool.HashPassword(newPassword);
                     using var connection = new SqlConnection(_connectionString);
                     await connection.OpenAsync();
-                    return await connection.ExecuteAsync(query, new { Id = id, NewPasswordHash = newPasswordHash }) > 0;
+                    return await connection.ExecuteAsync(_updatePasswordAsync, new { Id = id, NewPasswordHash = newPasswordHash }) > 0;
                 }
                 return false;
             }
