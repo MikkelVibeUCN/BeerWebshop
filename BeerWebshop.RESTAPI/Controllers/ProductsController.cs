@@ -96,5 +96,26 @@ namespace BeerWebshop.RESTAPI.Controllers
 				return BadRequest(e.Message);
 			}
 		}
+
+		[HttpPut("{id}")]
+		public async Task<IActionResult> UpdateProductAsync(int id, [FromBody] ProductDTO productDTO)
+		{
+			if (!ModelState.IsValid) return BadRequest();
+
+			try
+			{
+				productDTO.Id = id;
+				var result = await _productService.UpdateProductAsync(productDTO);
+				if (!result)
+				{
+					return NotFound($"Product with id {id} was not found.");
+				}
+				return Ok();
+			}
+			catch (Exception e)
+			{
+				return BadRequest(e.Message);
+			}
+		}
 	}
 }

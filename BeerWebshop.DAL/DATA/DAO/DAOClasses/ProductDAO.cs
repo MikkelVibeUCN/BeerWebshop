@@ -21,9 +21,12 @@ public class ProductDAO : IProductDAO
                 INNER JOIN Categories c ON p.CategoryId_FK = c.Id
                 INNER JOIN Breweries b ON p.BreweryId_FK = b.Id                
                 WHERE p.IsDeleted = 0 AND p.Id = @Id";
+	private const string DeleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
+	private const string UpdateByIdSql = @"UPDATE Products SET Name = @Name, CategoryId_FK = @CategoryId, BreweryId_FK = @BreweryId, 
+											Price = @Price, Description = @Description, Stock = @Stock, Abv = @Abv, ImageUrl = @ImageUrl, 
+											IsDeleted = @IsDeleted WHERE Id = @Id and RowVersion = @RowVersion;";
 
 	private const string GetFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
-	private const string DeleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
 	private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
 	private const string UpdateStockSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
 	private const string BaseProductSql = @"
@@ -76,9 +79,33 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
-	public async Task EditAsync(int id)
+	public async Task<bool> EditAsync(Product product)
 	{
-		throw new NotImplementedException();
+
+		try
+		{
+			using var connection = new SqlConnection(_connectionString);
+			var rowsAffected = await connection.ExecuteAsync(UpdateByIdSql, new
+			{
+				product.Name,
+				CategoryId = product.Category.Id,
+				BreweryId = product.Brewery.Id,
+				product.Price,
+				product.Description,
+				product.Stock,
+				product.Abv,
+				product.ImageUrl,
+				product.IsDeleted,
+				Id = product.Id,
+				product.RowVersion
+			});
+
+			return rowsAffected > 0;
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error updating product: {ex.Message}", ex);
+		}
 	}
 
 	public async Task<Product?> GetByIdAsync(int id)
@@ -108,7 +135,7 @@ public class ProductDAO : IProductDAO
 	}
 
 	//TODO Timeout ved deadlock.
-	public async Task<bool> UpdateStockAsync(int productId, int quantity) 
+	public async Task<bool> UpdateStockAsync(int productId, int quantity)
 	{
 		using var connection = new SqlConnection(_connectionString);
 		await connection.OpenAsync();
@@ -119,14 +146,14 @@ public class ProductDAO : IProductDAO
 		parameters.Add("@ProductId", productId);
 		parameters.Add("@Quantity", quantity);
 
-		var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout:5);
+		var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout: 5);
 		if (stock < quantity)
 		{
 			transaction.Rollback();
 			throw new InvalidOperationException("Insufficient stock.");
 		}
 
-		var rowsAffected = await connection.ExecuteAsync(UpdateStockSql, parameters, transaction, commandTimeout:5);
+		var rowsAffected = await connection.ExecuteAsync(UpdateStockSql, parameters, transaction, commandTimeout: 5);
 		if (rowsAffected < 0)
 		{
 			transaction.Rollback();
