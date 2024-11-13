@@ -40,8 +40,6 @@ namespace BeerWebshop.RESTAPI.Controllers
                 Email = customer.Email,
                 Phone = customer.Phone,
                 Password = customer.Password,
-                ZipCode = customer.ZipCode,
-                City = customer.City,
                 Age = customer.Age,
             };
         }

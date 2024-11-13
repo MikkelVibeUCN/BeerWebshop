@@ -2,15 +2,7 @@
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 {
@@ -21,10 +13,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string _getCustomerById = @"SELECT * FROM Customers WHERE Id = @Id;";
         private const string _saveCustomer = @"
             INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
-            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0) OUTPUT INSERTED.Id;";
+            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0) SELECT CAST(SCOPE_IDENTITY() AS int);";
 
         private const string _createAddress = @"INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK)
-            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode) OUTPUT INSERTED.Id";
+            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode)
+            SELECT CAST(SCOPE_IDENTITY() AS int)";
 
         private const string _createZipCode = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
 
@@ -76,18 +69,15 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 Postalcode = zipCode,
             };
 
-            int? zipCodeId = await GetZip(zipCode);
-
-            if (zipCodeId == null)
+            if (!await GetZipExistsAsync(zipCode))
             {
-                zipCodeId = await CreateZip(zipCode, city, connection);
+                await CreateZip(zipCode, city, connection);
             }
-
             try
             {
-                var addressParameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCodeId };
+                var addressParameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCode };
                 
-                int? id = await connection.QuerySingleOrDefaultAsync<int?>(_createAddress, addressParameters);
+                var id = await connection.QuerySingleAsync<int>(_createAddress, addressParameters);
 
                 return id;
             }
@@ -97,14 +87,14 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             }
         }
 
-        public async Task<int?> CreateZip(int zipCode, string city, SqlConnection connection)
+        public async Task<bool> CreateZip(int zipCode, string city, SqlConnection connection)
         {
             try
             {
                 var parameters = new { ZipCode = zipCode, City = city };
                 int rowsAffected = await connection.ExecuteAsync(_createZipCode, parameters);
 
-                return 
+                return rowsAffected > 0;
             }
             catch (Exception)
             {
@@ -113,7 +103,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             }   
         }
 
-        public async Task<int?> GetZip(int zipCode)
+        public async Task<bool> GetZipExistsAsync(int zipCode)
         {
             try
             {
@@ -121,15 +111,18 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 await connection.OpenAsync();
 
                 var parameters = new { ZipCode = zipCode };
-                int? id = await connection.QuerySingleOrDefaultAsync<int?>(_doesZipExist, parameters);
+                // Assuming _doesZipExist is a query that checks for existence of the zip code
+                var result = await connection.QuerySingleOrDefaultAsync<int?>(_doesZipExist, parameters);
 
-                return id;
+                // Return true if the result is not null (meaning the row exists)
+                return result.HasValue;
             }
             catch (Exception)
             {
-                throw new Exception("Error getting zip");
+                throw new Exception("Error checking if zip exists.");
             }
         }
+
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
