@@ -79,7 +79,7 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
-	public async Task<bool> EditAsync(Product product)
+	public async Task<bool> UpdateAsync(Product product)
 	{
 
 		try
@@ -298,4 +298,5 @@ public class ProductDAO : IProductDAO
 		}
 		return productCount;
 	}
+
 }

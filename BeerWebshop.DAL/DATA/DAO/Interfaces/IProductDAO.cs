@@ -10,7 +10,7 @@ public interface IProductDAO
 	Task<int> GetProductCountAsync(ProductQueryParameters parameters);
 	Task<IEnumerable<string>> GetProductCategoriesAsync();
 	Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
-	Task <bool> EditAsync(Product product, byte[]? rowVersion);
+	Task <bool> UpdateAsync(Product product);
 	Task<bool> UpdateStockAsync(int productId, int quantity);
 	Task<bool> DeleteAsync(int id);
 }
