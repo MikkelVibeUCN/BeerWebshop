@@ -26,14 +26,14 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string _createAddress = @"INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK)
             VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode) OUTPUT INSERTED.Id";
 
-        private const string _createZipCode = @"INSERT INTO Postalcode (Postalcode, City) VALUES (@ZipCode, @City);";
+        private const string _createZipCode = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
 
         private const string _deleteCustomerById = @" 
             DELETE FROM Address WHERE Id = (SELECT AddressId_FK FROM Customers WHERE Id = @Id);
 
             DELETE FROM Customers WHERE Id = @Id";
 
-        private const string _doesZipExist = @"SELECT COUNT(*) FROM Postalcode WHERE Postalcode = @ZipCode;";
+        private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
@@ -102,9 +102,9 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 var parameters = new { ZipCode = zipCode, City = city };
-                int? id = await connection.QuerySingleOrDefaultAsync<int?>(_createZipCode, parameters);
+                int rowsAffected = await connection.ExecuteAsync(_createZipCode, parameters);
 
-                return id;
+                return 
             }
             catch (Exception)
             {
