@@ -1,4 +1,5 @@
-﻿    using BeerWebshop.DAL.DATA.Entities;
+﻿using BeerWebshop.DAL.BCrypt;
+using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -15,6 +16,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     public class AccountDAO : IAccountDAO
     {
         private readonly string _connectionString;
+
         private const string _getCustomerById = @"SELECT * FROM Customers WHERE Id = @Id;";
         private const string _saveCustomer = @"
             INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
@@ -138,12 +140,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 var parameters = new { Id = id };
                 var customer = await connection.QuerySingleOrDefaultAsync<Customer>(_getCustomerById, parameters);
-
                 return customer;
             }
             catch (Exception ex)
             {
-
                 throw new Exception($"Error getting customer from database: {ex.Message}", ex);
             }
         }
@@ -153,12 +153,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // Deler navnet op i to variable som i databasen, og gemmer dem begge i name
+            // Split name into first and last names as required by the database
             var nameParts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
             string firstName = nameParts.Length > 0 ? nameParts[0] : "";
-            string lastName = nameParts.Length > 1
-                ? string.Join(" ", nameParts.Skip(1))
-                : "";
+            string lastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : "";
 
             var parameters = new
             {
@@ -168,8 +166,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 PasswordHash = customer.Password,
                 Street = customer.Address,
                 StreetNumber = "",
-                ApartmentNumber = "", 
-                Postalcode = int.Parse(customer.ZipCode), 
+                ApartmentNumber = "",
+                Postalcode = int.Parse(customer.ZipCode),
                 Age = customer.Age,
                 Email = customer.Email
             };
@@ -188,7 +186,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 await connection.ExecuteAsync(_deleteCustomerById, parameters);
                 return true;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new Exception($"Error deleting the customer: {ex.Message}");
             }

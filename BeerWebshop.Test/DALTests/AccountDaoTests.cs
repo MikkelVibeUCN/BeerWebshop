@@ -27,7 +27,7 @@ public class AccountDaoTests
         {
             Id = 1,
             Name = "Anders",
-            Address = "1",
+            Address = "50",
             ZipCode = "6969",
             City = "Lungeby",
             Email = "hej@dig.dk",
@@ -53,8 +53,8 @@ public class AccountDaoTests
         var newCustomer = new Customer
         {
             Name = "Mads Stigers",
-            Address = "herborthomas",
-            ZipCode = "6969",
+            Address = "herborthomas123",
+            ZipCode = "1010",
             City = "Test City",
             Email = "testuser@example.com",
             Password = "TestPassword123",
