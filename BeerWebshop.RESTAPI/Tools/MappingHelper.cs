@@ -107,9 +107,9 @@ public static class MappingHelper
 		};
 	}
 
-	public static BreweryDTO MapBreweryEntityToDTO(Brewery brewery)
+	public static CategoryDTO MapBreweryEntityToDTO(Brewery brewery)
 	{
-		return new BreweryDTO
+		return new CategoryDTO
 		{
 			Id = brewery.Id,
 			Name = brewery.Name

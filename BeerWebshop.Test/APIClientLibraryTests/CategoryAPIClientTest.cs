@@ -22,7 +22,7 @@ namespace BeerWebshop.Test.APIClientLibraryTests
         [Test]
         public async Task GetProductCategories_WhenCategoriesExist_ShouldReturnAllCategories()
         {
-            var categories = (await _categoryAPIClient.GetAllCategories()).ToList();
+            var categories = await _categoryAPIClient.GetAllAsync();
             Assert.That(categories != null);
             Assert.That(categories.Any(c => c.Name == "IPA"));
             Assert.That(!categories.Any(c => c.Name == "ThomasNumseJuice"));

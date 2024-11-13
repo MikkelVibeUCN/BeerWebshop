@@ -31,7 +31,7 @@ public class ProductAPIClientIntegrationTests
 			ImageUrl = "http://example.com/image.jpg"
 		};
 
-		_createdProductId = await _productApiClient.CreateProductAsync(productDto);
+		_createdProductId = await _productApiClient.CreateAsync(productDto);
 
 		Assert.That(_createdProductId, Is.GreaterThan(0), "Product creation should return a valid product ID.");
 	}
@@ -41,7 +41,7 @@ public class ProductAPIClientIntegrationTests
 	{
 		await CreateProductAsync_WhenProductIsValid_ShouldReturnProductId();
 
-		var product = await _productApiClient.GetProductFromIdAsync(_createdProductId);
+		var product = await _productApiClient.GetAsync(_createdProductId);
 
 		Assert.NotNull(product);
 		Assert.That(product.Name, Is.EqualTo("Integration Test Product"));
@@ -54,7 +54,7 @@ public class ProductAPIClientIntegrationTests
 	{
 		if (_createdProductId > 0)
 		{
-			await _productApiClient.DeleteProductByIdAsync(_createdProductId);
+			await _productApiClient.DeleteAsync(_createdProductId);
 			_createdProductId = 0;
 		}
 	}

@@ -14,7 +14,7 @@ namespace BeerWebshop.Web.Services
 
 		public async Task<OrderDTO?> GetOrderFromId(int id)
 		{
-			return await _orderAPIClient.GetOrderFromId(id);
+			return await _orderAPIClient.GetAsync(id);
 		}
 
 		public async Task<int> SaveOrder(Checkout checkout, ShoppingCart cart)
@@ -28,7 +28,7 @@ namespace BeerWebshop.Web.Services
 				Date = DateTime.Now,
 			};
 
-			return await _orderAPIClient.SaveOrder(orderDTO);
+			return await _orderAPIClient.CreateAsync(orderDTO);
 		}
 
 		private CustomerDTO CreateCustomerFromCheckout(Checkout checkout)

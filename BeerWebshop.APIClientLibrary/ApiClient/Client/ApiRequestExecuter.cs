@@ -5,6 +5,8 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
 	public static class ApiRequestExecuter
 	{
+
+
 		public static async Task<RestResponse<T>> RequestAsync<T>(this RestClient client, Method method, string resource = null, object body = null)
 		{
 			var request = new RestRequest(resource, method);
@@ -24,5 +26,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 			}
 			return await client.ExecuteAsync(request, method);
 		}
+
+		
 	}
 }

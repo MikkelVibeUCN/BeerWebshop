@@ -37,9 +37,9 @@ public class OrderApiClientTests
 			ImageUrl = "http://example.com/image.jpg"
 		};
 
-		_createdProductId = await _productApiClient.CreateProductAsync(productDto);
+		_createdProductId = await _productApiClient.CreateAsync(productDto);
 
-		var retrievedProductDto = await _productApiClient.GetProductFromIdAsync(_createdProductId);
+		var retrievedProductDto = await _productApiClient.GetAsync(_createdProductId);
 		Assert.IsNotNull(retrievedProductDto, "Product retrieval failed; product should not be null.");
 		Assert.AreEqual(productDto.Name, retrievedProductDto.Name, "Product names should match.");
 
@@ -54,7 +54,7 @@ public class OrderApiClientTests
 
 		orderDto.OrderLines.Add(orderline);
 
-		_createdOrderId = await _orderApiClient.SaveOrder(orderDto);
+		_createdOrderId = await _orderApiClient.CreateAsync(orderDto);
 
 		Assert.That(_createdOrderId, Is.GreaterThan(0), "Order ID should be greater than 0 for a valid order with null CustomerDTO.");
 
@@ -75,9 +75,9 @@ public class OrderApiClientTests
             ImageUrl = "http://example.com/image.jpg"
         };
 
-        _createdProductId = await _productApiClient.CreateProductAsync(productDto);
+        _createdProductId = await _productApiClient.CreateAsync(productDto);
 
-        var retrievedProductDto = await _productApiClient.GetProductFromIdAsync(_createdProductId);
+        var retrievedProductDto = await _productApiClient.GetAsync(_createdProductId);
 
         OrderDTO orderDto = new OrderDTO(DateTime.Now, new List<OrderLineDTO>(), null, false);
 
@@ -90,9 +90,9 @@ public class OrderApiClientTests
 
         orderDto.OrderLines.Add(orderline);
 
-        _createdOrderId = await _orderApiClient.SaveOrder(orderDto);
+        _createdOrderId = await _orderApiClient.CreateAsync(orderDto);
 
-		orderDto = await _orderApiClient.GetOrderFromId(_createdOrderId);
+		orderDto = await _orderApiClient.GetAsync(_createdOrderId);
 
 		Assert.IsNotNull(orderDto, $"Order with ID {_createdOrderId} should exist.");
 		Assert.That(orderDto.Id, Is.EqualTo(_createdOrderId), "Returned Order ID should match the created order ID.");
@@ -103,8 +103,8 @@ public class OrderApiClientTests
 	{
 		if (_createdOrderId > 0)
 		{
-			await _orderApiClient.DeleteOrder(_createdOrderId);
-			await _productApiClient.DeleteProductByIdAsync(_createdProductId);
+			await _orderApiClient.DeleteAsync(_createdOrderId);
+			await _productApiClient.DeleteAsync(_createdProductId);
 
 		}
 	}
