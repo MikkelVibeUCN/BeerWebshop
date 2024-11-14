@@ -23,7 +23,7 @@ public class AccountDaoTests
     public async Task SetUpAsync()
     {
         _accountDAO = new AccountDAO(DBConnection.ConnectionString());
-        
+
 
     }
 
@@ -71,6 +71,63 @@ public class AccountDaoTests
         int customerId = await _accountDAO.SaveCustomerAsync(customer);
         _customersCreated.Add(customerId);
     }
+
+    [Test]
+    public async Task SaveCustomerAsync_WhenCalledWithNullEmail_ShouldThrowException()
+    {
+        var customer = new Customer()
+        {
+            Name = "Navn efternavn",
+            Address = "sejvej 11 9000 aalborg",
+            Email = null,
+            Password = "æggemad",
+            Phone = "60170091",
+            Age = 18
+        };
+
+        Assert.ThrowsAsync<Exception>(async () =>
+        {
+            int customerId = await _accountDAO.SaveCustomerAsync(customer);
+            _customersCreated.Add(customerId);
+        });
+    }
+
+    [Test]
+
+    public async Task SaveCustomerAsync_WhenCalledWithExistingEmail_ShouldThrowException()
+    {
+        var customer = new Customer()
+        {
+            Name = "Navn efternavn",
+            Address = "sejvej 11 9000 aalborg",
+            Email = "123@123.com",
+            Password = "æggemad",
+            Phone = "60170091",
+            Age = 18
+        };
+
+
+        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        _customersCreated.Add(customerId);
+
+        var customer2 = new Customer()
+        {
+            Name = "Efternavn navn",
+            Address = "vej 15 9000 aalborg",
+            Email = "123@123.com",
+            Password = "æggemad",
+            Phone = "12345678",
+            Age = 18
+        };
+
+        Assert.ThrowsAsync<Exception>(async () =>
+        {
+            int customerId = await _accountDAO.SaveCustomerAsync(customer2);
+            _customersCreated.Add(customerId);
+        });
+    }
+
+
 
     [TearDown]
     public async Task TearDownAsync()

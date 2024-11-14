@@ -44,6 +44,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode, @CustomerId)
             SELECT CAST(SCOPE_IDENTITY() AS int);";
 
+        private const string _customerWithEmailExists = @"SELECT Id FROM Customers WHERE Email = @Email;";
 
         private const string _createZipCode = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
 
@@ -53,6 +54,22 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
+        }
+
+        public async Task<bool> DoesCustomerWithEmailExist(string email)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var idFound = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, new { Email = email });
+                return idFound != null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<int?> CreateAddress(Customer customer, SqlConnection connection, SqlTransaction transaction)
@@ -99,7 +116,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 var addressParameters = new
                 {
-                    CustomerId = customer.Id, 
+                    CustomerId = customer.Id,
                     Street = street,
                     StreetNumber = streetNumber,
                     ApartmentNumber = apartmentNumber,
@@ -170,6 +187,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         public async Task<int> SaveCustomerAsync(Customer customer)
         {
+            if(customer.Email == null) { throw new Exception("Email cannot be null"); }
+            if(await DoesCustomerWithEmailExist(customer.Email)) { throw new Exception("Customer with this email already exists"); }
 
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
