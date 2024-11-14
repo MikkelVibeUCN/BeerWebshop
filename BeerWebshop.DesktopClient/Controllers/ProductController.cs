@@ -25,6 +25,7 @@ namespace BeerWebshop.DesktopClient.Controllers
             {
                 ProductDTO newProduct = new ProductDTO
                 {
+                    Id = 0,
                     Name = product.Name,
                     BreweryName = product.BreweryName,
                     Price = product.Price,
@@ -32,7 +33,9 @@ namespace BeerWebshop.DesktopClient.Controllers
                     Stock = product.Stock,
                     ABV = product.ABV,
                     CategoryName = product.CategoryName,
-                };
+					RowVersion = "",
+                    ImageUrl = ""
+				};
 
                return await _productAPIClient.CreateProductAsync(newProduct);
             }

@@ -1,4 +1,7 @@
+using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
+using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.DesktopClient.Controllers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BeerWebshop.DesktopClient
 {
@@ -18,5 +21,13 @@ namespace BeerWebshop.DesktopClient
             ApplicationConfiguration.Initialize();
             Application.Run(new MainForm());
         }
-    }
+
+        private static void ConfigureServices(ServiceCollection services)
+		{
+
+			services.AddTransient<IOrderApiClient, OrderApiClient>();
+			services.AddTransient<OrderController>();
+			services.AddTransient<MainForm>();
+		}
+	}
 }

@@ -45,5 +45,10 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 
 			return true;
 		}
+
+		public async Task<IEnumerable<OrderDTO>> GetAllOrdersAsync()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
