@@ -34,8 +34,12 @@ namespace BeerWebshop.Web.Services
                 }
                 return null;
             }
+            catch(Exception ex)
+            {
+                throw new Exception($"Error creating customer: {ex.Message}", ex);
+            }
 
-                address += $" {viewModel.PostalCode} {viewModel.City}";
+            address += $" {viewModel.PostalCode} {viewModel.City}";
 
             CustomerDTO customer = new CustomerDTO
             {
@@ -48,10 +52,8 @@ namespace BeerWebshop.Web.Services
             };
             return await _customerApiClient.CreateAsync(customer);
         }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error creating customer: {ex.Message}", ex);
-    }
+           
+    
 
     public void RemoveAuthCookie()
     {
