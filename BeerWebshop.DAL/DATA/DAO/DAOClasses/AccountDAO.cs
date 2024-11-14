@@ -169,6 +169,31 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             }
         }
 
+        public async Task<Customer> GetCustomerByEmail(string email)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            try
+            {
+                var parameters = new { Email = email };
+                int? customerId = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, parameters);
+
+                await connection.CloseAsync();
+
+                if (customerId == null)
+                {
+                    throw new Exception("Customer with this email does not exist");
+                }
+
+                return await GetCustomerByIdAsync((int)customerId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting customer from database: {ex.Message}", ex);
+            }
+        }
+
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
