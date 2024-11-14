@@ -10,21 +10,16 @@ namespace BeerWebshop.DesktopClient
 		{
 			_orderController = orderController ?? throw new ArgumentNullException(nameof(orderController));
 			InitializeComponent();
+			ConfigureLayout();
+			InitializeOrderLinesGrid();
+			_ = LoadData();
+		}
+
+		private void ConfigureLayout()
+		{
 			this.Size = new Size(1400, 800);
 			this.BackColor = Color.LightGray;
 			this.Font = new Font("Segoe UI", 10);
-			foreach (Control control in this.Controls)
-			{
-				if (control is Button button)
-				{
-					button.FlatStyle = FlatStyle.Flat;
-					button.BackColor = Color.SteelBlue;
-					button.ForeColor = Color.White;
-					button.FlatAppearance.BorderSize = 0;
-				}
-			}
-			InitializeOrderLinesGrid();
-			_ = LoadData();
 		}
 
 		//TODO: Få det til at se bedre ud
@@ -137,6 +132,6 @@ namespace BeerWebshop.DesktopClient
 			}
 		}
 
-		
+
 	}
 }
