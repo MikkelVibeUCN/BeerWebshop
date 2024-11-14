@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
-    public interface IAccountAPIClient
+    public interface ICustomerAPIClient
     {
         Task<int> CreateCustomer(CustomerDTO customer);
         Task<CustomerDTO?> GetCustomer(int id);
