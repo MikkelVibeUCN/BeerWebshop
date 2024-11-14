@@ -11,9 +11,9 @@ namespace BeerWebshop.DesktopClient
 		public MainForm()
 		{
 			_orderController = new OrderController(new OrderApiClient("https://localhost:7244/api/v1/"));
-
-			InitializeComponent();
 			_productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
+			InitializeComponent();
+
 
 		}
 

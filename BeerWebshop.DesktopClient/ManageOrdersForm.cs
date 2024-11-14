@@ -1,14 +1,4 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using BeerWebshop.APIClientLibrary;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using BeerWebshop.DesktopClient.Controllers;
 
 namespace BeerWebshop.DesktopClient
@@ -18,34 +8,79 @@ namespace BeerWebshop.DesktopClient
 		private readonly OrderController _orderController;
 		public ManageOrdersForm(OrderController orderController)
 		{
+			_orderController = orderController ?? throw new ArgumentNullException(nameof(orderController));
 			InitializeComponent();
-			LoadData();
-			_orderController = orderController;
+			InitializeOrderLinesGrid();
+			_ = LoadData();
+		}
+
+		//TODO: Få det til at se bedre ud
+		private void InitializeOrderLinesGrid()
+		{
+			dgvOrderlines.Columns.Clear();
+
+			dgvOrderlines.Columns.Add("ProductName", "Product Name");
+			dgvOrderlines.Columns.Add("Quantity", "Quantity");
+			dgvOrderlines.Columns.Add("Price", "Price");
+			dgvOrderlines.Columns.Add("TotalPrice", "Total Price");
+
+			dgvOrderlines.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+			dgvOrderlines.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+			dgvOrderlines.Columns["TotalPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 		}
 
 		private void lstOrders_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			
+			if (lstOrders.SelectedItem is OrderDTO selectedOrder)
+			{
+				DisplayOrderDetails(selectedOrder);
+			}
+		}
+
+		private void DisplayOrderDetails(OrderDTO selectedOrder)
+		{
+			textBox1.Text = selectedOrder.Id.ToString();
+			textBox2.Text = selectedOrder.Date.ToString("dd-MM-yyyy");
+			textBox3.Text = selectedOrder.IsDelivered.ToString();
+
+			dgvOrderlines.Rows.Clear();
+			foreach (var orderLine in selectedOrder.OrderLines)
+			{
+				dgvOrderlines.Rows.Add(
+					orderLine.Product.Name,
+					orderLine.Quantity,
+					orderLine.Product.Price,
+					orderLine.Quantity * orderLine.Product.Price
+				);
+			}
 		}
 
 		//TODO: Implement the LoadData method og fædiggør viewet
 		private async Task LoadData()
 		{
 			try
-
 			{
-				IEnumerable<OrderDTO> products = await _orderController.GetAllOrders();
+				IEnumerable<OrderDTO> orders = await _orderController.GetAllOrders();
+
 				lstOrders.Items.Clear();
-				foreach (var product in products)
+
+				foreach (var order in orders)
 				{
-					lstOrders.Items.Add(product);
+					lstOrders.Items.Add(order);
+				}
+
+				if (lstOrders.Items.Count > 0)
+				{
+					lstOrders.SelectedIndex = 0;
 				}
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show($"Error retrieving data from the server. Error is: '{ex.Message}'", "Communication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show($"Error retrieving data from the server. Error: '{ex.Message}'",
+								"Communication error",
+								MessageBoxButtons.OK,
+								MessageBoxIcon.Error);
 			}
-			if (lstOrders.Items.Count > 0) { lstOrders.SelectedIndex = 0; }
 		}
 	}
 }

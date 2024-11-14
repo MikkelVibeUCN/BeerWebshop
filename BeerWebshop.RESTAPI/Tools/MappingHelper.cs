@@ -3,8 +3,9 @@ using BeerWebshop.DAL.DATA.Entities;
 
 namespace BeerWebshop.RESTAPI.Tools;
 
-public static class MappingHelper
+internal static class MappingHelper
 {
+
 	public static Order MapOrderDTOToEntity(OrderDTO dto, List<OrderLine> orderLines)
 	{
 		return new Order

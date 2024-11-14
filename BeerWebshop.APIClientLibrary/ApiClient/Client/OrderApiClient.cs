@@ -48,7 +48,14 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 
 		public async Task<IEnumerable<OrderDTO>> GetAllOrdersAsync()
 		{
-			throw new NotImplementedException();
+			var response = await _restClient.RequestAsync<IEnumerable<OrderDTO>>(Method.Get, "Orders/");
+
+			if (!response.IsSuccessful)
+			{
+				throw new Exception("Error getting all orders");
+			}
+
+			return response.Data;
 		}
 	}
 }

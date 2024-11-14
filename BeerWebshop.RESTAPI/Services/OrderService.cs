@@ -84,10 +84,18 @@ namespace BeerWebshop.RESTAPI.Services
 			return order;
 		}
 
+		public async Task<IEnumerable<OrderDTO>> GetOrdersAsync()
+		{
+			var orders = await _orderDao.GetAllOrdersAsync();
+			return orders.Select(MappingHelper.MapOrderEntityToDTO).ToList();
+		}
+
 
 		public async Task<bool> DeleteOrderByIdAsync(int orderId)
 		{
 			return await _orderDao.DeleteOrderByIdAsync(orderId);
 		}
+
+
 	}
 }
