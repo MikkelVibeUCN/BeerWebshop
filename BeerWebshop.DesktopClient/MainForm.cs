@@ -28,5 +28,10 @@ namespace BeerWebshop.DesktopClient
         {
             new AddProductForm().ShowDialog();
         }
+
+        private void btnEditProducts_Click(object sender, EventArgs e)
+        {
+            new ViewProductsForm().ShowDialog();
+        }
     }
 }

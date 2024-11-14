@@ -14,7 +14,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 		private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
 		private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
 		private const string GetOrderByIdSql = @"SELECT o.Id, o.CreatedAt, o.IsDelivered, o.IsDeleted, ol.Quantity, ol.Total, 
-												p.Id, p.Name, p.Price, p.Description, p.Stock, p.Abv, p.ImageUrl, c.Id, c.Name, c.IsDeleted, b.Id, b.Name, b.IsDeleted
+												p.Id, p.Name, p.Price, p.Description, p.Stock, p.Abv, p.ImageUrl, p.RowVersion, c.Id, c.Name, c.IsDeleted, b.Id, b.Name, b.IsDeleted
 												FROM Orders o
 												LEFT JOIN OrderLines ol ON o.Id = ol.OrderId
 												LEFT JOIN Products p ON ol.ProductId = p.Id
@@ -50,32 +50,32 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
 			try
 			{
-                Order? orderResult = null;
+				Order? orderResult = null;
 
-                connection.Query<Order, OrderLine, Product, Category, Brewery, Order>(
-                    GetOrderByIdSql,
-                    (order, orderLine, product, category, brewery) =>
-                    {
-                        if (orderResult == null)
-                        {
+				connection.Query<Order, OrderLine, Product, Category, Brewery, Order>(
+					GetOrderByIdSql,
+					(order, orderLine, product, category, brewery) =>
+					{
+						if (orderResult == null)
+						{
 							orderResult = order;
-                            orderResult.OrderLines = new List<OrderLine>();
-                        }
-						
+							orderResult.OrderLines = new List<OrderLine>();
+						}
+
 						product.Brewery = brewery;
-                        product.Category = category;
+						product.Category = category;
 
-                        orderLine.Product = product;
-                        orderResult.OrderLines.Add(orderLine);
+						orderLine.Product = product;
+						orderResult.OrderLines.Add(orderLine);
 
-                        return order;
-                    },
-                    new { Id = id },
-                    splitOn: "Quantity,Id,Id,Id"
-                );
+						return order;
+					},
+					new { Id = id },
+					splitOn: "Quantity,Id,Id,Id"
+				);
 
-                return orderResult;
-            }
+				return orderResult;
+			}
 			catch (Exception ex)
 			{
 				throw new Exception($"Error getting order from database: {ex.Message}", ex);
