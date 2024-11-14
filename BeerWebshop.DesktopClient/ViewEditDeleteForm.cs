@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary;
+using System.Xml.Linq;
 
 
 namespace BeerWebshop.DesktopClient
@@ -91,13 +92,13 @@ namespace BeerWebshop.DesktopClient
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            EditSelectedCompany();
+            EditSelectedProduct();
         }
         //TODO: Lav en ny form hvor man indtaster de informationer der skal edites, gem dem, vis ViewEditDeleteForm vinduet igen
         //HACK: Kig på Jakobs edit metode og form
-        private void EditSelectedCompany()
+        private async void EditSelectedProduct()
         {
-            throw new NotImplementedException();
+            
         }
 
         private void btnDelete_Click(object sender, EventArgs e)

@@ -48,7 +48,7 @@ namespace BeerWebshop.DesktopClient.Controllers
                     Stock = stock,
                     ABV = abv,
                     CategoryName = categoryName
-                   
+
                 };
 
 
@@ -90,6 +90,11 @@ namespace BeerWebshop.DesktopClient.Controllers
         {
             btnAddProduct_Click(sender, e);
 
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
