@@ -48,5 +48,10 @@ namespace BeerWebshop.DesktopClient.Controllers
         {
             return await _productAPIClient.GetProductsAsync(productQueryParameters); 
         }
+
+        public async Task<bool> DeleteProduct(ProductDTO product)
+        {
+            return await _productAPIClient.DeleteProductByIdAsync(product.Id);
+        }
     }
 }
