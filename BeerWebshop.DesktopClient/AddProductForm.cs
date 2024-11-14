@@ -40,6 +40,7 @@ namespace BeerWebshop.DesktopClient.Controllers
                 // Create a ProductDTO object
                 ProductDTO newProduct = new ProductDTO()
                 {
+                    Id = 0,
                     Name = name,
                     BreweryName = breweryName,
                     Price = price,
@@ -47,6 +48,7 @@ namespace BeerWebshop.DesktopClient.Controllers
                     Stock = stock,
                     ABV = abv,
                     CategoryName = categoryName
+                   
                 };
 
 

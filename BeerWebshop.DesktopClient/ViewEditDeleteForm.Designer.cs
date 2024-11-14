@@ -187,6 +187,7 @@
             btnBack.TabIndex = 9;
             btnBack.Text = "&Back";
             btnBack.UseVisualStyleBackColor = true;
+            btnBack.Click += btnBack_Click;
             // 
             // btnDelete
             // 
@@ -196,6 +197,7 @@
             btnDelete.TabIndex = 8;
             btnDelete.Text = "&Delete";
             btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += btnDelete_Click;
             // 
             // btnEdit
             // 
@@ -205,6 +207,7 @@
             btnEdit.TabIndex = 7;
             btnEdit.Text = "&Edit";
             btnEdit.UseVisualStyleBackColor = true;
+            btnEdit.Click += btnEdit_Click;
             // 
             // lblDescription
             // 

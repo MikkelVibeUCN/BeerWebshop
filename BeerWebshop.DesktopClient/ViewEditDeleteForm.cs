@@ -15,7 +15,7 @@ using BeerWebshop.APIClientLibrary;
 
 namespace BeerWebshop.DesktopClient
 {
-   
+
     public partial class ViewEditDeleteForm : Form
     {
         private readonly ProductController _productController;
@@ -26,7 +26,8 @@ namespace BeerWebshop.DesktopClient
             _productController = productController;
             ViewEditDeleteForm_Load();
         }
-        public async void ViewEditDeleteForm_Load() {
+        public async void ViewEditDeleteForm_Load()
+        {
             await LoadData();
             lstProduct.DisplayMember = "Name";
             UpdateUi();
@@ -36,7 +37,7 @@ namespace BeerWebshop.DesktopClient
         private async Task LoadData()
         {
             try
-                
+
             {
                 ProductQueryParameters queryParameters = new ProductQueryParameters
                 {
@@ -88,5 +89,44 @@ namespace BeerWebshop.DesktopClient
             lblDescription.Text = product.Description;
         }
 
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            EditSelectedCompany();
+        }
+        //TODO: Lav en ny form hvor man indtaster de informationer der skal edites, gem dem, vis ViewEditDeleteForm vinduet igen
+        //HACK: Kig på Jakobs edit metode og form
+        private void EditSelectedCompany()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            DeleteSelectedCompany();
+        }
+
+        private async Task DeleteSelectedCompany()
+        {
+            if (lstProduct.SelectedIndex == -1) { return; }
+            if (MessageBox.Show("Are you sure you wish to delete this company?", "Delete?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+            {
+                try
+                {
+                    ProductDTO productToDelete = (ProductDTO)lstProduct.SelectedItem;
+                    await _productController.DeleteProduct(productToDelete);
+                    lstProduct.Items.Remove(productToDelete);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error deleting data on the server. Error is: '{ex.Message}'", "Communication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
