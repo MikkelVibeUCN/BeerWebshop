@@ -44,24 +44,24 @@ namespace BeerWebshop.Web.Controllers
 
         [HttpPost]
         public IActionResult Logout()
-            {
+        {
             _accountService.RemoveAuthCookie();
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAccount(AccountCreationViewModel viewModel)
+        {
+            try
+            {
+                await _accountService.CreateCustomerAsync(viewModel);
+                return RedirectToAction("Index", "Home");
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty, "An error occurred while creating the account.");
                 return RedirectToAction("Index", "Home");
             }
         }
-    [HttpPost]
-    public async Task<IActionResult> CreateAccount(AccountCreationViewModel viewModel)
-    {
-        try
-        {
-            await _accountService.CreateCustomerAsync(viewModel);
-            return RedirectToAction("Index", "Home");
-        }
-        catch
-        {
-            ModelState.AddModelError(string.Empty, "An error occurred while creating the account.");
-            return RedirectToAction("Index", "Home");
-        }
     }
-}
 }

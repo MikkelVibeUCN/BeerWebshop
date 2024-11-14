@@ -32,30 +32,29 @@ namespace BeerWebshop.Web.Services
                 {
                     address += $" {viewModel.ApartmentNumber}";
                 }
-                return null;
+
+                address += $" {viewModel.PostalCode} {viewModel.City}";
+
+                CustomerDTO customer = new CustomerDTO
+                {
+                    Name = $"{viewModel.FirstName} {viewModel.LastName}",
+                    Address = address,
+                    Email = viewModel.Email,
+                    Password = viewModel.Password,
+                    Phone = viewModel.Phone,
+                    Age = viewModel.Age
+                };
+                return await _accountAPIClient.CreateAsync(customer);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception($"Error creating customer: {ex.Message}", ex);
             }
 
-            address += $" {viewModel.PostalCode} {viewModel.City}";
-
-            CustomerDTO customer = new CustomerDTO
-            {
-                Name = $"{viewModel.FirstName} {viewModel.LastName}",
-                Address = address,
-                Email = viewModel.Email,
-                Password = viewModel.Password,
-                Phone = viewModel.Phone,
-                Age = viewModel.Age
-            };
-            return await _customerApiClient.CreateAsync(customer);
         }
-           
-    
 
-    public void RemoveAuthCookie()
+
+        public void RemoveAuthCookie()
     {
         _cookieService.RemoveCookies<string>(AuthCookieKey);
     }

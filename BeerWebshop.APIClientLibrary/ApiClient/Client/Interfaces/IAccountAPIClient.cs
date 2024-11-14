@@ -8,6 +8,8 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces
         Task<int> CreateAsync(CustomerDTO entity, string? endpoint = null);
         Task<bool> DeleteAsync(int id, string? endpoint = null);
         Task<IEnumerable<CustomerDTO>> GetAllAsync(string? endpoint = null);
+        Task<CustomerDTO> GetCustomerByEmail(string email);
+
         Task<CustomerDTO?> GetAsync(int id, string? endpoint = null);
     }
 }

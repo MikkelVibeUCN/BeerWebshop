@@ -1,13 +1,15 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using RestSharp;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client;
 
-public class AccountAPIClient : IAccountAPIClient
+public class AccountAPIClient : BaseClient<CustomerDTO>, IAccountAPIClient
 {
-	private RestClient _restClient;
-	public AccountAPIClient(string uri) => _restClient = new RestClient(new Uri(uri));
 
+    public AccountAPIClient(string uri) : base(uri, "account")
+    {
+    }
     public Task<CustomerDTO> GetCustomerByEmail(string email)
     {
         throw new NotImplementedException();
