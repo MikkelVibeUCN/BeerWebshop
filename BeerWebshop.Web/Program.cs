@@ -19,9 +19,10 @@ namespace BeerWebshop.Web
 			string uri = "https://localhost:7244/api/v1/";
 
             // Register API clients with the base URI
-            builder.Services.AddSingleton<IProductAPIClient>(new ProductAPIClient(uri));
-            builder.Services.AddSingleton<ICategoryAPIClient>(new CategoryAPIClient(uri));
-            builder.Services.AddSingleton<IAccountAPIClient, AccountApiClientStub>();
+            builder.Services.AddScoped<IProductAPIClient>(provider => new ProductAPIClient(uri));
+            builder.Services.AddScoped<ICategoryAPIClient>(provider => new CategoryAPIClient(uri));
+            builder.Services.AddScoped<IOrderApiClient>(provider => new OrderApiClient(uri));
+            builder.Services.AddScoped<IAccountAPIClient, AccountApiClientStub>();
 			// Register HttpContextAccessor for CookieService and other services
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -35,7 +36,6 @@ namespace BeerWebshop.Web
 			builder.Services.AddScoped<AccountService>();
 
             // Use a stub for the IOrderApiClient
-            builder.Services.AddScoped<IOrderApiClient>(provider => new OrderApiClient(uri));
 
 
 			var app = builder.Build();
