@@ -15,7 +15,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
       
         public string Name { get; set; }
         
-        public string Address { get; set; } // Street StreetNumber OptionalApartment ZipCode City
+        public string Address { get; set; } 
         
        
         public string Email { get; set; }

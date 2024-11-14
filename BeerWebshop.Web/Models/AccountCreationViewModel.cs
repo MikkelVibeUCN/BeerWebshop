@@ -14,7 +14,8 @@ namespace BeerWebshop.Web.Models
         public string Street { get; set; }
         [Required]
         public string StreetNumber { get; set; }
-        public string ApartmentNumber { get; set; }
+        public string? ApartmentNumber { get; set; }
+
         [Required]
         public string PostalCode { get; set; }
         [Required]
