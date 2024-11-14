@@ -1,4 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.Web.Models;
 using BeerWebshop.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,17 +23,17 @@ namespace BeerWebshop.Web.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccount(CustomerDTO customer)
+        public async Task<IActionResult> CreateAccount(AccountCreationViewModel viewModel)
         {
             try
             {
-                    await _accountService.CreateCustomerAsync(customer);
-                    return RedirectToAction("Index","Home");
+                await _accountService.CreateCustomerAsync(viewModel);
+                return RedirectToAction("Index", "Home");
             }
             catch
             {
                 ModelState.AddModelError(string.Empty, "An error occurred while creating the account.");
-                return View(customer);
+                return RedirectToAction("Index", "Home");
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿@model BeerWebshop.APIClientLibrary.ApiClient.DTO.CustomerDTO
+﻿@model BeerWebshop.Web.Models.AccountCreationViewModel
 
 @{
     ViewData["Title"] = "Create Account";
@@ -13,27 +13,35 @@
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+                <!-- First Name -->
                 <div class="form-group">
-                    <label asp-for="Name" class="control-label">Full Name</label>
-                    <input asp-for="Name" class="form-control" placeholder="Enter your full name" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <label asp-for="FirstName" class="control-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" required />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <!-- Last Name -->
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Enter your last name" required />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
 
                 <!-- Street -->
                 <div class="form-group">
                     <label asp-for="Street" class="control-label">Street</label>
-                    <input asp-for="Street" class="form-control" placeholder="Enter your street" />
+                    <input asp-for="Street" class="form-control" placeholder="Enter your street" required />
                     <span asp-validation-for="Street" class="text-danger"></span>
                 </div>
 
                 <!-- Street Number -->
                 <div class="form-group">
                     <label asp-for="StreetNumber" class="control-label">Street Number</label>
-                    <input asp-for="StreetNumber" class="form-control" placeholder="Enter your street number" />
+                    <input asp-for="StreetNumber" class="form-control" placeholder="Enter your street number" required />
                     <span asp-validation-for="StreetNumber" class="text-danger"></span>
                 </div>
 
-                <!-- Apartment Number -->
+                <!-- Apartment Number (Optional) -->
                 <div class="form-group">
                     <label asp-for="ApartmentNumber" class="control-label">Apartment Number (optional)</label>
                     <input asp-for="ApartmentNumber" class="form-control" placeholder="Enter your apartment number (optional)" />
@@ -42,39 +50,44 @@
 
                 <!-- Postal Code -->
                 <div class="form-group">
-                    <label asp-for="Postalcode_FK" class="control-label">Postal Code</label>
-                    <input asp-for="Postalcode_FK" class="form-control" placeholder="Enter your postal code" />
-                    <span asp-validation-for="Postalcode_FK" class="text-danger"></span>
+                    <label asp-for="PostalCode" class="control-label">Postal Code</label>
+                    <input asp-for="PostalCode" class="form-control" placeholder="Enter your postal code" required />
+                    <span asp-validation-for="PostalCode" class="text-danger"></span>
                 </div>
 
                 <!-- City -->
                 <div class="form-group">
                     <label asp-for="City" class="control-label">City</label>
-                    <input asp-for="City" class="form-control" placeholder="Enter your city" />
+                    <input asp-for="City" class="form-control" placeholder="Enter your city" required />
                     <span asp-validation-for="City" class="text-danger"></span>
                 </div>
 
+                <!-- Email -->
                 <div class="form-group">
                     <label asp-for="Email" class="control-label">Email</label>
-                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email" type="email" required />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
+                <!-- Password -->
                 <div class="form-group">
                     <label asp-for="Password" class="control-label">Password</label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="Create a password" />
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Create a password" 
+                           required minlength="8" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
+                <!-- Phone -->
                 <div class="form-group">
                     <label asp-for="Phone" class="control-label">Phone Number</label>
-                    <input asp-for="Phone" class="form-control" placeholder="Enter your phone number" />
+                    <input asp-for="Phone" class="form-control" placeholder="Enter your phone number" type="tel" required />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
+                <!-- Age -->
                 <div class="form-group">
                     <label asp-for="Age" class="control-label">Age</label>
-                    <input asp-for="Age" class="form-control" placeholder="Enter your age" />
+                    <input asp-for="Age" class="form-control" placeholder="Enter your age" type="number" min="18" required />
                     <span asp-validation-for="Age" class="text-danger"></span>
                 </div>
 
@@ -84,7 +97,6 @@
             <div class="text-center mt-3">
                 <a href="@Url.Action("Index", "Home")">Already have an account? Log in</a>
             </div>
-
         </div>
     </div>
 </div>
@@ -97,12 +109,19 @@
     <script>
         document.getElementById("createAccountForm").addEventListener("submit", function (event) {
             const ageInput = document.querySelector("[name='Age']");
+            const passwordInput = document.querySelector("[name='Password']");
             const age = parseInt(ageInput.value, 10);
+            const password = passwordInput.value;
 
+            // Check age
             if (isNaN(age) || age < 18) {
                 event.preventDefault();
                 alert("You must be at least 18 years old to create an account.");
                 ageInput.focus();
+                return;
+            }
+
+           
             }
         });
     </script>
