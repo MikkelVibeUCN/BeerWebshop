@@ -14,12 +14,12 @@ namespace BeerWebshop.DesktopClient.Controllers
 {
     public partial class AddProductForm : Form
     {
-        private readonly ProductController productController;
+        private readonly ProductController _productController;
 
         public AddProductForm()
         {
             InitializeComponent();
-            productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
+            _productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
         }
 
         private async void btnAddProduct_Click(object sender, EventArgs e)
@@ -36,8 +36,9 @@ namespace BeerWebshop.DesktopClient.Controllers
                 int stock = int.TryParse(txtStock.Text, out int parsedStock) ? parsedStock : 0;
                 float abv = float.TryParse(txtABV.Text, out float parsedABV) ? parsedABV : 0;
 
+
                 // Create a ProductDTO object
-                ProductDTO newProduct = new ProductDTO
+                ProductDTO newProduct = new ProductDTO()
                 {
                     Name = name,
                     BreweryName = breweryName,
@@ -45,11 +46,12 @@ namespace BeerWebshop.DesktopClient.Controllers
                     Description = description,
                     Stock = stock,
                     ABV = abv,
-                    CategoryName = categoryName,
+                    CategoryName = categoryName
                 };
 
+
                 // Call the controller to add the product
-                int result = await productController.AddProductAsync(newProduct);
+                int result = await _productController.AddProductAsync(newProduct);
 
                 // Check if product was added successfully
                 if (result > 0)

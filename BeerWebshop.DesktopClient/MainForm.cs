@@ -1,12 +1,18 @@
+using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.DesktopClient.Controllers;
+
 
 namespace BeerWebshop.DesktopClient
 {
     public partial class MainForm : Form
     {
+        private readonly ProductController _productController;
+
         public MainForm()
         {
             InitializeComponent();
+            _productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -31,7 +37,14 @@ namespace BeerWebshop.DesktopClient
 
         private void btnEditProducts_Click(object sender, EventArgs e)
         {
-            new ViewProductsForm().ShowDialog();
+            new ViewEditDeleteForm(_productController).ShowDialog();
+        }
+
+        private void btnViewProducts_Click(object sender, EventArgs e)
+        {
+            
+            new ViewEditDeleteForm(_productController).ShowDialog();
+            
         }
     }
 }

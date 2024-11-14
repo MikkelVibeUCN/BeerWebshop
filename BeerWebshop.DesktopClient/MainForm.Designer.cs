@@ -61,7 +61,7 @@
             // splitContainer1
             // 
             splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(3, 39);
+            splitContainer1.Location = new Point(3, 32);
             splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -71,7 +71,7 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(grpCrudProducts);
-            splitContainer1.Size = new Size(776, 712);
+            splitContainer1.Size = new Size(776, 719);
             splitContainer1.SplitterDistance = 258;
             splitContainer1.TabIndex = 0;
             // 
@@ -140,6 +140,7 @@
             btnViewProducts.TabIndex = 0;
             btnViewProducts.Text = "&Manage products";
             btnViewProducts.UseVisualStyleBackColor = false;
+            btnViewProducts.Click += btnViewProducts_Click;
             // 
             // button1
             // 
@@ -152,7 +153,7 @@
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(15F, 37F);
+            AutoScaleDimensions = new SizeF(12F, 30F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(782, 753);
             Controls.Add(grpFrontpage);

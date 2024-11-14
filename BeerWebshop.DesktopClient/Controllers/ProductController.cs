@@ -1,4 +1,5 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.Client;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using System;
@@ -11,14 +12,10 @@ namespace BeerWebshop.DesktopClient.Controllers
 {
     public class ProductController
     {
-        private IProductAPIClient productAPIClient;
-        public ProductController()
-        {
-            
-        }
+        private IProductAPIClient _productAPIClient;
         public ProductController(ProductAPIClient productAPIClient)
         {
-            this.productAPIClient = new ProductAPIClient("https://localhost:7244/api/v1/");
+            _productAPIClient = productAPIClient;
         }
 
         public async Task<int>AddProductAsync(ProductDTO product)
@@ -37,12 +34,16 @@ namespace BeerWebshop.DesktopClient.Controllers
                     CategoryName = product.CategoryName,
                 };
 
-               return await productAPIClient.CreateProductAsync(newProduct);
+               return await _productAPIClient.CreateProductAsync(newProduct);
             }
             catch (Exception ex)
             {
                 throw new Exception($"Produkt ikke tilføjet: {ex.Message}");
             }
+        }
+        public async Task<IEnumerable<ProductDTO>> getProducts(ProductQueryParameters productQueryParameters) 
+        {
+            return await _productAPIClient.GetProductsAsync(productQueryParameters); 
         }
     }
 }
