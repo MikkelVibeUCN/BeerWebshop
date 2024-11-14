@@ -19,18 +19,35 @@
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
+                <!-- Street -->
                 <div class="form-group">
-                    <label asp-for="Address" class="control-label">Address</label>
-                    <input asp-for="Address" class="form-control" placeholder="Enter your address" />
-                    <span asp-validation-for="Address" class="text-danger"></span>
+                    <label asp-for="Street" class="control-label">Street</label>
+                    <input asp-for="Street" class="form-control" placeholder="Enter your street" />
+                    <span asp-validation-for="Street" class="text-danger"></span>
                 </div>
 
+                <!-- Street Number -->
                 <div class="form-group">
-                    <label asp-for="ZipCode" class="control-label">Zip Code</label>
-                    <input asp-for="ZipCode" class="form-control" placeholder="Enter your zip code" />
-                    <span asp-validation-for="ZipCode" class="text-danger"></span>
+                    <label asp-for="StreetNumber" class="control-label">Street Number</label>
+                    <input asp-for="StreetNumber" class="form-control" placeholder="Enter your street number" />
+                    <span asp-validation-for="StreetNumber" class="text-danger"></span>
                 </div>
 
+                <!-- Apartment Number -->
+                <div class="form-group">
+                    <label asp-for="ApartmentNumber" class="control-label">Apartment Number (optional)</label>
+                    <input asp-for="ApartmentNumber" class="form-control" placeholder="Enter your apartment number (optional)" />
+                    <span asp-validation-for="ApartmentNumber" class="text-danger"></span>
+                </div>
+
+                <!-- Postal Code -->
+                <div class="form-group">
+                    <label asp-for="Postalcode_FK" class="control-label">Postal Code</label>
+                    <input asp-for="Postalcode_FK" class="form-control" placeholder="Enter your postal code" />
+                    <span asp-validation-for="Postalcode_FK" class="text-danger"></span>
+                </div>
+
+                <!-- City -->
                 <div class="form-group">
                     <label asp-for="City" class="control-label">City</label>
                     <input asp-for="City" class="form-control" placeholder="Enter your city" />
@@ -77,16 +94,16 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-        <script>
-            document.getElementById("createAccountForm").addEventListener("submit", function (event) {
-                const ageInput = document.querySelector("[name='Age']");
-                const age = parseInt(ageInput.value, 10);
+    <script>
+        document.getElementById("createAccountForm").addEventListener("submit", function (event) {
+            const ageInput = document.querySelector("[name='Age']");
+            const age = parseInt(ageInput.value, 10);
 
-                if (isNaN(age) || age < 18) {
-                    event.preventDefault();
-                    alert("You must be at least 18 years old to create an account.");
-                    ageInput.focus();
-                }
-            });
-        </script>
+            if (isNaN(age) || age < 18) {
+                event.preventDefault();
+                alert("You must be at least 18 years old to create an account.");
+                ageInput.focus();
+            }
+        });
+    </script>
 }
