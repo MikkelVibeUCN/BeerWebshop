@@ -1,18 +1,11 @@
-﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.Entities;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BeerWebshop.DAL.DATA.Entities;
 
-namespace BeerWebshop.DAL.DATA.DAO.Interfaces
+namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
+
+public interface IOrderDAO
 {
-    public interface IOrderDAO
-    {
-        Task<int> InsertCompleteOrderAsync(Order order);
-        Task<Order> GetByIdAsync(int id);
+	Task<int> InsertCompleteOrderAsync(Order order);
+	Task<Order?> GetByIdAsync(int id);
+	Task<bool> DeleteOrderByIdAsync(int id);
 
-	}
 }

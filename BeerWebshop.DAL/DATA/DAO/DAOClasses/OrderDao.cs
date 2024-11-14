@@ -10,41 +10,78 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 	{
 		private readonly string _connectionString;
 
-		private const string _insertOrderSql = @"
-            INSERT INTO Orders (CreatedAt, IsDelivered, CustomerId_FK, IsDeleted)
-            OUTPUT INSERTED.Id 
-            VALUES (@CreatedAt, @IsDelivered, @CustomerId_FK, @IsDeleted);";
-
-		private const string _insertOrderLineSql = @"
-            INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total)
-            VALUES (@OrderId, @ProductId, @Quantity, @Total);";
-
-		private const string _getOrderByIdSql = @"
-			SELECT * FROM Orders WHERE Id = @Id;";
+		private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted);";
+		private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
+		private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
+		private const string GetOrderByIdSql = @"SELECT o.Id, o.CreatedAt, o.IsDelivered, o.IsDeleted, ol.Quantity, ol.Total, 
+												p.Id, p.Name, p.Price, p.Description, p.Stock, p.Abv, p.ImageUrl, c.Id, c.Name, c.IsDeleted, b.Id, b.Name, b.IsDeleted
+												FROM Orders o
+												LEFT JOIN OrderLines ol ON o.Id = ol.OrderId
+												LEFT JOIN Products p ON ol.ProductId = p.Id
+												LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
+												LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id
+												WHERE o.Id = @Id";
 
 		public OrderDAO(string connectionString)
 		{
 			_connectionString = connectionString;
 		}
 
-		public async Task<Order> GetByIdAsync(int id)
+		public async Task<bool> DeleteOrderByIdAsync(int orderId)
 		{
 			using var connection = new SqlConnection(_connectionString);
 			await connection.OpenAsync();
 
 			try
 			{
-				var parameters = new { Id = id };
-				var order = await connection.QuerySingleOrDefaultAsync<Order>(_getOrderByIdSql, parameters);
-
-				return order;
+				var rowsAffected = await connection.ExecuteAsync(DeleteOrderByIdSql, new { Id = orderId });
+				return rowsAffected > 0;
 			}
 			catch (Exception ex)
 			{
+				throw new Exception($"Error deleting order with ID: {orderId}: {ex.Message}", ex);
+			}
+		}
 
+		public async Task<Order?> GetByIdAsync(int id)
+		{
+			using var connection = new SqlConnection(_connectionString);
+			await connection.OpenAsync();
+
+			try
+			{
+                Order? orderResult = null;
+
+                connection.Query<Order, OrderLine, Product, Category, Brewery, Order>(
+                    GetOrderByIdSql,
+                    (order, orderLine, product, category, brewery) =>
+                    {
+                        if (orderResult == null)
+                        {
+							orderResult = order;
+                            orderResult.OrderLines = new List<OrderLine>();
+                        }
+						
+						product.Brewery = brewery;
+                        product.Category = category;
+
+                        orderLine.Product = product;
+                        orderResult.OrderLines.Add(orderLine);
+
+                        return order;
+                    },
+                    new { Id = id },
+                    splitOn: "Quantity,Id,Id,Id"
+                );
+
+                return orderResult;
+            }
+			catch (Exception ex)
+			{
 				throw new Exception($"Error getting order from database: {ex.Message}", ex);
 			}
 		}
+
 
 		public async Task<int> InsertCompleteOrderAsync(Order order)
 		{
@@ -65,10 +102,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
 				return orderId;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				await transaction.RollbackAsync();
-				throw new Exception($"Error inserting order: {ex.Message}");
+				throw new Exception($"Error inserting order: {ex.Message}", ex);
 			}
 		}
 
@@ -76,13 +113,12 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 		{
 			var parameters = new
 			{
-				CreatedAt = order.Date,
+				CreatedAt = order.CreatedAt,
 				IsDelivered = order.IsDelivered,
-				CustomerId_FK = order.CustomerId_FK,
 				IsDeleted = order.IsDeleted
 			};
 
-			return await connection.QuerySingleAsync<int>(_insertOrderSql, parameters, transaction);
+			return await connection.QuerySingleAsync<int>(InsertOrderSql, parameters, transaction);
 		}
 
 		private async Task InsertOrderLineAsync(SqlConnection connection, IDbTransaction transaction, OrderLine orderLine, int orderId)
@@ -90,12 +126,12 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			var parameters = new
 			{
 				OrderId = orderId,
-				ProductId = orderLine.ProductId,
+				ProductId = orderLine.Product.Id,
 				Quantity = orderLine.Quantity,
 				Total = orderLine.SubTotal
 			};
 
-			await connection.ExecuteAsync(_insertOrderLineSql, parameters, transaction);
+			await connection.ExecuteAsync(InsertOrderLineSql, parameters, transaction);
 		}
 	}
 }

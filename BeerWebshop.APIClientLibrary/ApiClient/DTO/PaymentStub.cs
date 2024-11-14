@@ -1,6 +1,5 @@
-﻿namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
+﻿namespace BeerWebshop.APIClientLibrary.ApiClient.DTO;
+
+public class PaymentStub
 {
-    public class PaymentStub
-    {
-    }
 }

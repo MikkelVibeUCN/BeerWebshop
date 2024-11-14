@@ -8,6 +8,7 @@ namespace BeerWebshop.Web.Services
     public class CookieService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly object _lock = new object(); // Synchronization lock
 
         public CookieService(IHttpContextAccessor httpContextAccessor)
         {
@@ -16,25 +17,29 @@ namespace BeerWebshop.Web.Services
 
         public T? GetObjectFromCookie<T>(string cookieKey)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null)
+            // Locking ensures only one thread can access this block at a time
+            lock (_lock)
             {
-                throw new Exception("HttpContext was null");
-            }
+                var httpContext = _httpContextAccessor.HttpContext;
+                if (httpContext == null)
+                {
+                    throw new Exception("HttpContext was null");
+                }
 
-            var cookieValue = httpContext.Request.Cookies[cookieKey];
+                var cookieValue = httpContext.Request.Cookies[cookieKey];
 
-            if (cookieValue == null)
-            {
-                return default;
-            }
+                if (cookieValue == null)
+                {
+                    return default;
+                }
 
-            var objectT = JsonConvert.DeserializeObject<T>(cookieValue);
-            if (objectT == null)
-            {
-                throw new Exception("Failed to deserialize cart from cookies");
+                var objectT = JsonConvert.DeserializeObject<T>(cookieValue);
+                if (objectT == null)
+                {
+                    throw new Exception("Failed to deserialize cart from cookies");
+                }
+                return objectT;
             }
-            return objectT;
         }
 
         public void RemoveCookies<T>(string cookieKey)

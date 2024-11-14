@@ -19,7 +19,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient
             if (email == TestEmail)
             {
                 return Task.FromResult(new CustomerDTO
-                {
+        {
                     Id = 1,
                     Email = TestEmail,
                     Password = _hashedPassword,
@@ -28,11 +28,15 @@ namespace BeerWebshop.APIClientLibrary.ApiClient
                     Phone = "123-456-7890",
                     Age = 30
                 });
-            }
+        }
             else
-            {
+        {
                 return Task.FromResult<CustomerDTO>(null);
-            }
+        }
+
+        public Task<CustomerDTO?> GetCustomer(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

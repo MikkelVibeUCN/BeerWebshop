@@ -2,13 +2,13 @@
 using Dapper;
 using System.Data.SqlClient;
 
-namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
+namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 
 public interface IBreweryDAO
 {
-	Task<int> CreateBreweryAsync(Brewery brewery);
-	Task<bool> DeleteAsync(int id);
-    
+    Task<int> CreateBreweryAsync(Brewery brewery);
+    Task<bool> DeleteAsync(int id);
+
     Task<int?> GetBreweryIdByName(string breweryName);
     Task<Brewery?> GetBreweryById(int id);
 }
