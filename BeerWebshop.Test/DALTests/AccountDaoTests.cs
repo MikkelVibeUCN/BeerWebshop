@@ -27,13 +27,33 @@ public class AccountDaoTests
 
     }
 
-    //[Test] Skal ikke implementeres i denne story
-    //public async Task GetCustomerById_WhenCustomerExists_ShouldReturnCustomerWithGivenId()
-    //{
-    //    var customer = await _accountDAO.GetCustomerByIdAsync(_testId);
-    //    Assert.IsNotNull(customer);
-    //    Assert.That(customer.Id == 1);
-    //}
+    [Test]
+    public async Task GetCustomerById_WhenCustomerExists_ShouldReturnCustomerWithGivenId()
+    {
+        var customer = new Customer()
+        {
+            Name = "Navn efternavn",
+            Address = "sejvej 11 9000 aalborg",
+            Email = "hej@dig.dk",
+            Password = "æggemad",
+            Phone = "60170091",
+            Age = 18
+        };
+
+        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+
+        _customersCreated.Add(customerId);
+
+        var customerFound = await _accountDAO.GetCustomerByIdAsync(customerId);
+
+        Assert.That(customer != null);
+        Assert.That(customer.Id == customerFound.Id);
+        Assert.That(customer.Name == customerFound.Name);
+        Assert.That(customer.Address.Equals(customerFound.Address));
+        Assert.That(customer.Email == customerFound.Email);
+        Assert.That(!customer.Password.Equals(customerFound.Password));
+        Assert.That(customer.Phone.Equals(customerFound.Phone));
+    }
 
     [Test]
     public async Task SaveCustomerAsync_WhenCalled_ShouldSaveCustomerAndReturnId()
@@ -41,7 +61,6 @@ public class AccountDaoTests
 
         var customer = new Customer()
         {
-            Id = 1,
             Name = "Navn efternavn",
             Address = "sejvej 11 9000 aalborg",
             Email = "hej@dig.dk",
@@ -50,6 +69,7 @@ public class AccountDaoTests
             Age = 18
         };
         int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        _customersCreated.Add(customerId);
     }
 
     [TearDown]

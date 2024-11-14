@@ -11,39 +11,43 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private readonly string _connectionString;
 
         private const string _getCustomerById = @"SELECT 
-                c.id AS Id, 
-                CONCAT(c.firstName, ' ', c.lastName) AS Name, 
-                c.phone as Phone, 
-                c.passwordHash AS Password, 
-                c.isDeleted AS IsDeleted, 
-                c.age AS Age, 
-                c.email AS Email,
-                -- Combine address components into a single string in SQL
-                CONCAT(a.street, ' ', a.streetNumber, 
-                       CASE WHEN a.apartmentNumber IS NOT NULL THEN CONCAT(' ', a.apartmentNumber) ELSE '' END, 
-                       ', ', p.city, ' ', p.postalCode) AS Address
-                FROM 
-                    Customers c
-                JOIN 
-                    Address a ON c.addressId_FK = a.id
-                JOIN 
-                    PostalCode p ON a.postalCode_FK = p.postalCode
-                WHERE 
-                    c.id = @Id";
-        private const string _saveCustomer = @"
-            INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, AddressId_FK, Age, Email, IsDeleted)
-            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @AddressId, @Age, @Email, 0) SELECT CAST(SCOPE_IDENTITY() AS int);";
+        c.Id AS Id, 
+        CONCAT(c.FirstName, ' ', c.LastName) AS Name, 
+        c.Phone AS Phone, 
+        c.PasswordHash AS Password, 
+        c.IsDeleted AS IsDeleted, 
+        c.Age AS Age, 
+        c.Email AS Email,
+        -- Combine address components into a single string
+        CONCAT(
+            a.Street, ' ', a.StreetNumber, 
+            CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 
+            ' ', p.Postalcode, ' ', p.City
+        ) AS Address
+        FROM 
+            Customers c
+        JOIN 
+            Address a ON a.CustomerId_FK = c.Id
+        JOIN 
+            Postalcode p ON a.Postalcode_FK = p.Postalcode
+        WHERE 
+            c.Id = @Id;";
 
-        private const string _createAddress = @"INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK)
-            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode)
-            SELECT CAST(SCOPE_IDENTITY() AS int)";
+
+        private const string _saveCustomer = @"
+            INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, Age, Email, IsDeleted)
+            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @Age, @Email, 0);
+            SELECT CAST(SCOPE_IDENTITY() AS int);";
+
+        private const string _createAddress = @"
+            INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK, CustomerId_FK)
+            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode, @CustomerId)
+            SELECT CAST(SCOPE_IDENTITY() AS int);";
+
 
         private const string _createZipCode = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
 
-        private const string _deleteCustomerById = @" 
-            DELETE FROM Address WHERE Id = (SELECT AddressId_FK FROM Customers WHERE Id = @Id);
-
-            DELETE FROM Customers WHERE Id = @Id";
+        private const string _deleteCustomerById = @"DELETE FROM Customers WHERE Id = @Id;";
 
         private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
         public AccountDAO(string connectionString)
@@ -51,12 +55,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             _connectionString = connectionString;
         }
 
-        public async Task<int?> CreateAddress(Customer customer, SqlConnection connection)
+        public async Task<int?> CreateAddress(Customer customer, SqlConnection connection, SqlTransaction transaction)
         {
-            // Split the string by spaces
             string[] parts = customer.Address.Split(' ');
 
-            // Initialize variables
             string street = parts[0];
             string streetNumber = parts[1];
             string? apartmentNumber = null;
@@ -90,15 +92,23 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             if (!await GetZipExistsAsync(zipCode))
             {
-                await CreateZip(zipCode, city, connection);
+                await CreateZip(zipCode, city, connection, transaction);
             }
+
             try
             {
-                var addressParameters = new { Street = street, StreetNumber = streetNumber, ApartmentNumber = apartmentNumber, Postalcode = zipCode };
+                var addressParameters = new
+                {
+                    CustomerId = customer.Id, 
+                    Street = street,
+                    StreetNumber = streetNumber,
+                    ApartmentNumber = apartmentNumber,
+                    Postalcode = zipCode
+                };
 
-                var id = await connection.QuerySingleAsync<int>(_createAddress, addressParameters);
+                await connection.ExecuteAsync(_createAddress, addressParameters, transaction);
 
-                return id;
+                return customer.Id;
             }
             catch (Exception)
             {
@@ -106,18 +116,18 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             }
         }
 
-        public async Task<bool> CreateZip(int zipCode, string city, SqlConnection connection)
+
+        public async Task<bool> CreateZip(int zipCode, string city, SqlConnection connection, SqlTransaction transaction)
         {
             try
             {
                 var parameters = new { ZipCode = zipCode, City = city };
-                int rowsAffected = await connection.ExecuteAsync(_createZipCode, parameters);
+                int rowsAffected = await connection.ExecuteAsync(_createZipCode, parameters, transaction);
 
                 return rowsAffected > 0;
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -160,15 +170,14 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         public async Task<int> SaveCustomerAsync(Customer customer)
         {
+
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            int? addressId = await CreateAddress(customer, connection);
+            using var transaction = connection.BeginTransaction();
 
-            if (addressId == null)
-            {
-                throw new Exception("Error creating address");
-            }
+
+            // Split the full name into first and last names
             var parts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             string firstName = parts[0];
@@ -180,13 +189,29 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 LastName = lastName,
                 Phone = customer.Phone,
                 PasswordHash = BCryptTool.HashPassword(customer.Password),
-                AddressId = addressId,
                 Age = customer.Age,
                 Email = customer.Email
             };
 
-            return await connection.QuerySingleAsync<int>(_saveCustomer, parameters);
+            try
+            {
+                int customerId = await connection.QuerySingleAsync<int>(_saveCustomer, parameters, transaction);
+
+                customer.Id = customerId;
+
+                await CreateAddress(customer, connection, transaction);
+
+                await transaction.CommitAsync();
+
+                return customerId;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("Error saving customer", ex);
+            }
         }
+
 
         public async Task<bool> DeleteCustomerAsync(int id)
         {
