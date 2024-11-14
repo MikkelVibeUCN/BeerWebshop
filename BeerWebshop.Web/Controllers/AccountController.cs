@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.Web.Controllers
 {
-	public class AccountController : Controller
-	{
-		private readonly AccountService _accountService;
+    public class AccountController : Controller
+    {
+        private readonly AccountService _accountService;
 
-		public AccountController(AccountService accountService)
-		{
-			_accountService = accountService;
-		}
+        public AccountController(AccountService accountService)
+        {
+            _accountService = accountService;
+        }
 
         public IActionResult Login()
         {
@@ -26,10 +26,11 @@ namespace BeerWebshop.Web.Controllers
                 return View(loginDTO);
             }
 
-            bool isAuthenticated = await _accountService.AuthenticateUserAsync(loginDTO);
-            if (isAuthenticated)
+            // Authenticate and get the hashed password if successful
+            var hashedPassword = await _accountService.AuthenticateAndGetHashedPasswordAsync(loginDTO);
+            if (hashedPassword != null)
             {
-                _accountService.SetAuthCookie("user_token_or_id"); // Replace with actual token or user ID
+                _accountService.SetAuthCookie(hashedPassword, loginDTO.Email); // Store hashed password and email
                 return RedirectToAction("Index", "Home");
             }
 

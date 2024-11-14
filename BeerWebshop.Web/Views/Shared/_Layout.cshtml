@@ -1,201 +1,216 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BeerWebshop.Web</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - BeerWebshop.Web</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BeerWebshop.Web.styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/BeerWebshop.Web.styles.css" asp-append-version="true" />
 
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            font-family: 'Helvetica Neue', sans-serif;
-            background-color: #f4f4f4;
-            color: #333; 
-        }
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			font-family: 'Helvetica Neue', sans-serif;
+			background-color: #f4f4f4;
+			color: #333;
+		}
 
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100%;
-        }
+		.main-container {
+			display: flex;
+			flex-direction: column;
+			min-height: 100%;
+		}
 
-        .content {
-            flex: 1; 
-        }
+		.content {
+			flex: 1;
+		}
 
-        header {
-            background-color: #1b1b1b; 
-            padding: 1rem 0;
-        }
+		header {
+			background-color: #1b1b1b;
+			padding: 1rem 0;
+		}
 
-        .navbar {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+		.navbar {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 0 1rem;
+		}
 
-        .navbar-brand {
-            font-size: 1.8rem;
-            color: #f2a900; 
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+		.navbar-brand {
+			font-size: 1.8rem;
+			color: #f2a900;
+			font-weight: bold;
+			text-transform: uppercase;
+		}
 
-        .navbar-nav .nav-item .nav-link {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #ddd; 
-            padding: 0.8rem 1rem;
-        }
+		.navbar-nav .nav-item .nav-link {
+			font-size: 1rem;
+			font-weight: 600;
+			color: #ddd;
+			padding: 0.8rem 1rem;
+		}
 
-            .navbar-nav .nav-item .nav-link:hover {
-                color: #f2a900; 
-            }
+			.navbar-nav .nav-item .nav-link:hover {
+				color: #f2a900;
+			}
 
-        .navbar-toggler-icon {
-            background-color: #f2a900; 
-        }
+		.navbar-toggler-icon {
+			background-color: #f2a900;
+		}
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #28a745; 
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 5px;
-            z-index: 1000;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-        }
+		.notification {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			background-color: #28a745;
+			color: #fff;
+			padding: 12px 20px;
+			border-radius: 5px;
+			z-index: 1000;
+			display: none;
+			opacity: 0;
+			transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+		}
 
-            .notification.error {
-                background-color: #dc3545;
-            }
+			.notification.error {
+				background-color: #dc3545;
+			}
 
-        footer {
-            background-color: #1b1b1b;
-            color: #ddd;
-            text-align: center;
-            padding: 1rem;
-            margin-top: auto;
-        }
+		footer {
+			background-color: #1b1b1b;
+			color: #ddd;
+			text-align: center;
+			padding: 1rem;
+			margin-top: auto;
+		}
 
-            footer a {
-                color: #f2a900;
-                text-decoration: none;
-            }
+			footer a {
+				color: #f2a900;
+				text-decoration: none;
+			}
 
-                footer a:hover {
-                    text-decoration: underline;
-                }
+				footer a:hover {
+					text-decoration: underline;
+				}
 
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-        }
+		.container {
+			max-width: 1200px;
+			margin: 2rem auto;
+			padding: 2rem;
+		}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+		}
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+		th, td {
+			padding: 12px;
+			text-align: left;
+			border-bottom: 1px solid #ddd;
+		}
 
-        th {
-            background-color: #f2f2f2;
-            color: #333;
-        }
+		th {
+			background-color: #f2f2f2;
+			color: #333;
+		}
 
-    </style>
+	</style>
 
 
 </head>
 <body>
 
-    <div class="main-container">
+	<div class="main-container">
 
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="@Url.Action("Index", "Home")">BeerWebshop</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Index", "Home")">Hjem</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Index", "Beer")">Produkter</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Index", "Cart")">Kurv</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Login", "Account")">Log ind</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
+		<header>
+			<nav class="navbar navbar-expand-lg navbar-dark">
+				<div class="container-fluid">
+					<a class="navbar-brand" href="@Url.Action("Index", "Home")">BeerWebshop</a>
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="navbar-collapse collapse">
+						<ul class="navbar-nav ms-auto">
+							<li class="nav-item">
+								<a class="nav-link" asp-controller="Home" asp-action="Index">Hjem</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" asp-controller="Beer" asp-action="Index">Produkter</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" asp-controller="Cart" asp-action="Index">Kurv</a>
+							</li>
 
-        <div class="content">
-            <div class="container">
-                <main role="main" class="pb-3">
-                    @RenderBody()
-                </main>
-            </div>
-        </div>
+							@if (Context.Request.Cookies["AuthCookie"] != null)
+							{
+								<li class="nav-item">
+									<form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+										<button type="submit" class="nav-link btn btn-link" style="padding: 0;">
+											Log ud
+										</button>
+									</form>
+								</li>
+							}
+							else
+							{
+								<li class="nav-item">
+									<a class="nav-link" asp-controller="Account" asp-action="Login">Log ind</a>
+								</li>
+							}
+						</ul>
+					</div>
 
-        <footer>
-            <p>&copy; 2024 - BeerWebshop</p>
-        </footer>
+				</div>
+			</nav>
+		</header>
 
-    </div>
+		<div class="content">
+			<div class="container">
+				<main role="main" class="pb-3">
+					@RenderBody()
+				</main>
+			</div>
+		</div>
 
-    <div id="notification" class="notification"></div>
+		<footer>
+			<p>&copy; 2024 - BeerWebshop</p>
+		</footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+	</div>
 
-    <script>
-        function showNotification(message, type) {
-            var $notification = $('#notification');
-            $notification.text(message);
-            $notification.removeClass('error success');
-            if (type === 'error') {
-                $notification.addClass('error');
-            } else {
-                $notification.addClass('success');
-            }
-            $notification.css('display', 'block').css('opacity', 1).css('transform', 'translateY(0)');
-            setTimeout(function () {
-                $notification.css('opacity', 0).css('transform', 'translateY(-10px)');
-                setTimeout(function () {
-                    $notification.css('display', 'none');
-                }, 200);
-            }, 1500);
-        }
-    </script>
+	<div id="notification" class="notification"></div>
 
-    @await RenderSectionAsync("Scripts", required: false)
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+
+	<script>
+		function showNotification(message, type) {
+			var $notification = $('#notification');
+			$notification.text(message);
+			$notification.removeClass('error success');
+			if (type === 'error') {
+				$notification.addClass('error');
+			} else {
+				$notification.addClass('success');
+			}
+			$notification.css('display', 'block').css('opacity', 1).css('transform', 'translateY(0)');
+			setTimeout(function () {
+				$notification.css('opacity', 0).css('transform', 'translateY(-10px)');
+				setTimeout(function () {
+					$notification.css('display', 'none');
+				}, 200);
+			}, 1500);
+		}
+	</script>
+
+	@await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>
