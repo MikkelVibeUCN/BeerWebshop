@@ -102,7 +102,7 @@ public class OrderApiClientTests
 
 		orderDto = await _orderApiClient.GetAsync(_createdOrderId);
 
-		var fetchedOrderDto = await _orderApiClient.GetOrderFromId(_createdOrderId);
+		var fetchedOrderDto = await _orderApiClient.GetAsync(_createdOrderId);
 		Assert.IsNotNull(fetchedOrderDto, $"Order with ID {_createdOrderId} should exist.");
 		Assert.That(fetchedOrderDto.Id, Is.EqualTo(_createdOrderId), "Returned Order ID should match the created order ID.");
 	}
