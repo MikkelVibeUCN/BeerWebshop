@@ -17,7 +17,7 @@ namespace BeerWebshop.DesktopClient
 
 		private void ConfigureLayout()
 		{
-			this.Size = new Size(1400, 800);
+			this.Size = new Size(1400, 1200);
 			this.BackColor = Color.LightGray;
 			this.Font = new Font("Segoe UI", 10);
 		}
@@ -35,19 +35,18 @@ namespace BeerWebshop.DesktopClient
 
 			dgvOrderlines.Columns.Clear();
 
-			// Set flexible and fixed column widths
 			dgvOrderlines.Columns.Add(new DataGridViewTextBoxColumn
 			{
 				Name = "ProductName",
 				HeaderText = "Product Name",
-				AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill // Fills available space
+				AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
 			});
 			dgvOrderlines.Columns.Add(new DataGridViewTextBoxColumn
 			{
 				Name = "Quantity",
 				HeaderText = "Quantity",
 				AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
-				MinimumWidth = 60 // Minimum width to avoid overflow
+				MinimumWidth = 60 
 			});
 			dgvOrderlines.Columns.Add(new DataGridViewTextBoxColumn
 			{
@@ -64,15 +63,13 @@ namespace BeerWebshop.DesktopClient
 				MinimumWidth = 80
 			});
 
-			// Align numeric columns to the right
 			dgvOrderlines.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 			dgvOrderlines.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 			dgvOrderlines.Columns["Subtotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 
-			// Set the DataGridView to fill the form width with constraints
 			dgvOrderlines.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-			dgvOrderlines.MaximumSize = new Size(800, dgvOrderlines.Height); // Set max width to 800px (adjust as needed)
-			dgvOrderlines.AutoSize = true; // Resize to fit content within constraints
+			dgvOrderlines.MaximumSize = new Size(800, dgvOrderlines.Height);
+			dgvOrderlines.AutoSize = true; 
 		}
 
 
@@ -104,7 +101,6 @@ namespace BeerWebshop.DesktopClient
 			}
 		}
 
-		//TODO: Implement the LoadData method og fædiggør viewet
 		private async Task LoadData()
 		{
 			try

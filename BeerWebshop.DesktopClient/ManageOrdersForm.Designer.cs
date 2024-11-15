@@ -30,17 +30,16 @@
 		{
 			splitContainer1 = new SplitContainer();
 			lstOrders = new ListBox();
+			txtBox_Total = new TextBox();
 			lbl_Total = new Label();
 			dgvOrderlines = new DataGridView();
 			textBox3 = new TextBox();
 			textBox2 = new TextBox();
 			textBox1 = new TextBox();
-			lbl_Orderlines = new Label();
 			lbl_Status = new Label();
 			lbl_Date = new Label();
 			lbl_OrderId = new Label();
 			backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-			txtBox_Total = new TextBox();
 			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
 			splitContainer1.Panel1.SuspendLayout();
 			splitContainer1.Panel2.SuspendLayout();
@@ -67,7 +66,6 @@
 			splitContainer1.Panel2.Controls.Add(textBox3);
 			splitContainer1.Panel2.Controls.Add(textBox2);
 			splitContainer1.Panel2.Controls.Add(textBox1);
-			splitContainer1.Panel2.Controls.Add(lbl_Orderlines);
 			splitContainer1.Panel2.Controls.Add(lbl_Status);
 			splitContainer1.Panel2.Controls.Add(lbl_Date);
 			splitContainer1.Panel2.Controls.Add(lbl_OrderId);
@@ -87,6 +85,14 @@
 			lstOrders.TabIndex = 0;
 			lstOrders.SelectedIndexChanged += lstOrders_SelectedIndexChanged;
 			// 
+			// txtBox_Total
+			// 
+			txtBox_Total.Location = new Point(166, 114);
+			txtBox_Total.Margin = new Padding(4);
+			txtBox_Total.Name = "txtBox_Total";
+			txtBox_Total.Size = new Size(155, 31);
+			txtBox_Total.TabIndex = 10;
+			// 
 			// lbl_Total
 			// 
 			lbl_Total.AutoSize = true;
@@ -99,12 +105,13 @@
 			// 
 			// dgvOrderlines
 			// 
+			dgvOrderlines.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
 			dgvOrderlines.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			dgvOrderlines.Location = new Point(21, 181);
 			dgvOrderlines.Margin = new Padding(4);
 			dgvOrderlines.Name = "dgvOrderlines";
 			dgvOrderlines.RowHeadersWidth = 51;
-			dgvOrderlines.Size = new Size(560, 254);
+			dgvOrderlines.Size = new Size(499, 256);
 			dgvOrderlines.TabIndex = 8;
 			// 
 			// textBox3
@@ -130,16 +137,6 @@
 			textBox1.Name = "textBox1";
 			textBox1.Size = new Size(155, 31);
 			textBox1.TabIndex = 4;
-			// 
-			// lbl_Orderlines
-			// 
-			lbl_Orderlines.AutoSize = true;
-			lbl_Orderlines.Location = new Point(21, 152);
-			lbl_Orderlines.Margin = new Padding(4, 0, 4, 0);
-			lbl_Orderlines.Name = "lbl_Orderlines";
-			lbl_Orderlines.Size = new Size(93, 25);
-			lbl_Orderlines.TabIndex = 3;
-			lbl_Orderlines.Text = "Orderlines";
 			// 
 			// lbl_Status
 			// 
@@ -171,14 +168,6 @@
 			lbl_OrderId.TabIndex = 0;
 			lbl_OrderId.Text = "Order ID:";
 			// 
-			// txtBox_Total
-			// 
-			txtBox_Total.Location = new Point(166, 114);
-			txtBox_Total.Margin = new Padding(4);
-			txtBox_Total.Name = "txtBox_Total";
-			txtBox_Total.Size = new Size(155, 31);
-			txtBox_Total.TabIndex = 10;
-			// 
 			// ManageOrdersForm
 			// 
 			AutoScaleDimensions = new SizeF(10F, 25F);
@@ -204,7 +193,6 @@
 		private TextBox textBox3;
 		private TextBox textBox2;
 		private TextBox textBox1;
-		private Label lbl_Orderlines;
 		private Label lbl_OrderId;
 		private Label lbl_Date;
 		private Label lbl_Status;
