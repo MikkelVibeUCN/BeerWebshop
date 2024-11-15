@@ -10,9 +10,9 @@ public class AccountAPIClient : BaseClient<CustomerDTO>, IAccountAPIClient
     public AccountAPIClient(string uri) : base(uri, "account")
     {
     }
-    public async Task<CustomerDTO?> GetCustomerByEmail(string email)
+    public async Task<CustomerDTO?> GetByEmailAsync(string email)
     {
-        return await GetByString(email);
+        return await GetByStringAsync(email);
     }
 
     public Task<string> GetHashedPasswordAsync(string email)

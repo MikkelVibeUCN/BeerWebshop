@@ -36,7 +36,7 @@ namespace BeerWebshop.RESTAPI.Controllers
         {
             try
             {
-                var customerDTO = await _accountService.GetCustomerFromEmail(email);
+                var customerDTO = await _accountService.GetByEmail(email);
                 return Ok(customerDTO);
             }
             catch (Exception e)

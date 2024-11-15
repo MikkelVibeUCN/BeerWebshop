@@ -65,10 +65,10 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
-        public async Task<T?> GetByString(string searchKey, string? endpoint = null)
+        public async Task<T?> GetByStringAsync(string searchKey, string? endpoint = null)
         {
             endpoint ??= _defaultEndPoint;
-            var response = await _restClient.RequestAsync<T>(Method.Get, endpoint);
+            var response = await _restClient.RequestAsync<T>(Method.Get, endpoint, searchKey);
 
             if (!response.IsSuccessful)
             {

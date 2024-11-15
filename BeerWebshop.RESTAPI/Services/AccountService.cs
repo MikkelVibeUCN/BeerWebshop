@@ -19,15 +19,12 @@ namespace BeerWebshop.RESTAPI.Services
             return await _accountDAO.SaveCustomerAsync(customer);
         }
 
-        public async Task<CustomerDTO> GetCustomerFromEmail(string email)
+        public async Task<CustomerDTO?> GetByEmail(string email)
         {
-            // få fat i customer entity'
-            var customer = await _accountDAO.GetCustomerByEmail(email);
-            //Map entity til dto
-            //returner dto
-            return MappingHelper.MapToDTO(customer);
-            
+            var customer = await _accountDAO.GetByEmail(email);
+            if(customer == null) { return null; }
 
+            return MappingHelper.MapToDTO(customer);
         }
     }
 }

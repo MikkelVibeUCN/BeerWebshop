@@ -169,7 +169,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             }
         }
 
-        public async Task<Customer> GetCustomerByEmail(string email)
+        public async Task<Customer?> GetByEmail(string email)
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -180,11 +180,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 int? customerId = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, parameters);
 
                 await connection.CloseAsync();
-
-                if (customerId == null)
-                {
-                    throw new Exception("Customer with this email does not exist");
-                }
 
                 return await GetCustomerByIdAsync((int)customerId);
             }
