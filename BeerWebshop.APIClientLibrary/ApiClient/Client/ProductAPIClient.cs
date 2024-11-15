@@ -21,9 +21,13 @@ public class ProductAPIClient : IProductAPIClient
 		return response.Data;
 	}
 
-	public Task EditProductAsync(ProductDTO product)
+	public async Task EditProductAsync(ProductDTO product)
 	{
-		throw new NotImplementedException();
+		var response = await _restClient.RequestAsync(Method.Put, $"Products/{product.Id}", product);
+		if (!response.IsSuccessful)
+		{
+			throw new Exception($"Error updating ProductDTO with ID{product.Id}. Message was {response.Content}");
+		}
 	}
 
 	public async Task<IEnumerable<string>> GetProductCategoriesAsync()

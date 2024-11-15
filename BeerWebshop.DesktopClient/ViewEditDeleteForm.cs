@@ -89,17 +89,15 @@ namespace BeerWebshop.DesktopClient
             lblCategory.Text = product.CategoryName;
             lblDescription.Text = product.Description;
         }
-
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            EditSelectedProduct();
+            //TODO: Fix så UI opdaterer med det samme når man editer
+            new EditProductForm(_productController).ShowDialog();
+
         }
         //TODO: Lav en ny form hvor man indtaster de informationer der skal edites, gem dem, vis ViewEditDeleteForm vinduet igen
         //HACK: Kig på Jakobs edit metode og form
-        private async void EditSelectedProduct()
-        {
-            
-        }
+
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
