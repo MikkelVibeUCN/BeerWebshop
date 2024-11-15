@@ -15,11 +15,11 @@ namespace BeerWebshop.APIClientLibrary.ApiClient
             _hashedPassword = BCrypt.Net.BCrypt.HashPassword(TestPassword);
         }
 
-        public Task<CustomerDTO> GetCustomerByEmail(string email)
+        public Task<CustomerDTO?> GetByEmailAsync(string email)
         {
             if (email == TestEmail)
             {
-                return Task.FromResult(new CustomerDTO
+                return Task.FromResult<CustomerDTO?>(new CustomerDTO
                 {
                     Id = 1,
                     Email = TestEmail,
@@ -32,7 +32,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient
             }
             else
             {
-                return Task.FromResult<CustomerDTO>(null);
+                return Task.FromResult<CustomerDTO?>(null);
             }
         }
 

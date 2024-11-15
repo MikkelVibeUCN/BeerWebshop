@@ -92,7 +92,7 @@ namespace BeerWebshop.Web.Services
     // Authenticate user and return hashed password if successful
     public async Task<string?> AuthenticateAndGetHashedPasswordAsync(LoginDTO loginDTO)
     {
-        var customerDTO = await _accountAPIClient.GetCustomerByEmail(loginDTO.Email);
+        var customerDTO = await _accountAPIClient.GetByEmailAsync(loginDTO.Email);
         if (customerDTO != null && BCrypt.Net.BCrypt.Verify(loginDTO.Password, customerDTO.Password))
         {
             return customerDTO.Password; // Return the hashed password to store in the cookie
