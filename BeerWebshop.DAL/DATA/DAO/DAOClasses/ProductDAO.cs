@@ -30,7 +30,7 @@ public class ProductDAO : IProductDAO
 	private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
 	private const string UpdateStockSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
 	private const string BaseProductSql = @"
-        SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.ABV, p.Stock,
+        SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.ABV, p.Stock, p.Rowversion,
                c.Id AS Id, c.Name AS Name, 
                b.Id AS Id, b.Name AS Name
         FROM Products p
@@ -265,11 +265,8 @@ public class ProductDAO : IProductDAO
 			param: new { Offset = offset, PageSize = pageSize, CategoryNames = categoryNames },
 			splitOn: "Id,Id"
 		);
-
 		return products;
 	}
-
-
 
 	public async Task<int> GetProductCountAsync(ProductQueryParameters parameters)
 	{
