@@ -8,11 +8,13 @@ namespace BeerWebshop.Web.Controllers
     public class AccountController : Controller
     {
         private readonly AccountService _accountService;
+        private readonly OrderService _orderService;
 
-        public AccountController(AccountService accountService)
+		public AccountController(AccountService accountService, OrderService orderService)
         {
             _accountService = accountService;
-        }
+			_orderService = orderService;
+		}
 
         public IActionResult Login()
         {
@@ -27,20 +29,37 @@ namespace BeerWebshop.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                return View(loginDTO); 
+            }
+
+            try
+            {
+                var customer = await _accountService.GetCustomerByEmailAsync(loginDTO.Email);
+                if (customer == null)
+                {
+                    ModelState.AddModelError("", "Invalid email or password.");
+                    return View(loginDTO);
+                }
+
+                var hashedPassword = await _accountService.AuthenticateAndGetHashedPasswordAsync(loginDTO);
+                if (hashedPassword != null)
+                {
+                    _accountService.SetAuthCookie(hashedPassword, loginDTO.Email, (int)customer.Id);
+                    return RedirectToAction("Index", "Home"); 
+                }
+
+                ModelState.AddModelError("", "Invalid email or password.");
                 return View(loginDTO);
             }
-
-            // Authenticate and get the hashed password if successful
-            var hashedPassword = await _accountService.AuthenticateAndGetHashedPasswordAsync(loginDTO);
-            if (hashedPassword != null)
+            catch (Exception ex)
             {
-                _accountService.SetAuthCookie(hashedPassword, loginDTO.Email); // Store hashed password and email
-                return RedirectToAction("Index", "Home");
-            }
+                Console.WriteLine($"Login failed: {ex.Message}");
 
-            ModelState.AddModelError("", "Invalid login attempt.");
-            return View(loginDTO);
+                ModelState.AddModelError("", "An error occurred while attempting to log in. Please try again.");
+                return View(loginDTO);
+            }
         }
+
 
         [HttpPost]
         public IActionResult Logout()
@@ -63,5 +82,16 @@ namespace BeerWebshop.Web.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-    }
+
+        public async Task<IActionResult> AccountOverview()
+        {
+            var customerId = _accountService.GetCustomerIdFromCookie();
+            
+            var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+
+			return View(orders);
+		}
+
+        
+	}
 }

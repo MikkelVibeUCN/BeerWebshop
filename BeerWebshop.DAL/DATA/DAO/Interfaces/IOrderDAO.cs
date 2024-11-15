@@ -8,4 +8,5 @@ public interface IOrderDAO
 	Task<Order?> GetByIdAsync(int id);
 	Task<bool> DeleteOrderByIdAsync(int id);
 	Task<IEnumerable<Order>> GetAllOrdersAsync();
+	Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId);
 }
