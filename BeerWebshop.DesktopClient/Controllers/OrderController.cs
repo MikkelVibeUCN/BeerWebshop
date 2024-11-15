@@ -14,6 +14,6 @@ public class OrderController
 
 	public async Task<IEnumerable<OrderDTO>> GetAllOrders()
 	{
-		return await _orderAPIClient.GetAllOrdersAsync();
+		return await _orderAPIClient.GetAllAsync();
 	}
 }

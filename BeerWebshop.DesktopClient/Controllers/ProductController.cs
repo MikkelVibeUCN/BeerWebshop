@@ -37,7 +37,7 @@ namespace BeerWebshop.DesktopClient.Controllers
                     ImageUrl = ""
 				};
 
-               return await _productAPIClient.CreateProductAsync(newProduct);
+               return await _productAPIClient.CreateAsync(newProduct);
             }
             catch (Exception ex)
             {
@@ -51,7 +51,7 @@ namespace BeerWebshop.DesktopClient.Controllers
 
         public async Task<bool> DeleteProduct(ProductDTO product)
         {
-            return await _productAPIClient.DeleteProductByIdAsync(product.Id);
+            return await _productAPIClient.DeleteAsync(product.Id);
         }
         public async Task EditProduct(ProductDTO product)
         { 
