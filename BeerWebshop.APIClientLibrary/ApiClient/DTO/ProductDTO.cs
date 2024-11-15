@@ -11,5 +11,6 @@ public class ProductDTO
 	public float ABV { get; set; }
 	public required string CategoryName { get; set; }
 	public string? ImageUrl { get; set; }
+	public string? RowVersion { get; set; }
 
 }

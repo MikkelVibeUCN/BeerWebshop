@@ -3,8 +3,9 @@ using BeerWebshop.DAL.DATA.Entities;
 
 namespace BeerWebshop.RESTAPI.Tools;
 
-public static class MappingHelper
+internal static class MappingHelper
 {
+
 	public static Order MapOrderDTOToEntity(OrderDTO dto, List<OrderLine> orderLines)
 	{
 		return new Order
@@ -67,7 +68,8 @@ public static class MappingHelper
 			Stock = product.Stock,
 			ABV = product.Abv,
 			CategoryName = product.Category?.Name!,
-			ImageUrl = product.ImageUrl!
+			ImageUrl = product.ImageUrl!,
+			RowVersion = product.RowVersion != null ? Convert.ToBase64String(product.RowVersion) : string.Empty
 		};
 	}
 
@@ -84,7 +86,8 @@ public static class MappingHelper
 			Stock = productDTO.Stock,
 			Abv = productDTO.ABV,
 			ImageUrl = productDTO.ImageUrl,
-			IsDeleted = false
+			IsDeleted = false,
+			RowVersion = Convert.FromBase64String(productDTO.RowVersion)
 		};
 	}
 

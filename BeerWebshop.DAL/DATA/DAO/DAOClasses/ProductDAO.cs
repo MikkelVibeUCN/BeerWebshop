@@ -21,15 +21,18 @@ public class ProductDAO : IProductDAO
                 INNER JOIN Categories c ON p.CategoryId_FK = c.Id
                 INNER JOIN Breweries b ON p.BreweryId_FK = b.Id                
                 WHERE p.IsDeleted = 0 AND p.Id = @Id";
+	private const string DeleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
+	private const string UpdateByIdSql = @"UPDATE Products SET Name = @Name, CategoryId_FK = @CategoryId, BreweryId_FK = @BreweryId, 
+											Price = @Price, Description = @Description, Stock = @Stock, Abv = @Abv, ImageUrl = @ImageUrl, 
+											IsDeleted = @IsDeleted WHERE Id = @Id and RowVersion = @RowVersion;";
 
 	private const string GetFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
-	private const string DeleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
 	private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
 	private const string UpdateStockSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
 	private const string BaseProductSql = @"
-        SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, 
-               c.Id AS CategoryId, c.Name AS Name, 
-               b.Id AS BreweryId, b.Name AS Name
+        SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.ABV, p.Stock, p.Rowversion,
+               c.Id AS Id, c.Name AS Name, 
+               b.Id AS Id, b.Name AS Name
         FROM Products p
         INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
         INNER JOIN Categories c ON p.CategoryId_FK = c.Id
@@ -40,8 +43,6 @@ public class ProductDAO : IProductDAO
             INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
             INNER JOIN Categories c ON p.CategoryId_FK = c.Id
             WHERE p.IsDeleted = 0";
-
-	//TODO Update til køb + inventory management.
 
 
 	private readonly string _connectionString;
@@ -76,9 +77,38 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
-	public async Task EditAsync(int id)
+	public async Task<bool> UpdateAsync(Product product)
 	{
-		throw new NotImplementedException();
+
+		try
+		{
+			using var connection = new SqlConnection(_connectionString);
+			var rowsAffected = await connection.ExecuteAsync(UpdateByIdSql, new
+			{
+				product.Name,
+				CategoryId = product.Category.Id,
+				BreweryId = product.Brewery.Id,
+				product.Price,
+				product.Description,
+				product.Stock,
+				product.Abv,
+				product.ImageUrl,
+				product.IsDeleted,
+				Id = product.Id,
+				product.RowVersion
+			});
+
+			if(rowsAffected == 0)
+			{
+				throw new Exception("Concurrency conflict detected.");
+			}
+
+			return true;
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error updating product: {ex.Message}", ex);
+		}
 	}
 
 	public async Task<Product?> GetByIdAsync(int id)
@@ -108,7 +138,7 @@ public class ProductDAO : IProductDAO
 	}
 
 	//TODO Timeout ved deadlock.
-	public async Task<bool> UpdateStockAsync(int productId, int quantity) 
+	public async Task<bool> UpdateStockAsync(int productId, int quantity)
 	{
 		using var connection = new SqlConnection(_connectionString);
 		await connection.OpenAsync();
@@ -119,14 +149,14 @@ public class ProductDAO : IProductDAO
 		parameters.Add("@ProductId", productId);
 		parameters.Add("@Quantity", quantity);
 
-		var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout:5);
+		var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout: 5);
 		if (stock < quantity)
 		{
 			transaction.Rollback();
 			throw new InvalidOperationException("Insufficient stock.");
 		}
 
-		var rowsAffected = await connection.ExecuteAsync(UpdateStockSql, parameters, transaction, commandTimeout:5);
+		var rowsAffected = await connection.ExecuteAsync(UpdateStockSql, parameters, transaction, commandTimeout: 5);
 		if (rowsAffected < 0)
 		{
 			transaction.Rollback();
@@ -167,7 +197,6 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
-
 	public async Task<bool> DeleteAsync(int id)
 	{
 		using var connection = new SqlConnection(_connectionString);
@@ -182,8 +211,6 @@ public class ProductDAO : IProductDAO
 			throw new Exception($"Error deleting product by id: {ex.Message}", ex);
 		}
 	}
-
-
 
 	// Ny implementering af getproducts som kan tage søgekriterier med
 	public async Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters)
@@ -222,43 +249,35 @@ public class ProductDAO : IProductDAO
 
 		using var connection = new SqlConnection(_connectionString);
 
-		products = await connection.QueryAsync<Product, Brewery, Category, Product>(
+		products = await connection.QueryAsync<Product, Category, Brewery, Product>(
 			queryBuilder.ToString(),
-			(product, brewery, category) =>
+			(product, category, brewery) =>
 			{
 				product.Brewery = brewery;
 				product.Category = category;
 				return product;
 			},
 			param: new { Offset = offset, PageSize = pageSize, CategoryNames = categoryNames },
-			splitOn: "CategoryId,BreweryId"
+			splitOn: "Id,Id"
 		);
-
 		return products;
 	}
 
-
-
 	public async Task<int> GetProductCountAsync(ProductQueryParameters parameters)
 	{
-		// Initialize count variable
 		int productCount = 0;
 
-		// Build the query for counting the total products based on parameters
 		StringBuilder queryBuilder = new StringBuilder(GetProductCountSql);
 
-		// Apply category filter if specified
 		if (!string.IsNullOrEmpty(parameters.Category))
 		{
 			queryBuilder.Append(" AND c.Name IN (@CategoryNames)");
 		}
 
-		// Execute the count query using Dapper
 		try
 		{
 			using var connection = new SqlConnection(_connectionString);
 
-			// Execute the query and return the count
 			productCount = await connection.ExecuteScalarAsync<int>(
 				queryBuilder.ToString(),
 				new { CategoryNames = parameters.Category != null ? string.Join(",", parameters.Category) : string.Empty }

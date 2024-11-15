@@ -29,7 +29,10 @@
 			IsDelivered = isDelivered;
 		}
 
-
+		public override string ToString()
+		{
+			return $"Order ID: {Id}, Date: {Date.ToShortDateString()}, Delivered: {IsDelivered}";
+		}
 
 		public void AddOrderLine(OrderLineDTO OrderLineDTO)
 		{

@@ -41,7 +41,21 @@ namespace BeerWebshop.RESTAPI.Controllers
 			}
 		}
 
-		//New
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrdersAsync()
+		{
+			try
+			{
+				var ordersDtos = await _orderService.GetOrdersAsync();
+				return Ok(ordersDtos);
+
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
+
 		[HttpPost]
 		public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
 		{

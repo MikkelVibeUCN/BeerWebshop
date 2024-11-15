@@ -28,7 +28,8 @@ public class ProductAPIClientIntegrationTests
 			Description = "Sample product for integration test",
 			Stock = 20,
 			ABV = 5.5f,
-			ImageUrl = "http://example.com/image.jpg"
+			ImageUrl = "http://example.com/image.jpg",
+			RowVersion = ""
 		};
 
 		_createdProductId = await _productApiClient.CreateAsync(productDto);

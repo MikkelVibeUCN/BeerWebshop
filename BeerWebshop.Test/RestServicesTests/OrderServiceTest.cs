@@ -44,7 +44,9 @@ namespace BeerWebshop.Test.RestServicesTests
 				Stock = 10,
 				ABV = 5.0f,
 				CategoryName = testCategory.Name,
-				ImageUrl = "https://example.com/sample-image.jpg"
+				ImageUrl = "https://example.com/sample-image.jpg",
+				RowVersion = ""
+
 			};
 
 			int productId = await _productService.CreateProductAsync(testProductDTO);

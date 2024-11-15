@@ -53,7 +53,7 @@ namespace BeerWebshop.RESTAPI.Services
 			{
 				foreach (var orderLine in order.OrderLines)
 				{
-					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity, orderLine.Product.RowVersion);
+					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity);
 					if (!success)
 					{
 						throw new InvalidOperationException("The product stock was modified by another transaction.");
@@ -84,10 +84,18 @@ namespace BeerWebshop.RESTAPI.Services
 			return order;
 		}
 
+		public async Task<IEnumerable<OrderDTO>> GetOrdersAsync()
+		{
+			var orders = await _orderDao.GetAllOrdersAsync();
+			return orders.Select(MappingHelper.MapOrderEntityToDTO).ToList();
+		}
+
 
 		public async Task<bool> DeleteOrderByIdAsync(int orderId)
 		{
 			return await _orderDao.DeleteOrderByIdAsync(orderId);
 		}
+
+
 	}
 }

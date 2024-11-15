@@ -21,11 +21,11 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 		{
 			var response = await _restClient.RequestAsync<int>(Method.Get, "products/count", parameters);
 
-			if (!response.IsSuccessful)
-			{
-				throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
-			}
-			return response.Data;
+		if (!response.IsSuccessful)
+		{
+			throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
+		}
+		return response.Data;
 
 		}
 
@@ -33,13 +33,13 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 		{
 			var response = await _restClient.RequestAsync<IEnumerable<ProductDTO>>(Method.Get, "products", parameters);
 
-			if (!response.IsSuccessful || response.Data == null)
-			{
-				throw new Exception($"Error retrieving Products. Message was {response.Content}");
-			}
-
-			return response.Data ?? Enumerable.Empty<ProductDTO>();
+		if (!response.IsSuccessful || response.Data == null)
+		{
+			throw new Exception($"Error retrieving Products. Message was {response.Content}");
 		}
+
+		return response.Data ?? Enumerable.Empty<ProductDTO>();
+	}
 
 		
 	}

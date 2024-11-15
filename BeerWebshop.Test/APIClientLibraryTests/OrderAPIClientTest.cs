@@ -34,7 +34,8 @@ public class OrderApiClientTests
 			Description = "Sample product for integration test",
 			Stock = 20,
 			ABV = 5.5f,
-			ImageUrl = "http://example.com/image.jpg"
+			ImageUrl = "http://example.com/image.jpg",
+			RowVersion = Convert.ToBase64String(new byte[8])
 		};
 
 		_createdProductId = await _productApiClient.CreateAsync(productDto);
@@ -63,40 +64,50 @@ public class OrderApiClientTests
 	[Test]
 	public async Task GetOrderFromId_WhenOrderExists_ShouldReturnOrder()
 	{
-        var productDto = new ProductDTO
-        {
-            Name = "Integration Test Product",
-            CategoryName = "IPA",
-            BreweryName = "Overtone",
-            Price = 10.0f,
-            Description = "Sample product for integration test",
-            Stock = 20,
-            ABV = 5.5f,
-            ImageUrl = "http://example.com/image.jpg"
-        };
+		var productDto = new ProductDTO
+		{
+			Name = "Integration Test Product",
+			CategoryName = "IPA",
+			BreweryName = "Overtone",
+			Price = 10.0f,
+			Description = "Sample product for integration test",
+			Stock = 20,
+			ABV = 5.5f,
+			ImageUrl = "http://example.com/image.jpg",
+			RowVersion = Convert.ToBase64String(new byte[8])
+		};
 
         _createdProductId = await _productApiClient.CreateAsync(productDto);
 
         var retrievedProductDto = await _productApiClient.GetAsync(_createdProductId);
 
-        OrderDTO orderDto = new OrderDTO(DateTime.Now, new List<OrderLineDTO>(), null, false);
+		var orderDto = new OrderDTO
+		{
+			Date = DateTime.Now,
+			OrderLines = new List<OrderLineDTO>(),
+			CustomerDTO = null,
+			IsDelivered = false
+			
+		};
 
-        var orderline = new OrderLineDTO
-        {
+		var orderline = new OrderLineDTO
+		{
+			Product = retrievedProductDto,
+			Quantity = 2
+		};
 
-            Product = retrievedProductDto,
-            Quantity = 2
-        };
-
-        orderDto.OrderLines.Add(orderline);
+		orderDto.OrderLines.Add(orderline); 
 
         _createdOrderId = await _orderApiClient.CreateAsync(orderDto);
 
 		orderDto = await _orderApiClient.GetAsync(_createdOrderId);
 
-		Assert.IsNotNull(orderDto, $"Order with ID {_createdOrderId} should exist.");
-		Assert.That(orderDto.Id, Is.EqualTo(_createdOrderId), "Returned Order ID should match the created order ID.");
+		var fetchedOrderDto = await _orderApiClient.GetOrderFromId(_createdOrderId);
+		Assert.IsNotNull(fetchedOrderDto, $"Order with ID {_createdOrderId} should exist.");
+		Assert.That(fetchedOrderDto.Id, Is.EqualTo(_createdOrderId), "Returned Order ID should match the created order ID.");
 	}
+
+
 
 	[TearDown]
 	public async Task TearDown()
