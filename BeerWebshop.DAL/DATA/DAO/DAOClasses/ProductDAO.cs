@@ -30,7 +30,7 @@ public class ProductDAO : IProductDAO
 	private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
 	private const string UpdateStockSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
 	private const string BaseProductSql = @"
-        SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, 
+        SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.ABV, p.Stock,
                c.Id AS CategoryId, c.Name AS Name, 
                b.Id AS BreweryId, b.Name AS Name
         FROM Products p
@@ -254,9 +254,9 @@ public class ProductDAO : IProductDAO
 
 		using var connection = new SqlConnection(_connectionString);
 
-		products = await connection.QueryAsync<Product, Brewery, Category, Product>(
+		products = await connection.QueryAsync<Product, Category, Brewery, Product>(
 			queryBuilder.ToString(),
-			(product, brewery, category) =>
+			(product, category, brewery) =>
 			{
 				product.Brewery = brewery;
 				product.Category = category;
