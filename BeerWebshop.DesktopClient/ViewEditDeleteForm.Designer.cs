@@ -1,4 +1,5 @@
-﻿namespace BeerWebshop.DesktopClient
+﻿
+namespace BeerWebshop.DesktopClient
 {
     partial class ViewEditDeleteForm
     {
@@ -294,6 +295,8 @@
             pnlEdit.PerformLayout();
             ResumeLayout(false);
         }
+
+        
 
         #endregion
 
