@@ -31,8 +31,8 @@ namespace BeerWebshop.RESTAPI.Controllers
             }
         }
 
-        [HttpGet("customer")]
-        public async Task<ActionResult> GetCustomerFromEmail(string email)
+        [HttpGet]
+        public async Task<ActionResult> GetCustomerFromEmail([FromBody]string email)
         {
             try
             {
