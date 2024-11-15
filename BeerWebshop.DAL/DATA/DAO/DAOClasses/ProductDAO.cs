@@ -44,8 +44,6 @@ public class ProductDAO : IProductDAO
             INNER JOIN Categories c ON p.CategoryId_FK = c.Id
             WHERE p.IsDeleted = 0";
 
-	//TODO Update til køb + inventory management.
-
 
 	private readonly string _connectionString;
 
@@ -199,7 +197,6 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
-
 	public async Task<bool> DeleteAsync(int id)
 	{
 		using var connection = new SqlConnection(_connectionString);
@@ -214,8 +211,6 @@ public class ProductDAO : IProductDAO
 			throw new Exception($"Error deleting product by id: {ex.Message}", ex);
 		}
 	}
-
-
 
 	// Ny implementering af getproducts som kan tage søgekriterier med
 	public async Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters)
@@ -270,24 +265,19 @@ public class ProductDAO : IProductDAO
 
 	public async Task<int> GetProductCountAsync(ProductQueryParameters parameters)
 	{
-		// Initialize count variable
 		int productCount = 0;
 
-		// Build the query for counting the total products based on parameters
 		StringBuilder queryBuilder = new StringBuilder(GetProductCountSql);
 
-		// Apply category filter if specified
 		if (!string.IsNullOrEmpty(parameters.Category))
 		{
 			queryBuilder.Append(" AND c.Name IN (@CategoryNames)");
 		}
 
-		// Execute the count query using Dapper
 		try
 		{
 			using var connection = new SqlConnection(_connectionString);
 
-			// Execute the query and return the count
 			productCount = await connection.ExecuteScalarAsync<int>(
 				queryBuilder.ToString(),
 				new { CategoryNames = parameters.Category != null ? string.Join(",", parameters.Category) : string.Empty }
@@ -300,5 +290,4 @@ public class ProductDAO : IProductDAO
 		}
 		return productCount;
 	}
-
 }
