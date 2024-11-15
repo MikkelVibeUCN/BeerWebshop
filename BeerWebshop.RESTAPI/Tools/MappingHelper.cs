@@ -115,4 +115,29 @@ public static class MappingHelper
 			Name = brewery.Name
 		};
 	}
+	public static Customer MapToCustomer(CustomerDTO customer)
+	{
+		return new Customer
+		{
+			Name = customer.Name,
+			Address = customer.Address,
+			Email = customer.Email,
+			Phone = customer.Phone,
+			Password = customer.Password,
+			Age = customer.Age,
+		};
+	}
+	public static CustomerDTO MapToDTO(Customer customer)
+	{
+		return new CustomerDTO
+		{
+			Id = customer.Id,
+			Name = customer.Name,
+			Address = customer.Address,
+			Email = customer.Email,
+			Phone = customer.Phone,
+			Password = customer.Password,
+			Age = customer.Age,
+		};
+	}
 }

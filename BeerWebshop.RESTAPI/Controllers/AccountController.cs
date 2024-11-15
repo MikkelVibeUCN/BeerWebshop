@@ -31,6 +31,23 @@ namespace BeerWebshop.RESTAPI.Controllers
             }
         }
 
+        [HttpGet("customer")]
+        public async Task<ActionResult> GetCustomerFromEmail(string email)
+        {
+            try
+            {
+                var customerDTO = await _accountService.GetCustomerFromEmail(email);
+                return Ok(customerDTO);
+            }
+            catch (Exception e)
+            {
+                {
+                    return BadRequest(e.Message);
+
+                }
+            }
+        }
+
         private static Customer MapToCustomer(CustomerDTO customer)
         {
             return new Customer
