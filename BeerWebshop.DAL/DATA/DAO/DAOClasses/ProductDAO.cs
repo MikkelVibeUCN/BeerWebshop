@@ -31,8 +31,8 @@ public class ProductDAO : IProductDAO
 	private const string UpdateStockSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
 	private const string BaseProductSql = @"
         SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.ABV, p.Stock,
-               c.Id AS CategoryId, c.Name AS Name, 
-               b.Id AS BreweryId, b.Name AS Name
+               c.Id AS Id, c.Name AS Name, 
+               b.Id AS Id, b.Name AS Name
         FROM Products p
         INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
         INNER JOIN Categories c ON p.CategoryId_FK = c.Id
@@ -263,7 +263,7 @@ public class ProductDAO : IProductDAO
 				return product;
 			},
 			param: new { Offset = offset, PageSize = pageSize, CategoryNames = categoryNames },
-			splitOn: "CategoryId,BreweryId"
+			splitOn: "Id,Id"
 		);
 
 		return products;
