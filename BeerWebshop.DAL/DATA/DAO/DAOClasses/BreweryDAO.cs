@@ -18,7 +18,7 @@ public class BreweryDAO : IBreweryDAO
 	{
 		_connectionString = connectionString;
 	}
-	public async Task<int> CreateBreweryAsync(Brewery brewery)
+	public async Task<int> CreateAsync(Brewery brewery)
 	{
 		using var connection = new SqlConnection(_connectionString);
 		try
@@ -32,11 +32,11 @@ public class BreweryDAO : IBreweryDAO
 			var newBreweryId = await connection.QuerySingleAsync<int>(InsertBrewerySql, parameters);
 			return newBreweryId;
 		}
-		catch (Exception ex)
-		{
-			throw new Exception($"Error creating brewery: {ex.Message}", ex);
-		}
-	}
+        catch (SqlException sqlEx) when (sqlEx.Number == 2627 || sqlEx.Number == 2601) //Sql unique constraint violation
+        {
+            throw new InvalidOperationException($"Brewery with name '{brewery.Name}' already exists.", sqlEx);
+        }
+    }
 
 	public async Task<bool> DeleteAsync(int id)
 	{

@@ -16,13 +16,16 @@ namespace BeerWebshop.Web.Controllers
 			_orderService = orderService;
 		}
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(LoginViewModel? login)
         {
             if (await _accountService.GetCustomerIdFromCookie() != null)
             {
                 return RedirectToAction("AccountOverview", "Account");
             }
-            return View(new LoginViewModel());
+
+            if(login == null) { login = new LoginViewModel(); }
+
+            return View(login);
         }
 
         public IActionResult CreateAccount() => View();
@@ -33,7 +36,7 @@ namespace BeerWebshop.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(loginViewModel); 
+                return Json(new { success = false, errorMessage = "Ugyldige input. Tjek venligst dine oplysninger og prøv igen." });
             }
 
             try
@@ -60,12 +63,9 @@ namespace BeerWebshop.Web.Controllers
                 ModelState.AddModelError("", "Invalid email or password.");
                 return View(loginViewModel);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Login failed: {ex.Message}");
-
-                ModelState.AddModelError("", "An error occurred while attempting to log in. Please try again.");
-                return View(loginViewModel);
+                return Json(new { success = false, errorMessage = "Forkert email eller adgangskode"} );
             }
         }
 

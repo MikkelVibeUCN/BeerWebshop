@@ -23,10 +23,8 @@ public class ProductDaoTests
 		_categoryDao = new CategoryDAO(DBConnection.ConnectionString());
 		_breweryDao = new BreweryDAO(DBConnection.ConnectionString());
 
-
-        // Create a test category and a test brewery make sure to keep these ids saved so its easy to delete them once done
         _createdCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
-        _createdBreweryId = await _breweryDao.CreateBreweryAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
+        _createdBreweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
     }
 
     private async Task DeleteAllProductsMade()
@@ -71,6 +69,8 @@ public class ProductDaoTests
 		Assert.That(product.Name.Equals($"All that jazz{_testSuffix}"));
 	}
 
+
+
 	[Test]
 	public async Task CreateAsync_WhenCreated_ShouldReturnId()
 	{
@@ -106,6 +106,32 @@ public class ProductDaoTests
 
 		await _productDao.DeleteAsync(createdProductId);
 	}
+
+	[Test]
+	public async Task CreateAsync_WhenProductWithSameNameExists_ShouldThrowInvalidOperationException()
+	{
+		var productName = $"Product{_testSuffix}";
+		var product = new Product
+		{
+			Name = productName,
+			Category = new Category { Id = _createdCategoryId },
+			Brewery = new Brewery { Id = _createdBreweryId },
+			Price = 80f,
+			Description = "Citrusy flavor.",
+			Stock = 5,
+			Abv = 6.5f,
+			ImageUrl = "http://example.com/image.jpg",
+			IsDeleted = false
+		};
+
+		var createdProductId = await _productDao.CreateAsync(product);
+		_productIdsCreated.Add(createdProductId);
+
+		var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await _productDao.CreateAsync(product));
+
+		Assert.That(ex.Message, Does.Contain($"A product with the name '{productName}' already exists."));
+	}
+
 
 	[Test]
 	public async Task GetProductCategoriesAsync_WhenTestCategoriesExist_ShouldReturnOnlyTestCategories()
