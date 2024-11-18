@@ -71,11 +71,16 @@ public class ProductDAO : IProductDAO
 			var newProductId = await connection.QuerySingleAsync<int>(InsertProductSql, parameters);
 			return newProductId;
 		}
+		catch (SqlException sqlEx) when (sqlEx.Number == 2627 || sqlEx.Number == 2601) 
+		{
+			throw new InvalidOperationException($"A product with the name '{product.Name}' already exists.", sqlEx);
+		}
 		catch (Exception ex)
 		{
 			throw new Exception($"Error creating product: {ex.Message}", ex);
 		}
 	}
+
 
 	public async Task<bool> UpdateAsync(Product product)
 	{
