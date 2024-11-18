@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             grpAddProductPage = new GroupBox();
+            cmbBreweries = new ComboBox();
             cmbCategory = new ComboBox();
             btnCancel = new Button();
             btnAddProduct = new Button();
@@ -43,13 +44,13 @@
             txtStock = new TextBox();
             txtDescription = new TextBox();
             txtPrice = new TextBox();
-            txtBrewery = new TextBox();
             txtName = new TextBox();
             grpAddProductPage.SuspendLayout();
             SuspendLayout();
             // 
             // grpAddProductPage
             // 
+            grpAddProductPage.Controls.Add(cmbBreweries);
             grpAddProductPage.Controls.Add(cmbCategory);
             grpAddProductPage.Controls.Add(btnCancel);
             grpAddProductPage.Controls.Add(btnAddProduct);
@@ -64,7 +65,6 @@
             grpAddProductPage.Controls.Add(txtStock);
             grpAddProductPage.Controls.Add(txtDescription);
             grpAddProductPage.Controls.Add(txtPrice);
-            grpAddProductPage.Controls.Add(txtBrewery);
             grpAddProductPage.Controls.Add(txtName);
             grpAddProductPage.Dock = DockStyle.Top;
             grpAddProductPage.Location = new Point(0, 0);
@@ -73,6 +73,15 @@
             grpAddProductPage.TabIndex = 0;
             grpAddProductPage.TabStop = false;
             grpAddProductPage.Text = "Add product";
+            // 
+            // cmbBreweries
+            // 
+            cmbBreweries.FormattingEnabled = true;
+            cmbBreweries.Location = new Point(154, 116);
+            cmbBreweries.Name = "cmbBreweries";
+            cmbBreweries.Size = new Size(169, 28);
+            cmbBreweries.TabIndex = 5;
+            cmbBreweries.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // cmbCategory
             // 
@@ -193,13 +202,6 @@
             txtPrice.Size = new Size(169, 27);
             txtPrice.TabIndex = 0;
             // 
-            // txtBrewery
-            // 
-            txtBrewery.Location = new Point(154, 113);
-            txtBrewery.Name = "txtBrewery";
-            txtBrewery.Size = new Size(169, 27);
-            txtBrewery.TabIndex = 0;
-            // 
             // txtName
             // 
             txtName.Location = new Point(154, 69);
@@ -233,11 +235,11 @@
         private Label lblDescription;
         private TextBox txtDescription;
         private TextBox txtPrice;
-        private TextBox txtBrewery;
         private TextBox txtABV;
         private TextBox txtStock;
         private Button btnAddProduct;
         private Button btnCancel;
         private ComboBox cmbCategory;
+        private ComboBox cmbBreweries;
     }
 }

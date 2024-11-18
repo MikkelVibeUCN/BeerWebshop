@@ -16,18 +16,37 @@ namespace BeerWebshop.DesktopClient.Controllers
     {
         private readonly ProductController _productController;
         private readonly CategoryController _categoryController;
+        private readonly BreweryController _breweryController;
         private List<CategoryDTO> _categories = new List<CategoryDTO>();
+        private List<BreweryDTO> _breweries = new List<BreweryDTO>();
 
         public AddProductForm()
         {
             InitializeComponent();
             _productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
             _categoryController = new CategoryController(new CategoryAPIClient("https://localhost:7244/api/v1/"));
+            _breweryController = new BreweryController(new BreweryAPIClient("https://localhost:7244/api/v1/"));
             LoadCategories().ConfigureAwait(false);
+            LoadBreweries().ConfigureAwait(false);
+        }
+
+        private async Task LoadBreweries()
+        {
+            try
+            {
+                var breweries = await _breweryController.GetAllBreweries();
+                _breweries = breweries.ToList();
+                cmbBreweries.DataSource = _breweries;
+                cmbBreweries.DisplayMember = "Name";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading breweries: {ex.Message}");
+            }
         }
 
 
-            private async Task LoadCategories()
+        private async Task LoadCategories()
         {
             try
             {
@@ -36,7 +55,7 @@ namespace BeerWebshop.DesktopClient.Controllers
                 cmbCategory.DataSource = _categories;
                 cmbCategory.DisplayMember = "Name";
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show($"Error loading categories: {ex.Message}");
             }
@@ -48,10 +67,11 @@ namespace BeerWebshop.DesktopClient.Controllers
             {
                 // Gather data from input fields
                 string name = txtName.Text;
-                string breweryName = txtBrewery.Text;
+                var selectedBrewery = cmbBreweries.SelectedItem as BreweryDTO;
+                string breweryName = selectedBrewery.Name;
                 string description = txtDescription.Text;
                 var selectedCategory = cmbCategory.SelectedItem as CategoryDTO;
-                string categoryName = selectedCategory.Name;    
+                string categoryName = selectedCategory.Name;
 
                 float price = float.TryParse(txtPrice.Text, out float parsedPrice) ? parsedPrice : 0;
                 int stock = int.TryParse(txtStock.Text, out int parsedStock) ? parsedStock : 0;
@@ -101,6 +121,11 @@ namespace BeerWebshop.DesktopClient.Controllers
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

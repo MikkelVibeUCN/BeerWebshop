@@ -11,6 +11,7 @@ public class BreweryDAO : IBreweryDAO
 	private const string DeleteBrewerySql = @"DELETE FROM Breweries WHERE Id = @Id";
 	private const string GetBreweryByIdSql = @"SELECT * FROM Breweries WHERE Id = @Id;";
 	private const string GetBreweryIdByNameSql = @"SELECT Id FROM Breweries WHERE Name = @Name AND IsDeleted = 0";
+	private const string GetAllBreweriesSql = @"SELECT * FROM Breweries";
 
 	private readonly string _connectionString;
 
@@ -69,6 +70,22 @@ public class BreweryDAO : IBreweryDAO
 			throw new Exception($"Error retrieving brewery with Id: {breweryId}: {ex.Message}", ex);
 		}
 	}
+
+	public async Task<IEnumerable<Brewery>> GetAllBreweriesAsync()
+	{
+        using var connection = new SqlConnection(_connectionString);
+        try
+        {
+            // Fetch all breweries and return them as an IEnumerable
+            return await connection.QueryAsync<Brewery>(GetAllBreweriesSql);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving all breweries: {ex.Message}", ex);
+        }
+    }
+
+
 
 	public async Task<int?> GetBreweryIdByName(string breweryName)
 	{

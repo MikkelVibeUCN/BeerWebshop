@@ -4,7 +4,7 @@ using RestSharp;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client;
 
-public class BreweryAPIClient : BaseClient<CategoryDTO>, IBreweryAPIClient
+public class BreweryAPIClient : BaseClient<BreweryDTO>, IBreweryAPIClient
 {
 	public BreweryAPIClient(string uri) : base(uri, "Breweries") { }
 }
