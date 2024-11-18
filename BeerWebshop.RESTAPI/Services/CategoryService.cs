@@ -18,7 +18,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<int> CreateCategoryAsync(Category category)
 		{
-			return await _categoryDAO.CreateCategoryAsync(category);
+			return await _categoryDAO.CreateAsync(category);
 		}
 
 		public async Task<int?> GetCategoryIdByName(string name)
@@ -28,7 +28,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<Category?> GetCategoryById(int id)
 		{
-			return await _categoryDAO.GetCategoryByIdAsync(id);
+			return await _categoryDAO.GetByIdAsync(id);
 		}
 
 
