@@ -17,21 +17,6 @@ namespace BeerWebshop.DesktopClient
 
 		}
 
-		private void Form1_Load(object sender, EventArgs e)
-		{
-
-		}
-
-		private void grpFrontpage_Enter(object sender, EventArgs e)
-		{
-
-		}
-
-		private void button1_Click(object sender, EventArgs e)
-		{
-
-		}
-
 		private void btnAddProducts_Click(object sender, EventArgs e)
 		{
 			new AddProductForm().ShowDialog();

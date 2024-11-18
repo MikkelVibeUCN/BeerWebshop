@@ -104,7 +104,7 @@ namespace BeerWebshop.DesktopClient
         private async Task DeleteSelectedProduct()
         {
             if (lstProduct.SelectedIndex == -1) { return; }
-            if (MessageBox.Show("Are you sure you wish to delete this product?", "Delete?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+            if (MessageBox.Show("Er du sikker på at du vil slette dette produkt?", "Delete?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
             {
                 try
                 {
@@ -114,7 +114,7 @@ namespace BeerWebshop.DesktopClient
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error deleting data on the server. Error is: '{ex.Message}'", "Communication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Der skete en fejl i at slette produktet fra serveren. Fejlen er: '{ex.Message}'", "Communication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
             }

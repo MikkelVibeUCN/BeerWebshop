@@ -19,13 +19,14 @@ namespace BeerWebshop.DesktopClient.Controllers
         private readonly BreweryController _breweryController;
         private List<CategoryDTO> _categories = new List<CategoryDTO>();
         private List<BreweryDTO> _breweries = new List<BreweryDTO>();
+        private readonly string BaseUri = "https://localhost:7244/api/v1/";
 
         public AddProductForm()
         {
             InitializeComponent();
-            _productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
-            _categoryController = new CategoryController(new CategoryAPIClient("https://localhost:7244/api/v1/"));
-            _breweryController = new BreweryController(new BreweryAPIClient("https://localhost:7244/api/v1/"));
+            _productController = new ProductController(new ProductAPIClient(BaseUri));
+            _categoryController = new CategoryController(new CategoryAPIClient(BaseUri));
+            _breweryController = new BreweryController(new BreweryAPIClient(BaseUri));
             LoadCategories().ConfigureAwait(false);
             LoadBreweries().ConfigureAwait(false);
         }
@@ -41,7 +42,7 @@ namespace BeerWebshop.DesktopClient.Controllers
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading breweries: {ex.Message}");
+                MessageBox.Show($"Fejl med at loade bryggerier: {ex.Message}");
             }
         }
 
@@ -57,7 +58,7 @@ namespace BeerWebshop.DesktopClient.Controllers
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading categories: {ex.Message}");
+                MessageBox.Show($"Fejl med at loade kategorier: {ex.Message}");
             }
         }
 
@@ -99,11 +100,11 @@ namespace BeerWebshop.DesktopClient.Controllers
                 // Check if product was added successfully
                 if (result > 0)
                 {
-                    MessageBox.Show("Product added successfully!", "Success");
+                    MessageBox.Show("Produkt tilføjet!", "Success");
                 }
                 else
                 {
-                    MessageBox.Show("Failed to add product.", "Error");
+                    MessageBox.Show("Der skete en fejl med at tilføje produktet", "Error");
                 }
             }
             catch (Exception ex)

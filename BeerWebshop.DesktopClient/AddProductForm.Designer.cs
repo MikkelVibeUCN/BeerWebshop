@@ -72,7 +72,7 @@
             grpAddProductPage.Size = new Size(800, 453);
             grpAddProductPage.TabIndex = 0;
             grpAddProductPage.TabStop = false;
-            grpAddProductPage.Text = "Add product";
+            grpAddProductPage.Text = "Tilføj produkt";
             // 
             // cmbBreweries
             // 
@@ -97,7 +97,7 @@
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(104, 31);
             btnCancel.TabIndex = 3;
-            btnCancel.Text = "&Cancel";
+            btnCancel.Text = "&Annullér";
             btnCancel.UseVisualStyleBackColor = true;
             btnCancel.Click += btnCancel_Click;
             // 
@@ -107,7 +107,7 @@
             btnAddProduct.Name = "btnAddProduct";
             btnAddProduct.Size = new Size(104, 31);
             btnAddProduct.TabIndex = 2;
-            btnAddProduct.Text = "&Submit";
+            btnAddProduct.Text = "&Bekræft";
             btnAddProduct.UseVisualStyleBackColor = true;
             btnAddProduct.Click += btnSubmit_Click;
             // 
@@ -216,7 +216,7 @@
             ClientSize = new Size(800, 451);
             Controls.Add(grpAddProductPage);
             Name = "AddProductForm";
-            Text = "AddProductForm";
+            Text = "Tilføj produkt";
             grpAddProductPage.ResumeLayout(false);
             grpAddProductPage.PerformLayout();
             ResumeLayout(false);

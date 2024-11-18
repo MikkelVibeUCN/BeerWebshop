@@ -50,7 +50,7 @@ namespace BeerWebshop.DesktopClient
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error retrieving data from the server. Error is: '{ex.Message}'", "Communication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Der skete en fejl med at hente data fra serveren. Fejlen er: '{ex.Message}'", "Communication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             if (lstProduct.Items.Count > 0) { lstProduct.SelectedIndex = 0; }
         }
@@ -80,12 +80,12 @@ namespace BeerWebshop.DesktopClient
 
                 await _productController.EditProduct(product);
 
-                MessageBox.Show("Product edited successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Produktet blev ændret!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to edit product: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Der skete en fejl med at ændre produktet: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
