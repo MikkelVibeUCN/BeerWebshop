@@ -4,43 +4,43 @@ using RestSharp;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
-	public class ProductAPIClient : BaseClient<ProductDTO>, IProductAPIClient
-	{
-		public ProductAPIClient(string uri) : base(uri, "Products") { }
+    public class ProductAPIClient : BaseClient<ProductDTO>, IProductAPIClient
+    {
+        public ProductAPIClient(string uri) : base(uri, "Products") { }
 
         public Task EditProductAsync(ProductDTO product)
         {
             throw new NotImplementedException();
         }
-		public async Task<IEnumerable<string>> GetProductCategoriesAsync()
-		{
-			return await GetAllAsync<string>("Products/Categories");
-		}
+        public async Task<IEnumerable<string>> GetProductCategoriesAsync()
+        {
+            return await GetAllAsync<string>("Products/Categories");
+        }
 
         public async Task<int> GetProductCountAsync(ProductQueryParameters parameters)
-		{
-			var response = await _restClient.RequestAsync<int>(Method.Get, "products/count", parameters);
+        {
+            var response = await _restClient.RequestAsync<int>(Method.Get, "products/count", parameters);
 
-		if (!response.IsSuccessful)
-		{
-			throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
-		}
-		return response.Data;
+            if (!response.IsSuccessful)
+            {
+                throw new Exception($"Error retrieving ProductDTO. Message was {response.Content}");
+            }
+            return response.Data;
 
-		}
+        }
 
         public async Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)
-		{
-			var response = await _restClient.RequestAsync<IEnumerable<ProductDTO>>(Method.Get, "products", parameters);
+        {
+            var response = await _restClient.RequestAsync<IEnumerable<ProductDTO>>(Method.Get, "products", parameters);
 
-		if (!response.IsSuccessful || response.Data == null)
-		{
-			throw new Exception($"Error retrieving Products. Message was {response.Content}");
-		}
+            if (!response.IsSuccessful || response.Data == null)
+            {
+                throw new Exception($"Error retrieving Products. Message was {response.Content}");
+            }
 
-		return response.Data ?? Enumerable.Empty<ProductDTO>();
-	}
+            return response.Data ?? Enumerable.Empty<ProductDTO>();
+        }
 
-		
-	}
+
+    }
 }
