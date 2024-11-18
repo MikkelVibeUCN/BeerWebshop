@@ -6,7 +6,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
     public class OrderApiClient : BaseClient<OrderDTO>, IOrderApiClient
     {
-        public OrderApiClient(string uri) : base(uri, "Orders") { }
+        public OrderApiClient(string uri) : base(uri, "orders") { }
 
         public async Task<IEnumerable<OrderDTO>> GetOrdersByCustomerIdAsync(int customerId, string? endpoint = null)
         {

@@ -1,19 +1,23 @@
-﻿@model BeerWebshop.APIClientLibrary.ApiClient.DTO.LoginDTO
+﻿@model BeerWebshop.Web.Models.LoginViewModel
 
-<h2>Login</h2>
+<h2>Log ind</h2>
 
-<form asp-action="Login" method="post">
+<form asp-action="LogInd" method="post">
     <div class="form-group">
         <label asp-for="Email">Email</label>
         <input asp-for="Email" class="form-control" required />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Password">Password</label>
+        <label asp-for="Password">Adgangskode</label>
         <input asp-for="Password" type="password" class="form-control" required />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary">Log ind</button>
 </form>
+
+<div class="text-center mt-3">
+    <a href="@Url.Action("CreateAccount", "Account")">Har du ikke en konto? Opret en her</a>
+</div>
 
 

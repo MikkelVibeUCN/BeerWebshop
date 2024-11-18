@@ -18,7 +18,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         c.IsDeleted AS IsDeleted, 
         c.Age AS Age, 
         c.Email AS Email,
-        -- Combine address components into a single string
         CONCAT(
             a.Street, ' ', a.StreetNumber, 
             CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 

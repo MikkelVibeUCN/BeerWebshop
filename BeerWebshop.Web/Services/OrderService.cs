@@ -41,6 +41,7 @@ namespace BeerWebshop.Web.Services
 
 		private CustomerDTO CreateCustomerFromCheckout(Checkout checkout)
 		{
+			// TODO: Add email and password to this
 			string name = checkout.Firstname + " " + checkout.Lastname;
 
 			string address = checkout.Street + " " + checkout.Number + ", " + checkout.PostalCode + " " + checkout.City;

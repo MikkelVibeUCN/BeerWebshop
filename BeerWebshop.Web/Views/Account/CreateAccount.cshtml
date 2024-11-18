@@ -1,101 +1,90 @@
 ﻿@model BeerWebshop.Web.Models.AccountCreationViewModel
 
 @{
-    ViewData["Title"] = "Create Account";
+    ViewData["Title"] = "Opret konto";
 }
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="card p-4 shadow" style="max-width: 500px; width: 100%;">
         <div class="card-body">
-            <h3 class="card-title text-center mb-4">Create an Account</h3>
+            <h3 class="card-title text-center mb-4">@ViewData["Title"]</h3>
             <form id="createAccountForm" asp-action="CreateAccount" asp-controller="Account" method="post">
                 @Html.AntiForgeryToken()
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <!-- First Name -->
                 <div class="form-group">
-                    <label asp-for="FirstName" class="control-label">First Name</label>
-                    <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" required />
+                    <label asp-for="FirstName" class="control-label">Fornavn</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="Indtast dit fornavn" required />
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
 
-                <!-- Last Name -->
                 <div class="form-group">
-                    <label asp-for="LastName" class="control-label">Last Name</label>
-                    <input asp-for="LastName" class="form-control" placeholder="Enter your last name" required />
+                    <label asp-for="LastName" class="control-label">Efternavn</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Indtast dit efternavn" required />
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
 
-                <!-- Street -->
                 <div class="form-group">
-                    <label asp-for="Street" class="control-label">Street</label>
-                    <input asp-for="Street" class="form-control" placeholder="Enter your street" required />
+                    <label asp-for="Street" class="control-label">Vej</label>
+                    <input asp-for="Street" class="form-control" placeholder="Indtast din vej" required />
                     <span asp-validation-for="Street" class="text-danger"></span>
                 </div>
 
-                <!-- Street Number -->
                 <div class="form-group">
-                    <label asp-for="StreetNumber" class="control-label">Street Number</label>
-                    <input asp-for="StreetNumber" class="form-control" placeholder="Enter your street number" required />
+                    <label asp-for="StreetNumber" class="control-label">Vejnummer</label>
+                    <input asp-for="StreetNumber" class="form-control" placeholder="Indtast dit vejnummer" required />
                     <span asp-validation-for="StreetNumber" class="text-danger"></span>
                 </div>
 
-                <!-- Apartment Number (Optional) -->
                 <div class="form-group">
-                    <label asp-for="ApartmentNumber" class="control-label">Apartment Number (optional)</label>
-                    <input asp-for="ApartmentNumber" class="form-control" placeholder="Enter your apartment number (optional)" />
+                    <label asp-for="ApartmentNumber" class="control-label">Lejlighedsnummer</label>
+                    <input asp-for="ApartmentNumber" class="form-control" placeholder="Indtast dit lejlighedsnummer (Valgfri)" />
                     <span asp-validation-for="ApartmentNumber" class="text-danger"></span>
                 </div>
 
-                <!-- Postal Code -->
                 <div class="form-group">
-                    <label asp-for="PostalCode" class="control-label">Postal Code</label>
-                    <input asp-for="PostalCode" class="form-control" placeholder="Enter your postal code" required />
+                    <label asp-for="PostalCode" class="control-label">Postnummer</label>
+                    <input asp-for="PostalCode" class="form-control" placeholder="Indtast dit postnummer" required />
                     <span asp-validation-for="PostalCode" class="text-danger"></span>
                 </div>
 
-                <!-- City -->
                 <div class="form-group">
-                    <label asp-for="City" class="control-label">City</label>
-                    <input asp-for="City" class="form-control" placeholder="Enter your city" required />
+                    <label asp-for="City" class="control-label">By</label>
+                    <input asp-for="City" class="form-control" placeholder="Indtast din by" required />
                     <span asp-validation-for="City" class="text-danger"></span>
                 </div>
 
-                <!-- Email -->
                 <div class="form-group">
                     <label asp-for="Email" class="control-label">Email</label>
-                    <input asp-for="Email" class="form-control" placeholder="Enter your email" type="email" required />
+                    <input asp-for="Email" class="form-control" placeholder="Indtast din email" type="email" required />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
-                <!-- Password -->
                 <div class="form-group">
-                    <label asp-for="Password" class="control-label">Password</label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="Create a password" 
+                    <label asp-for="Password" class="control-label">Kodeord</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Vælg et kodeord" 
                            required minlength="8" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
-                <!-- Phone -->
                 <div class="form-group">
-                    <label asp-for="Phone" class="control-label">Phone Number</label>
-                    <input asp-for="Phone" class="form-control" placeholder="Enter your phone number" type="tel" required />
+                    <label asp-for="Phone" class="control-label">Telefonnummer</label>
+                    <input asp-for="Phone" class="form-control" placeholder="Indtast dit telefonnummer" type="tel" required />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
-                <!-- Age -->
                 <div class="form-group">
-                    <label asp-for="Age" class="control-label">Age</label>
-                    <input asp-for="Age" class="form-control" placeholder="Enter your age" type="number" min="18" required />
+                    <label asp-for="Age" class="control-label">Alder</label>
+                    <input asp-for="Age" class="form-control" placeholder="Indtast din alder" type="number" min="18" required />
                     <span asp-validation-for="Age" class="text-danger"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                <button type="submit" class="btn btn-primary btn-block">Opret konto</button>
             </form>
 
             <div class="text-center mt-3">
-                <a href="@Url.Action("Index", "Home")">Already have an account? Log in</a>
+                <a href="@Url.Action("Index", "Account")">Har du allerede en konto? Log ind her</a>
             </div>
         </div>
     </div>
@@ -107,22 +96,33 @@
     }
 
     <script>
-        document.getElementById("createAccountForm").addEventListener("submit", function (event) {
-            const ageInput = document.querySelector("[name='Age']");
-            const passwordInput = document.querySelector("[name='Password']");
-            const age = parseInt(ageInput.value, 10);
-            const password = passwordInput.value;
+        document.getElementById("createAccountForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-            // Check age
-            if (isNaN(age) || age < 18) {
-                event.preventDefault();
-                alert("You must be at least 18 years old to create an account.");
-                ageInput.focus();
-                return;
-            }
+            const form = event.target;
+            const formData = new FormData(form);
 
-           
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = result.redirectUrl; // Redirect on success
+                } else {
+                    const errorMessage = result.errorMessage || "An unexpected error occurred.";
+                    window.showNotification(errorMessage, 'error'); // Show error notification
+                }
+            } catch (error) {
+                window.showNotification("An unexpected error occurred. Please try again later.", 'error');
             }
         });
     </script>
+
 }
