@@ -24,7 +24,7 @@ public class ProductDaoTests
 		_breweryDao = new BreweryDAO(DBConnection.ConnectionString());
 
         _createdCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
-        _createdBreweryId = await _breweryDao.CreateBreweryAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
+        _createdBreweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
     }
 
     private async Task DeleteAllProductsMade()
