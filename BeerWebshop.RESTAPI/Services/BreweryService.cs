@@ -28,5 +28,10 @@ namespace BeerWebshop.RESTAPI.Services
 		{
 			return await _breweryDAO.DeleteAsync(id);
 		}
+
+		public async Task<IEnumerable<Brewery>> GetBreweriesAsync()
+		{
+			return await _breweryDAO.GetAllBreweriesAsync();
+		}
 	}
 }
