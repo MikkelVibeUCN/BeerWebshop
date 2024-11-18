@@ -7,6 +7,27 @@
     int totalPages = ViewBag.TotalPages ?? 1; 
 }
 
+<style>
+    .pagination-link {
+        margin-right: 10px; /* Space between the links */
+    }
+
+    .pagination-link:last-child {
+        margin-right: 0; /* No margin on the last link */
+    }
+
+    .pagination-text {
+        color: black; /* White color for the non-clickable page number */
+        margin-right: 10px; /* Same spacing as links */
+    }
+
+    .pagination-link.active {
+        font-weight: bold; /* Optional: style for the active page */
+    }
+
+
+</style>
+
 <form method="get" asp-action="Index">
     <div class="row mb-3">
         <div class="col-md-4">
@@ -29,7 +50,7 @@
             </select>
         </div>
         <div class="col-md-4 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Apply</button>
+            <button type="submit" class="btn btn-primary">Anvend</button>
         </div>
     </div>
 </form>
@@ -70,18 +91,27 @@
     <div class="pagination-links">
         @if (currentPage > 0)
         {
-            <a href="@Url.Action("Index", new { pageNumber = currentPage - 1, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light">Tilbage</a>
-        }
-        
-        @for (int i = Math.Max(0, currentPage); i <= Math.Min(Math.Max(0, currentPage) + 2, totalPages); i++)
-        {
-            <a href="@Url.Action("Index", new { pageNumber = i, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light @((i == currentPage) ? "active" : "")">@i</a>
+            <a href="@Url.Action("Index", new { pageNumber = currentPage - 1, SortBy = selectedSortOrder, Category = selectedCategory })">Tilbage</a>
         }
 
-        @if (currentPage < totalPages - 1)
+        @for (int i = Math.Max(0, currentPage); i <= Math.Min(Math.Max(0, currentPage) + 2, totalPages); i++)
         {
-            <a href="@Url.Action("Index", new { pageNumber = currentPage + 1, SortBy = selectedSortOrder, Category = selectedCategory })" class="btn btn-light">Næste</a>
+            if (i == Math.Max(0, currentPage))
+            {
+                <span class="pagination-text">@i</span> 
+            }
+            else
+            {
+                <a href="@Url.Action("Index", new { pageNumber = i, SortBy = selectedSortOrder, Category = selectedCategory })" class="pagination-link @((i == currentPage) ? "active" : "")">@i</a>
+            }
         }
+
+
+        @if (currentPage < totalPages)
+        {
+            <a href="@Url.Action("Index", new { pageNumber = currentPage + 1, SortBy = selectedSortOrder, Category = selectedCategory })">Næste</a>
+        }
+
     </div>
 </div>
 
@@ -103,10 +133,10 @@
 
                     success: function (response) {
                         $('#cart-item-count').text(response.cartItemCount);
-                        window.showNotification('Product added to cart!', 'success');
+                        window.showNotification('Varen blev tiføjet til kurven', 'success');
                     },
                     error: function (xhr) {
-                        var errorMessage = xhr.responseText || 'Error adding to cart. Try again.';
+                        var errorMessage = xhr.responseText || 'Kunne ikke tilføje varen til kurv.';
                         window.showNotification(errorMessage, 'error');
                     }
                 });
