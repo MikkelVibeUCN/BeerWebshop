@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             grpAddProductPage = new GroupBox();
+            cmbCategory = new ComboBox();
+            btnCancel = new Button();
             btnAddProduct = new Button();
             lblCategory = new Label();
             lblABV = new Label();
@@ -37,19 +39,18 @@
             lblPrice = new Label();
             lblBrewery = new Label();
             lblName = new Label();
-            txtCategory = new TextBox();
             txtABV = new TextBox();
             txtStock = new TextBox();
             txtDescription = new TextBox();
             txtPrice = new TextBox();
             txtBrewery = new TextBox();
             txtName = new TextBox();
-            btnCancel = new Button();
             grpAddProductPage.SuspendLayout();
             SuspendLayout();
             // 
             // grpAddProductPage
             // 
+            grpAddProductPage.Controls.Add(cmbCategory);
             grpAddProductPage.Controls.Add(btnCancel);
             grpAddProductPage.Controls.Add(btnAddProduct);
             grpAddProductPage.Controls.Add(lblCategory);
@@ -59,7 +60,6 @@
             grpAddProductPage.Controls.Add(lblPrice);
             grpAddProductPage.Controls.Add(lblBrewery);
             grpAddProductPage.Controls.Add(lblName);
-            grpAddProductPage.Controls.Add(txtCategory);
             grpAddProductPage.Controls.Add(txtABV);
             grpAddProductPage.Controls.Add(txtStock);
             grpAddProductPage.Controls.Add(txtDescription);
@@ -68,21 +68,35 @@
             grpAddProductPage.Controls.Add(txtName);
             grpAddProductPage.Dock = DockStyle.Top;
             grpAddProductPage.Location = new Point(0, 0);
-            grpAddProductPage.Margin = new Padding(3, 2, 3, 2);
             grpAddProductPage.Name = "grpAddProductPage";
-            grpAddProductPage.Padding = new Padding(3, 2, 3, 2);
-            grpAddProductPage.Size = new Size(700, 340);
+            grpAddProductPage.Size = new Size(800, 453);
             grpAddProductPage.TabIndex = 0;
             grpAddProductPage.TabStop = false;
             grpAddProductPage.Text = "Add product";
-            grpAddProductPage.Enter += groupBox1_Enter;
+            // 
+            // cmbCategory
+            // 
+            cmbCategory.FormattingEnabled = true;
+            cmbCategory.Location = new Point(154, 341);
+            cmbCategory.Name = "cmbCategory";
+            cmbCategory.Size = new Size(169, 28);
+            cmbCategory.TabIndex = 4;
+            // 
+            // btnCancel
+            // 
+            btnCancel.Location = new Point(561, 349);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(104, 31);
+            btnCancel.TabIndex = 3;
+            btnCancel.Text = "&Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += btnCancel_Click;
             // 
             // btnAddProduct
             // 
-            btnAddProduct.Location = new Point(588, 262);
-            btnAddProduct.Margin = new Padding(3, 2, 3, 2);
+            btnAddProduct.Location = new Point(672, 349);
             btnAddProduct.Name = "btnAddProduct";
-            btnAddProduct.Size = new Size(91, 23);
+            btnAddProduct.Size = new Size(104, 31);
             btnAddProduct.TabIndex = 2;
             btnAddProduct.Text = "&Submit";
             btnAddProduct.UseVisualStyleBackColor = true;
@@ -91,149 +105,114 @@
             // lblCategory
             // 
             lblCategory.AutoSize = true;
-            lblCategory.Location = new Point(10, 262);
+            lblCategory.Location = new Point(11, 349);
             lblCategory.Name = "lblCategory";
-            lblCategory.Size = new Size(54, 15);
+            lblCategory.Size = new Size(69, 20);
             lblCategory.TabIndex = 1;
             lblCategory.Text = "Kategori:";
-            lblCategory.Click += label1_Click;
             // 
             // lblABV
             // 
             lblABV.AutoSize = true;
-            lblABV.Location = new Point(10, 222);
+            lblABV.Location = new Point(11, 296);
             lblABV.Name = "lblABV";
-            lblABV.Size = new Size(92, 15);
+            lblABV.Size = new Size(114, 20);
             lblABV.TabIndex = 1;
             lblABV.Text = "Alkoholprocent:";
-            lblABV.Click += label1_Click;
             // 
             // lblStock
             // 
             lblStock.AutoSize = true;
-            lblStock.Location = new Point(10, 187);
+            lblStock.Location = new Point(11, 249);
             lblStock.Name = "lblStock";
-            lblStock.Size = new Size(100, 15);
+            lblStock.Size = new Size(125, 20);
             lblStock.TabIndex = 1;
             lblStock.Text = "Lagerbeholdning:";
-            lblStock.Click += label1_Click;
             // 
             // lblDescription
             // 
             lblDescription.AutoSize = true;
-            lblDescription.Location = new Point(10, 152);
+            lblDescription.Location = new Point(11, 203);
             lblDescription.Name = "lblDescription";
-            lblDescription.Size = new Size(67, 15);
+            lblDescription.Size = new Size(84, 20);
             lblDescription.TabIndex = 1;
             lblDescription.Text = "Beskrivelse:";
-            lblDescription.Click += label1_Click;
             // 
             // lblPrice
             // 
             lblPrice.AutoSize = true;
-            lblPrice.Location = new Point(10, 119);
+            lblPrice.Location = new Point(11, 159);
             lblPrice.Name = "lblPrice";
-            lblPrice.Size = new Size(29, 15);
+            lblPrice.Size = new Size(35, 20);
             lblPrice.TabIndex = 1;
             lblPrice.Text = "Pris:";
-            lblPrice.Click += label1_Click;
             // 
             // lblBrewery
             // 
             lblBrewery.AutoSize = true;
-            lblBrewery.Location = new Point(10, 87);
+            lblBrewery.Location = new Point(11, 116);
             lblBrewery.Name = "lblBrewery";
-            lblBrewery.Size = new Size(54, 15);
+            lblBrewery.Size = new Size(68, 20);
             lblBrewery.TabIndex = 1;
             lblBrewery.Text = "Bryggeri:";
             // 
             // lblName
             // 
             lblName.AutoSize = true;
-            lblName.Location = new Point(10, 52);
+            lblName.Location = new Point(11, 69);
             lblName.Name = "lblName";
-            lblName.Size = new Size(38, 15);
+            lblName.Size = new Size(46, 20);
             lblName.TabIndex = 1;
             lblName.Text = "Navn:";
             // 
-            // txtCategory
-            // 
-            txtCategory.Location = new Point(135, 260);
-            txtCategory.Margin = new Padding(3, 2, 3, 2);
-            txtCategory.Name = "txtCategory";
-            txtCategory.Size = new Size(148, 23);
-            txtCategory.TabIndex = 0;
-            txtCategory.TextChanged += textBox3_TextChanged;
-            // 
             // txtABV
             // 
-            txtABV.Location = new Point(135, 222);
-            txtABV.Margin = new Padding(3, 2, 3, 2);
+            txtABV.Location = new Point(154, 296);
             txtABV.Name = "txtABV";
-            txtABV.Size = new Size(148, 23);
+            txtABV.Size = new Size(169, 27);
             txtABV.TabIndex = 0;
-            txtABV.TextChanged += textBox3_TextChanged;
             // 
             // txtStock
             // 
-            txtStock.Location = new Point(135, 187);
-            txtStock.Margin = new Padding(3, 2, 3, 2);
+            txtStock.Location = new Point(154, 249);
             txtStock.Name = "txtStock";
-            txtStock.Size = new Size(148, 23);
+            txtStock.Size = new Size(169, 27);
             txtStock.TabIndex = 0;
-            txtStock.TextChanged += textBox3_TextChanged;
             // 
             // txtDescription
             // 
-            txtDescription.Location = new Point(135, 152);
-            txtDescription.Margin = new Padding(3, 2, 3, 2);
+            txtDescription.Location = new Point(154, 203);
             txtDescription.Name = "txtDescription";
-            txtDescription.Size = new Size(148, 23);
+            txtDescription.Size = new Size(169, 27);
             txtDescription.TabIndex = 0;
-            txtDescription.TextChanged += textBox3_TextChanged;
             // 
             // txtPrice
             // 
-            txtPrice.Location = new Point(135, 119);
-            txtPrice.Margin = new Padding(3, 2, 3, 2);
+            txtPrice.Location = new Point(154, 159);
             txtPrice.Name = "txtPrice";
-            txtPrice.Size = new Size(148, 23);
+            txtPrice.Size = new Size(169, 27);
             txtPrice.TabIndex = 0;
             // 
             // txtBrewery
             // 
-            txtBrewery.Location = new Point(135, 85);
-            txtBrewery.Margin = new Padding(3, 2, 3, 2);
+            txtBrewery.Location = new Point(154, 113);
             txtBrewery.Name = "txtBrewery";
-            txtBrewery.Size = new Size(148, 23);
+            txtBrewery.Size = new Size(169, 27);
             txtBrewery.TabIndex = 0;
             // 
             // txtName
             // 
-            txtName.Location = new Point(135, 52);
-            txtName.Margin = new Padding(3, 2, 3, 2);
+            txtName.Location = new Point(154, 69);
             txtName.Name = "txtName";
-            txtName.Size = new Size(148, 23);
+            txtName.Size = new Size(169, 27);
             txtName.TabIndex = 0;
-            // 
-            // btnCancel
-            // 
-            btnCancel.Location = new Point(491, 262);
-            btnCancel.Margin = new Padding(3, 2, 3, 2);
-            btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(91, 23);
-            btnCancel.TabIndex = 3;
-            btnCancel.Text = "&Cancel";
-            btnCancel.UseVisualStyleBackColor = true;
-            btnCancel.Click += btnCancel_Click;
             // 
             // AddProductForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(700, 338);
+            ClientSize = new Size(800, 451);
             Controls.Add(grpAddProductPage);
-            Margin = new Padding(3, 2, 3, 2);
             Name = "AddProductForm";
             Text = "AddProductForm";
             grpAddProductPage.ResumeLayout(false);
@@ -255,10 +234,10 @@
         private TextBox txtDescription;
         private TextBox txtPrice;
         private TextBox txtBrewery;
-        private TextBox txtCategory;
         private TextBox txtABV;
         private TextBox txtStock;
         private Button btnAddProduct;
         private Button btnCancel;
+        private ComboBox cmbCategory;
     }
 }

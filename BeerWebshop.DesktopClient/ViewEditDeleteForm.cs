@@ -34,7 +34,7 @@ namespace BeerWebshop.DesktopClient
             UpdateUi();
 
         }
-        private void lstCompanies_SelectedIndexChanged(object sender, EventArgs e) { UpdateUi(); }
+    
         private async Task LoadData()
         {
             try
@@ -61,7 +61,7 @@ namespace BeerWebshop.DesktopClient
         {
             if (lstProduct.SelectedIndex != -1)
             {
-                UpdateSelectedCompanyOnUI();
+                UpdateSelectedProductOnUI();
                 btnDelete.Enabled = true;
                 btnEdit.Enabled = true;
             }
@@ -77,7 +77,7 @@ namespace BeerWebshop.DesktopClient
         {
             UpdateUi();
         }
-        private void UpdateSelectedCompanyOnUI()
+        private void UpdateSelectedProductOnUI()
         {
             if (lstProduct.SelectedIndex == -1) { return; }
             ProductDTO product = (ProductDTO)lstProduct.SelectedItem;
@@ -95,16 +95,13 @@ namespace BeerWebshop.DesktopClient
             new EditProductForm(_productController).ShowDialog();
 
         }
-        //TODO: Lav en ny form hvor man indtaster de informationer der skal edites, gem dem, vis ViewEditDeleteForm vinduet igen
-        //HACK: Kig på Jakobs edit metode og form
-
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            DeleteSelectedCompany();
+            DeleteSelectedProduct();
         }
 
-        private async Task DeleteSelectedCompany()
+        private async Task DeleteSelectedProduct()
         {
             if (lstProduct.SelectedIndex == -1) { return; }
             if (MessageBox.Show("Are you sure you wish to delete this product?", "Delete?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)

@@ -146,7 +146,6 @@
             lblImageUrl.Size = new Size(45, 15);
             lblImageUrl.TabIndex = 11;
             lblImageUrl.Text = "Billede:";
-            lblImageUrl.Click += lblCategory_Click;
             // 
             // lblCategory
             // 
@@ -157,7 +156,6 @@
             lblCategory.Size = new Size(54, 15);
             lblCategory.TabIndex = 11;
             lblCategory.Text = "Kategori:";
-            lblCategory.Click += lblCategory_Click;
             // 
             // lblABV
             // 
@@ -227,7 +225,6 @@
             txtImageUrlEdit.Name = "txtImageUrlEdit";
             txtImageUrlEdit.Size = new Size(148, 23);
             txtImageUrlEdit.TabIndex = 4;
-            txtImageUrlEdit.TextChanged += txtCategoryEdit_TextChanged;
             // 
             // txtCategoryEdit
             // 
@@ -237,7 +234,6 @@
             txtCategoryEdit.Name = "txtCategoryEdit";
             txtCategoryEdit.Size = new Size(148, 23);
             txtCategoryEdit.TabIndex = 4;
-            txtCategoryEdit.TextChanged += txtCategoryEdit_TextChanged;
             // 
             // txtABVEdit
             // 
@@ -304,7 +300,6 @@
             lblRowVersionEdit.TabIndex = 11;
             lblRowVersionEdit.Text = "Billede:";
             lblRowVersionEdit.Visible = false;
-            lblRowVersionEdit.Click += lblCategory_Click;
             // 
             // EditProductForm
             // 
