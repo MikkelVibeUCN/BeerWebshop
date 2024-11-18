@@ -2,11 +2,10 @@
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
-using BeerWebshop.Test.DALTests;
 
 namespace BeerWebshop.Test.RestServicesTests
 {
-	[TestFixture]
+    [TestFixture]
 	public class OrderServiceTests
 	{
 		private OrderService _orderService;

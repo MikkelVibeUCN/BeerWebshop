@@ -17,8 +17,13 @@ public class CategoryDAO : ICategoryDAO
 		_connectionString = connectionString;
 	}
 
-	public async Task<int> CreateCategoryAsync(Category category)
+	public async Task<int> CreateAsync(Category category)
 	{
+		if (string.IsNullOrWhiteSpace(category.Name))
+		{
+			throw new ArgumentException("Category name cant be null or empty.");
+		}
+
 		using var connection = new SqlConnection(_connectionString);
 
 		try
@@ -31,11 +36,18 @@ public class CategoryDAO : ICategoryDAO
 			var newCategoryId = await connection.QuerySingleAsync<int>(InsertCategorySql, parameters);
 			return newCategoryId;
 		}
+		catch (SqlException sqlEx) when (sqlEx.Number == 2627 || sqlEx.Number == 2601) //Sql unique constraint violation
+		{
+			throw new InvalidOperationException($"Category with name '{category.Name}' already exists.", sqlEx);
+		}
 		catch (Exception ex)
 		{
 			throw new Exception($"Error creating category: {ex.Message}", ex);
 		}
 	}
+
+
+
 
 	public async Task<bool> DeleteAsync(int id)
 	{
@@ -69,7 +81,7 @@ public class CategoryDAO : ICategoryDAO
 		return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = categoryName });
 	}
 
-	public async Task<Category?> GetCategoryByIdAsync(int categoryId)
+	public async Task<Category?> GetByIdAsync(int categoryId)
 	{
 		const string sql = "SELECT * FROM Categories WHERE Id = @Id;";
 		using var connection = new SqlConnection(_connectionString);

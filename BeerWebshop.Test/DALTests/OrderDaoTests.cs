@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 namespace BeerWebshop.Test.DALTests;
 
 [TestFixture]
-public class OrderDaoTest
+public class OrderDaoTests
 {
 	private OrderDAO _orderDao;
 	private ProductDAO _productDao;
@@ -72,12 +72,6 @@ public class OrderDaoTest
 		await DeleteOrderById(orderId);
 	}
 
-
-	private async Task DeleteOrderLinesByProductId(int productId)
-	{
-		using var connection = new SqlConnection(DBConnection.ConnectionString());
-		await connection.ExecuteAsync("DELETE FROM OrderLines WHERE ProductId = @ProductId", new { ProductId = productId });
-	}
 
 	private async Task DeleteOrderById(int orderId)
 	{

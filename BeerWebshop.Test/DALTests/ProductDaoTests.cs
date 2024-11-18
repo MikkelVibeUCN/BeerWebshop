@@ -1,8 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary;
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
-using Microsoft.Extensions.Configuration;
 using System.Data;
 
 namespace BeerWebshop.Test.DALTests;
@@ -27,7 +25,7 @@ public class ProductDaoTests
 
 
         // Create a test category and a test brewery make sure to keep these ids saved so its easy to delete them once done
-        _createdCategoryId = await _categoryDao.CreateCategoryAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
+        _createdCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
         _createdBreweryId = await _breweryDao.CreateBreweryAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
     }
 
@@ -118,11 +116,6 @@ public class ProductDaoTests
 		Assert.That(categories.Count, Is.GreaterThan(0), "The number of test categories should match the expected count.");
 		Assert.That(categories, Contains.Item($"Category{_testSuffix}"), $"The category 'Category{_testSuffix}' should be present in the list.");
 	}
-
-
-
-	// Nye tests til implementering af categorier og søgehalløj
-
 
 	[Test]
     public async Task GetProductsAsync_WithAscendingNameOrder()
