@@ -26,7 +26,7 @@ public class ProductDaoTests
 
         // Create a test category and a test brewery make sure to keep these ids saved so its easy to delete them once done
         _createdCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
-        _createdBreweryId = await _breweryDao.CreateBreweryAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
+        _createdBreweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
     }
 
     private async Task DeleteAllProductsMade()

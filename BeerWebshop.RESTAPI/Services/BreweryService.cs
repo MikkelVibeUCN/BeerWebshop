@@ -12,7 +12,7 @@ namespace BeerWebshop.RESTAPI.Services
 		}
 		public async Task<int> CreateBreweryAsync(Brewery brewery)
 		{
-			return await _breweryDAO.CreateBreweryAsync(brewery);
+			return await _breweryDAO.CreateAsync(brewery);
 		}
 		public async Task<int?> GetBreweryIdByName(string name)
 		{
