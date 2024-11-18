@@ -15,11 +15,50 @@ namespace BeerWebshop.DesktopClient.Controllers
     public partial class AddProductForm : Form
     {
         private readonly ProductController _productController;
+        private readonly CategoryController _categoryController;
+        private readonly BreweryController _breweryController;
+        private List<CategoryDTO> _categories = new List<CategoryDTO>();
+        private List<BreweryDTO> _breweries = new List<BreweryDTO>();
 
         public AddProductForm()
         {
             InitializeComponent();
             _productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
+            _categoryController = new CategoryController(new CategoryAPIClient("https://localhost:7244/api/v1/"));
+            _breweryController = new BreweryController(new BreweryAPIClient("https://localhost:7244/api/v1/"));
+            LoadCategories().ConfigureAwait(false);
+            LoadBreweries().ConfigureAwait(false);
+        }
+
+        private async Task LoadBreweries()
+        {
+            try
+            {
+                var breweries = await _breweryController.GetAllBreweries();
+                _breweries = breweries.ToList();
+                cmbBreweries.DataSource = _breweries;
+                cmbBreweries.DisplayMember = "Name";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading breweries: {ex.Message}");
+            }
+        }
+
+
+        private async Task LoadCategories()
+        {
+            try
+            {
+                var categories = await _categoryController.GetCategoriesAsync();
+                _categories = categories.ToList();
+                cmbCategory.DataSource = _categories;
+                cmbCategory.DisplayMember = "Name";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading categories: {ex.Message}");
+            }
         }
 
         private async void btnAddProduct_Click(object sender, EventArgs e)
@@ -28,9 +67,11 @@ namespace BeerWebshop.DesktopClient.Controllers
             {
                 // Gather data from input fields
                 string name = txtName.Text;
-                string breweryName = txtBrewery.Text;
+                var selectedBrewery = cmbBreweries.SelectedItem as BreweryDTO;
+                string breweryName = selectedBrewery.Name;
                 string description = txtDescription.Text;
-                string categoryName = txtCategory.Text;
+                var selectedCategory = cmbCategory.SelectedItem as CategoryDTO;
+                string categoryName = selectedCategory.Name;
 
                 float price = float.TryParse(txtPrice.Text, out float parsedPrice) ? parsedPrice : 0;
                 int stock = int.TryParse(txtStock.Text, out int parsedStock) ? parsedStock : 0;
@@ -71,21 +112,6 @@ namespace BeerWebshop.DesktopClient.Controllers
             }
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             btnAddProduct_Click(sender, e);
@@ -95,6 +121,11 @@ namespace BeerWebshop.DesktopClient.Controllers
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

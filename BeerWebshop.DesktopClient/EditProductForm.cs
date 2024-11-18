@@ -24,7 +24,6 @@ namespace BeerWebshop.DesktopClient
             _productController = productController;
             EditProductForm_Load();
         }
-        private void lstCompanies_SelectedIndexChanged(object sender, EventArgs e) { UpdateUi(); }
 
         public async void EditProductForm_Load()
         {
@@ -125,20 +124,5 @@ namespace BeerWebshop.DesktopClient
             txtImageUrlEdit.Text = product.ImageUrl;
             lblRowVersionEdit.Text = product.RowVersion;
         }
-
-        private void lblId_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblCategory_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtCategoryEdit_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
-}
+    }

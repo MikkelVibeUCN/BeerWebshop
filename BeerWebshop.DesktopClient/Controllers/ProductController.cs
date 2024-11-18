@@ -16,6 +16,7 @@ namespace BeerWebshop.DesktopClient.Controllers
         public ProductController(ProductAPIClient productAPIClient)
         {
             _productAPIClient = productAPIClient;
+
         }
 
         public async Task<int>AddProductAsync(ProductDTO product)

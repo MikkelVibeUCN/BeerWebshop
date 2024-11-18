@@ -11,4 +11,5 @@ public interface IBreweryDAO
 
     Task<int?> GetBreweryIdByName(string breweryName);
     Task<Brewery?> GetBreweryById(int id);
+    Task<IEnumerable<Brewery>> GetAllBreweriesAsync();
 }

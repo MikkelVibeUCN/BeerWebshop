@@ -6,21 +6,20 @@ using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.Web.Controllers
 {
-    public class BeerController : Controller
+    public class ProductController : Controller
     {
-        private readonly BeerService _beerService;
+        private readonly ProductService _productService;
 
-        public BeerController(BeerService beerService)
+        public ProductController(ProductService productService)
         {
-            _beerService = beerService;
+            _productService = productService;
         }
 
-        // GET: BeerController
         public async Task<IActionResult> Index(ProductQueryParameters parameters)
         {
-            ViewBag.Categories = await _beerService.GetProductCategories();
+            ViewBag.Categories = await _productService.GetProductCategories();
 
-            int totalProductCount = await _beerService.GetProductCount(parameters);
+            int totalProductCount = await _productService.GetProductCount(parameters);
             int totalPages = (int)Math.Ceiling(totalProductCount / (double)parameters.PageSize);
 
             if(totalPages > 1)
@@ -33,15 +32,14 @@ namespace BeerWebshop.Web.Controllers
             ViewBag.CurrentPage = parameters.PageNumber;
             ViewBag.TotalPages = totalPages;
 
-            IEnumerable<ProductDTO> beers = await _beerService.GetProducts(parameters);
+            IEnumerable<ProductDTO> products = await _productService.GetProducts(parameters);
 
-            return View(beers);
+            return View(products);
         }
 
-        // GET: BeerController/Details/5
         public ActionResult Details(int id)
         {
-            ProductDTO? product = _beerService.GetProductFromId(id).Result;
+            ProductDTO? product = _productService.GetProductFromId(id).Result;
             if(product != null)
             {
                 return View(product);

@@ -16,6 +16,26 @@ public class BreweriesController : ControllerBase
 		_breweryService = breweryService;
 	}
 
+	[HttpGet]
+	public async Task<IActionResult> GetAllBreweriesAsync()
+	{
+        try
+        {
+            var breweries = await _breweryService.GetBreweriesAsync();
+            var breweryDTOs = breweries.Select(category => new BreweryDTO
+            {
+                Id = category.Id,
+                Name = category.Name
+            }).ToList();
+
+            return Ok(breweryDTOs);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
 	[HttpPost]
 	public async Task<IActionResult> CreateBreweryAsync([FromBody] BreweryDTO breweryDTO)
 	{

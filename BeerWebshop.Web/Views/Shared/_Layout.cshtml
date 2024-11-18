@@ -141,7 +141,7 @@
 								<a class="nav-link" asp-controller="Home" asp-action="Index">Hjem</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" asp-controller="Beer" asp-action="Index">Produkter</a>
+								<a class="nav-link" asp-controller="Product" asp-action="Index">Produkter</a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link" asp-controller="Cart" asp-action="Index">Kurv</a>
@@ -150,31 +150,6 @@
 							<li class="nav-item">
 								<a class="nav-link" asp-controller="Account" asp-action="index">Konto</a>
 							</li>
-
-
-							@* @if (Context.Request.Cookies["AuthCookie"] != null)
-							{
-								<li class="nav-item">
-									<a class="nav-link" asp-controller="Account" asp-action="AccountOverview">Konto oversigt</a>
-								</li>
-								<li class="nav-item">
-									<form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
-										<button type="submit" class="nav-link btn btn-link" style="padding: 0;">
-											Log ud
-										</button>
-									</form>
-								</li>
-								
-							}
-							else
-							{
-								<li class="nav-item">
-									<a class="nav-link" asp-controller="Account" asp-action="Login">Log ind</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" href="@Url.Action("CreateAccount", "Account")">Opret konto</a>
-								</li>
-							} *@
 							
 						</ul>
 					</div>
