@@ -96,20 +96,33 @@
     }
 
     <script>
-        document.getElementById("createAccountForm").addEventListener("submit", function (event) {
-            const ageInput = document.querySelector("[name='Age']");
-            const age = parseInt(ageInput.value, 10);
+        document.getElementById("createAccountForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-            // Check age
-            if (isNaN(age) || age < 18) {
-                event.preventDefault();
-                alert("Du skal være mindst 18 år gammel for at oprette en konto.");
-                ageInput.focus();
-                return;
-            }
+            const form = event.target;
+            const formData = new FormData(form);
 
-           
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = result.redirectUrl; // Redirect on success
+                } else {
+                    const errorMessage = result.errorMessage || "An unexpected error occurred.";
+                    window.showNotification(errorMessage, 'error'); // Show error notification
+                }
+            } catch (error) {
+                window.showNotification("An unexpected error occurred. Please try again later.", 'error');
             }
         });
     </script>
+
 }

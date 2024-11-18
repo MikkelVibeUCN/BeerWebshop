@@ -31,8 +31,7 @@
                 <td>@Html.DisplayFor(modelItem => order.IsDelivered)</td>
                 <td>@Html.DisplayFor(modelItem => order.TotalPrice)</td>
                 <td>
-                    @Html.ActionLink("Se detaljer", "Detaljer", new { id = order.Id }, new { @class = "btn btn-primary btn-sm" }) |
-                    @Html.ActionLink("Rediger", "Rediger", new { id = order.Id }, new { @class = "btn btn-warning btn-sm" })
+                    @Html.ActionLink("Se detaljer", "Detaljer", new { id = order.Id }, new { @class = "btn btn-primary btn-sm" })
                 </td>
             </tr>
         }

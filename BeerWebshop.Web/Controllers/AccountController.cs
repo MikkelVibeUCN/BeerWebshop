@@ -80,6 +80,11 @@ namespace BeerWebshop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAccount(AccountCreationViewModel viewModel)
         {
+            if (viewModel.Age < 18)
+            {
+                return Json(new { success = false, errorMessage = "Du skal være mindst 18 år gammel for at oprette en konto." });
+            }
+
             try
             {
                 await _accountService.CreateCustomerAsync(viewModel);
@@ -87,17 +92,26 @@ namespace BeerWebshop.Web.Controllers
                 _accountService.SaveAuthCookie(new AuthCookie
                 {
                     Email = viewModel.Email,
-                    PasswordHash = await _accountService.AuthenticateAndGetHashedPasswordAsync(new LoginViewModel { Email = viewModel.Email, Password = viewModel.Password })
+                    PasswordHash = await _accountService.AuthenticateAndGetHashedPasswordAsync(new LoginViewModel
+                    {
+                        Email = viewModel.Email,
+                        Password = viewModel.Password
+                    })
                 });
 
-                return RedirectToAction("Index", "Account");
+                return Json(new { success = true, redirectUrl = Url.Action("Index", "Account") });
             }
-            catch
+            catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "An error occurred while creating the account.");
-                return RedirectToAction("Index", "Account");
+                string message = "Der skete en fejl under oprettelsen af din konto. Prøv venligst igen.";
+                if (ex.Message.ToLower().Contains("email"))
+                {
+                    message = "Den indtastede email er allerede i brug.";
+                }
+                return Json(new { success = false, errorMessage = message});
             }
         }
+
 
         public async Task<IActionResult> AccountOverview()
         {
