@@ -8,4 +8,5 @@ public interface IOrderApiClient
     Task<bool> DeleteAsync(int id, string? endpoint = null);
     Task<IEnumerable<OrderDTO>> GetAllAsync(string? endpoint = null);
     Task<OrderDTO?> GetAsync(int id, string? endpoint = null);
+    Task<IEnumerable<OrderDTO>> GetOrdersByCustomerIdAsync(int customerId, string? endpoint = null);
 }

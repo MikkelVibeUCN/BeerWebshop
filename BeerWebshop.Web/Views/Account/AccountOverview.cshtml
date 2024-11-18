@@ -1,0 +1,34 @@
+﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.OrderDTO>
+
+@{
+    ViewData["Title"] = "Account Overview";
+}
+
+<h1>Account Overview</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Delivered</th>
+            <th>Total Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => order.Id)</td>
+                <td>@Html.DisplayFor(modelItem => order.Date)</td>
+                <td>@Html.DisplayFor(modelItem => order.IsDelivered)</td>
+                <td>@Html.DisplayFor(modelItem => order.TotalPrice)</td>
+                <td>
+                    @Html.ActionLink("View Details", "Details", new { id = order.Id }, new { @class = "btn btn-primary btn-sm" }) |
+                    @Html.ActionLink("Edit", "Edit", new { id = order.Id }, new { @class = "btn btn-warning btn-sm" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

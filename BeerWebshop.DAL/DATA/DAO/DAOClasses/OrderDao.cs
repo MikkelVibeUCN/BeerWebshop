@@ -82,6 +82,58 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			}
 		}
 
+		public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
+		{
+			using var connection = new SqlConnection(_connectionString);
+			await connection.OpenAsync();
+
+			try
+			{
+				var orders = new List<Order>();
+				var sqlQuery = $"{BaseOrderSql} WHERE o.CustomerId_FK = @CustomerId";
+
+				var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
+					sqlQuery,
+					(order, orderLine, product, category, brewery) =>
+					{
+						var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
+						if (existingOrder == null)
+						{
+							existingOrder = order;
+							existingOrder.OrderLines = new List<OrderLine>();
+							orders.Add(existingOrder);
+						}
+
+						if (product != null)
+						{
+							product.Brewery = brewery;
+							product.Category = category;
+						}
+
+						if (orderLine != null)
+						{
+							orderLine.Product = product;
+							existingOrder.OrderLines.Add(orderLine);
+						}
+
+						return existingOrder;
+					},
+					new { CustomerId = customerId },
+					splitOn: "Quantity,Id,Id,Id"
+				);
+
+				return orders;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Error getting orders for customerId {customerId} from database: {ex.Message}", ex);
+			}
+		}
+
+
+
+
+
 		public async Task<IEnumerable<Order>> GetAllOrdersAsync()
 		{
 			using var connection = new SqlConnection(_connectionString);
