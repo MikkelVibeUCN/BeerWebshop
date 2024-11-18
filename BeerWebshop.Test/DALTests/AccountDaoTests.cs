@@ -23,9 +23,7 @@ public class AccountDaoTests
     public async Task SetUpAsync()
     {
         _accountDAO = new AccountDAO(DBConnection.ConnectionString());
-
-
-    }
+     }
 
     [Test]
     public async Task GetCustomerById_WhenCustomerExists_ShouldReturnCustomerWithGivenId()
@@ -127,7 +125,71 @@ public class AccountDaoTests
         });
     }
 
+    [Test]
+    public async Task CreateAddress_WhenCalled_ShouldSaveAddressToDatabase()
+    {
+        var customer = new Customer()
+        {
+            Name = "Test User",
+            Address = "Testvej 10 1000 København",
+            Email = "test@test.dk",
+            Password = "testpassword",
+            Phone = "12345678",
+            Age = 30
+        };
 
+        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        _customersCreated.Add(customerId);
+
+        var customerFromDb = await _accountDAO.GetCustomerByIdAsync(customerId);
+
+        Assert.That(customerFromDb.Address, Is.EqualTo("Testvej 10 1000 København"));
+    }
+    [Test]
+    public async Task DeleteCustomerAsync_WhenCalled_ShouldRemoveCustomerFromDatabase()
+    {
+        var customer = new Customer()
+        {
+            Name = "Delete User",
+            Address = "Deletevej 5 5000 Odense",
+            Email = "delete@test.dk",
+            Password = "deletepassword",
+            Phone = "12345678",
+            Age = 30
+        };
+
+        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        _customersCreated.Add(customerId);
+
+        bool isDeleted = await _accountDAO.DeleteCustomerAsync(customerId);
+
+        Assert.That(isDeleted, Is.True);
+
+        var customerFromDb = await _accountDAO.GetCustomerByIdAsync(customerId);
+        Assert.That(customerFromDb, Is.Null);
+    }
+    [Test]
+    public async Task CreateAddress_WhenZipCodeIsMissing_ShouldThrowException()
+    {
+        var customer = new Customer()
+        {
+            Name = "Zip User",
+            Address = "NoZipvej 12",
+            Email = "zip@test.dk",
+            Password = "password",
+            Phone = "12345678",
+            Age = 30
+        };
+
+        var exception = Assert.ThrowsAsync<Exception>(async () =>
+        {
+            int customerId = await _accountDAO.SaveCustomerAsync(customer);
+            _customersCreated.Add(customerId);
+        });
+
+        Assert.That(exception.InnerException, Is.TypeOf<FormatException>());
+        Assert.That(exception.InnerException.Message, Is.EqualTo("Address format is incorrect."));
+    }
 
     [TearDown]
     public async Task TearDownAsync()

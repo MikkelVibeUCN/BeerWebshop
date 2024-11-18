@@ -50,6 +50,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string _deleteCustomerById = @"DELETE FROM Customers WHERE Id = @Id;";
 
         private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
+        
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
@@ -267,12 +268,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception($"Error deleting the customer: {ex.Message}");
             }
         }
-
-        public Task<bool> UpdatePasswordAsync(string email, string oldPassword, string newPassword)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<int> LoginAsync(string email, string password)
         {
             throw new NotImplementedException();
