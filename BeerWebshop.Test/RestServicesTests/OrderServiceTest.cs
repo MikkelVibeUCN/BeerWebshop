@@ -3,93 +3,163 @@ using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
 
-namespace BeerWebshop.Test.RestServicesTests
+namespace BeerWebshop.Test.RestServicesTests;
+
+[TestFixture]
+public class OrderServiceTests
 {
-    [TestFixture]
-	public class OrderServiceTests
+	private OrderService _orderService;
+	private ProductService _productService;
+	private string _connectionString = DBConnection.ConnectionString();
+	private CategoryService _categoryService;
+	private BreweryService _breweryService;
+
+	private int _createdOrderId;
+
+	[SetUp]
+	public async Task SetUp()
 	{
-		private OrderService _orderService;
-		private ProductService _productService;
-		private Order _testOrder;
-		private Product _testProduct;
-		private string _connectionString = DBConnection.ConnectionString();
-		private int _createdOrderId;
+		var productDao = new ProductDAO(_connectionString);
+		var orderDao = new OrderDAO(_connectionString);
+		var categoryDao = new CategoryDAO(_connectionString);
+		var breweryDao = new BreweryDAO(_connectionString);
 
+		_categoryService = new CategoryService(categoryDao);
+		_breweryService = new BreweryService(breweryDao);
+		_productService = new ProductService(productDao, _categoryService, _breweryService);
+		_orderService = new OrderService(orderDao, _productService, _connectionString);
+	}
 
-		[SetUp]
-		public async Task SetUp()
+	[Test]
+	public async Task CreateOrderAsync_WhenOrderIsValid_ShouldReturnOrderId()
+	{
+		var breweryId = await _breweryService.CreateBreweryAsync(new Brewery
 		{
-			var productDao = new ProductDAO(_connectionString);
-			var orderDao = new OrderDAO(_connectionString);
-			var categoryDao = new CategoryDAO(_connectionString);
-			var breweryDao = new BreweryDAO(_connectionString);
+			Name = "TestBrewery",
+			IsDeleted = false
+		});
+		var testBrewery = await _breweryService.GetBreweryById(breweryId);
 
-			var categoryService = new CategoryService(categoryDao);
-			var breweryService = new BreweryService(breweryDao);
-
-			_productService = new ProductService(productDao, categoryService, breweryService);
-
-			_orderService = new OrderService(orderDao, _productService, _connectionString);
-
-			var testBrewery = await breweryService.GetBreweryById(15);
-			var testCategory = await categoryService.GetCategoryById(15);
-
-			var testProductDTO = new ProductDTO
-			{
-				Name = "Sample Product",
-				BreweryName = testBrewery.Name,
-				Price = 10.0f,
-				Description = "Sample Description",
-				Stock = 10,
-				ABV = 5.0f,
-				CategoryName = testCategory.Name,
-				ImageUrl = "https://example.com/sample-image.jpg",
-				RowVersion = ""
-
-			};
-
-			int productId = await _productService.CreateProductAsync(testProductDTO);
-
-			_testProduct = await productDao.GetByIdAsync(productId);
-
-			_testOrder = new Order
-			{
-				CreatedAt = DateTime.Now,
-				DeliveryAddress = "123 Test Ave",
-				IsDelivered = false,
-				OrderLines = new List<OrderLine>
+		var categoryId = await _categoryService.CreateCategoryAsync(new Category
 		{
-			new OrderLine
+			Name = "TestCategory",
+			IsDeleted = false
+		});
+		var testCategory = await _categoryService.GetCategoryById(categoryId);
+
+		var testProductDTO = new ProductDTO
+		{
+			Name = "TestProduct",
+			BreweryName = testBrewery.Name,
+			Price = 10.0f,
+			Description = "Test",
+			Stock = 10,
+			ABV = 5.0f,
+			CategoryName = testCategory.Name,
+			ImageUrl = "https://example.com/sample-image.jpg",
+			RowVersion = ""
+		};
+
+		var productId = await _productService.CreateProductAsync(testProductDTO);
+		var testProduct = await _productService.GetProductEntityByIdAsync(productId);
+
+		var testOrder = new Order
+		{
+			CreatedAt = DateTime.Now,
+			DeliveryAddress = "123 Smiths Residence",
+			IsDelivered = false,
+			CustomerId_FK = null,
+			OrderLines = new List<OrderLine>
 			{
-				Quantity = 2,
-				Product = _testProduct
+				new OrderLine
+				{
+					Quantity = 2,
+					Product = testProduct
+				}
 			}
-		}
-			};
-		}
+		};
 
+		_createdOrderId = await _orderService.CreateOrderAsync(testOrder);
 
+		Assert.That(_createdOrderId, Is.GreaterThan(0), "The returned order ID should be greater than 0.");
 
-		[Test]
-		public async Task CreateOrderAsync_WhenOrderIsValid_ShouldReturnOrderId()
+		var updatedProduct = await _productService.GetProductByIdAsync(testProduct.Id ?? 0);
+		Assert.That(updatedProduct.Stock, Is.EqualTo(testProduct.Stock - 2), "The product stock should be reduced by the order quantity.");
+
+		await _orderService.DeleteOrderByIdAsync(_createdOrderId);
+		await _productService.DeleteProductByIdAsync(productId);
+		await _breweryService.DeleteBreweryAsync(breweryId);
+		await _categoryService.DeleteCategoryAsync(categoryId);
+	}
+
+	[Test]
+	public async Task CreateOrderAsync_WhenProductStockIsInsufficient_ShouldThrowInvalidOperationException()
+	{
+		var breweryId = await _breweryService.CreateBreweryAsync(new Brewery
 		{
-			_createdOrderId = await _orderService.CreateOrderAsync(_testOrder);
+			Name = "TestBrewery",
+			IsDeleted = false
+		});
+		var testBrewery = await _breweryService.GetBreweryById(breweryId);
 
-			Assert.That(_createdOrderId, Is.GreaterThan(0), "The returned order ID should be greater than 0.");
-
-			var updatedProduct = await _productService.GetProductByIdAsync(_testProduct.Id ?? 0);
-			Assert.That(updatedProduct.Stock, Is.EqualTo(_testProduct.Stock - 2), "The product stock should be reduced by the order quantity.");
-		}
-
-
-		[TearDown]
-		public async Task TearDown()
+		var categoryId = await _categoryService.CreateCategoryAsync(new Category
 		{
-			if (_createdOrderId > 0)
+			Name = "TestCategory",
+			IsDeleted = false
+		});
+		var testCategory = await _categoryService.GetCategoryById(categoryId);
+
+		var testProductDTO = new ProductDTO
+		{
+			Name = "TestProduct",
+			BreweryName = testBrewery.Name,
+			Price = 10.0f,
+			Description = "Test",
+			Stock = 5, 
+			ABV = 5.0f,
+			CategoryName = testCategory.Name,
+			ImageUrl = "https://example.com/sample-image.jpg",
+			RowVersion = ""
+		};
+
+		var productId = await _productService.CreateProductAsync(testProductDTO);
+		var testProduct = await _productService.GetProductEntityByIdAsync(productId);
+
+		var testOrder = new Order
+		{
+			CreatedAt = DateTime.Now,
+			DeliveryAddress = "321 Smiths Residence",
+			IsDelivered = false,
+			CustomerId_FK = null,
+			OrderLines = new List<OrderLine>
 			{
-				await _orderService.DeleteOrderByIdAsync(_createdOrderId);
-				_createdOrderId = 0;
+				new OrderLine
+				{
+					Quantity = 5,
+                    Product = testProduct
+				}
 			}
+		};
+
+		await _productService.UpdateStockAsync(productId, 3);
+
+		var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
+			await _orderService.CreateOrderAsync(testOrder));
+
+		Assert.That(ex.Message, Does.Contain("Insufficient stock"));
+
+		await _productService.DeleteProductByIdAsync(productId);
+		await _breweryService.DeleteBreweryAsync(breweryId);
+		await _categoryService.DeleteCategoryAsync(categoryId);
+	}
+
+	[TearDown]
+	public async Task TearDown()
+	{
+		if (_createdOrderId > 0)
+		{
+			await _orderService.DeleteOrderByIdAsync(_createdOrderId);
+			_createdOrderId = 0;
 		}
 	}
 }

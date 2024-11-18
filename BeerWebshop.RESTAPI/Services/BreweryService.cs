@@ -28,5 +28,6 @@ namespace BeerWebshop.RESTAPI.Services
 		{
 			return await _breweryDAO.DeleteAsync(id);
 		}
+
 	}
 }
