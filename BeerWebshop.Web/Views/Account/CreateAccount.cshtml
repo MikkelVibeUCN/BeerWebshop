@@ -98,14 +98,12 @@
     <script>
         document.getElementById("createAccountForm").addEventListener("submit", function (event) {
             const ageInput = document.querySelector("[name='Age']");
-            const passwordInput = document.querySelector("[name='Password']");
             const age = parseInt(ageInput.value, 10);
-            const password = passwordInput.value;
 
             // Check age
             if (isNaN(age) || age < 18) {
                 event.preventDefault();
-                alert("You must be at least 18 years old to create an account.");
+                alert("Du skal være mindst 18 år gammel for at oprette en konto.");
                 ageInput.focus();
                 return;
             }

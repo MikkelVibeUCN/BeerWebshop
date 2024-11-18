@@ -107,7 +107,7 @@ namespace BeerWebshop.DesktopClient
         private async Task DeleteSelectedCompany()
         {
             if (lstProduct.SelectedIndex == -1) { return; }
-            if (MessageBox.Show("Are you sure you wish to delete this company?", "Delete?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+            if (MessageBox.Show("Are you sure you wish to delete this product?", "Delete?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
             {
                 try
                 {

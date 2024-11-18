@@ -121,7 +121,7 @@ public class ProductDaoTests
 
 
 
-	// Nye tests til implementering af categorier og søgehalløj
+	//TODO Nye tests til implementering af categorier og søgehalløj
 
 
 	[Test]
