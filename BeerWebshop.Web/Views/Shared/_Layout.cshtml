@@ -147,7 +147,12 @@
 								<a class="nav-link" asp-controller="Cart" asp-action="Index">Kurv</a>
 							</li>
 
-							@if (Context.Request.Cookies["AuthCookie"] != null)
+							<li class="nav-item">
+								<a class="nav-link" asp-controller="Account" asp-action="index">Konto</a>
+							</li>
+
+
+							@* @if (Context.Request.Cookies["AuthCookie"] != null)
 							{
 								<li class="nav-item">
 									<a class="nav-link" asp-controller="Account" asp-action="AccountOverview">Konto oversigt</a>
@@ -169,7 +174,7 @@
 								<li class="nav-item">
 									<a class="nav-link" href="@Url.Action("CreateAccount", "Account")">Opret konto</a>
 								</li>
-							}
+							} *@
 							
 						</ul>
 					</div>
