@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.OrderDTO>
 
 @{
-    ViewData["Title"] = "Account Overview";
+    ViewData["Title"] = "Bruger oversigt";
 }
 
 <h1>Account Overview</h1>
@@ -25,8 +25,8 @@
                 <td>@Html.DisplayFor(modelItem => order.IsDelivered)</td>
                 <td>@Html.DisplayFor(modelItem => order.TotalPrice)</td>
                 <td>
-                    @Html.ActionLink("View Details", "Details", new { id = order.Id }, new { @class = "btn btn-primary btn-sm" }) |
-                    @Html.ActionLink("Edit", "Edit", new { id = order.Id }, new { @class = "btn btn-warning btn-sm" })
+                    @Html.ActionLink("Se detaljer", "Detaljer", new { id = order.Id }, new { @class = "btn btn-primary btn-sm" }) |
+                    @Html.ActionLink("Rediger", "Rediger", new { id = order.Id }, new { @class = "btn btn-warning btn-sm" })
                 </td>
             </tr>
         }

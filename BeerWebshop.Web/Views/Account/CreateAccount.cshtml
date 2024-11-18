@@ -15,87 +15,87 @@
 
                 <!-- First Name -->
                 <div class="form-group">
-                    <label asp-for="FirstName" class="control-label">First Name</label>
-                    <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" required />
+                    <label asp-for="FirstName" class="control-label">Fornavn</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="Indtast Fornavn" required />
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
 
                 <!-- Last Name -->
                 <div class="form-group">
-                    <label asp-for="LastName" class="control-label">Last Name</label>
-                    <input asp-for="LastName" class="form-control" placeholder="Enter your last name" required />
+                    <label asp-for="LastName" class="control-label">Efternavn</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Indtast Efternavn" required />
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
 
                 <!-- Street -->
                 <div class="form-group">
-                    <label asp-for="Street" class="control-label">Street</label>
-                    <input asp-for="Street" class="form-control" placeholder="Enter your street" required />
+                    <label asp-for="Street" class="control-label">Vej</label>
+                    <input asp-for="Street" class="form-control" placeholder="Indtast Vej" required />
                     <span asp-validation-for="Street" class="text-danger"></span>
                 </div>
 
                 <!-- Street Number -->
                 <div class="form-group">
-                    <label asp-for="StreetNumber" class="control-label">Street Number</label>
-                    <input asp-for="StreetNumber" class="form-control" placeholder="Enter your street number" required />
+                    <label asp-for="StreetNumber" class="control-label">Vej Nummer</label>
+                    <input asp-for="StreetNumber" class="form-control" placeholder="Indtast Vej Nummer" required />
                     <span asp-validation-for="StreetNumber" class="text-danger"></span>
                 </div>
 
                 <!-- Apartment Number (Optional) -->
                 <div class="form-group">
-                    <label asp-for="ApartmentNumber" class="control-label">Apartment Number (optional)</label>
-                    <input asp-for="ApartmentNumber" class="form-control" placeholder="Enter your apartment number (optional)" />
+                    <label asp-for="ApartmentNumber" class="control-label">Etage (valgfri)</label>
+                    <input asp-for="ApartmentNumber" class="form-control" placeholder="Indtast Din Etage (valgfri)" />
                     <span asp-validation-for="ApartmentNumber" class="text-danger"></span>
                 </div>
 
                 <!-- Postal Code -->
                 <div class="form-group">
-                    <label asp-for="PostalCode" class="control-label">Postal Code</label>
-                    <input asp-for="PostalCode" class="form-control" placeholder="Enter your postal code" required />
+                    <label asp-for="PostalCode" class="control-label">Postnummer</label>
+                    <input asp-for="PostalCode" class="form-control" placeholder="Indtast Postnummer" required />
                     <span asp-validation-for="PostalCode" class="text-danger"></span>
                 </div>
 
                 <!-- City -->
                 <div class="form-group">
-                    <label asp-for="City" class="control-label">City</label>
-                    <input asp-for="City" class="form-control" placeholder="Enter your city" required />
+                    <label asp-for="City" class="control-label">By</label>
+                    <input asp-for="City" class="form-control" placeholder="Indtast By" required />
                     <span asp-validation-for="City" class="text-danger"></span>
                 </div>
 
                 <!-- Email -->
                 <div class="form-group">
                     <label asp-for="Email" class="control-label">Email</label>
-                    <input asp-for="Email" class="form-control" placeholder="Enter your email" type="email" required />
+                    <input asp-for="Email" class="form-control" placeholder="Indtast Email" type="email" required />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
                 <!-- Password -->
                 <div class="form-group">
-                    <label asp-for="Password" class="control-label">Password</label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="Create a password" 
+                    <label asp-for="Password" class="control-label">Adgangskode</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Opret Adgangskode"
                            required minlength="8" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
                 <!-- Phone -->
                 <div class="form-group">
-                    <label asp-for="Phone" class="control-label">Phone Number</label>
-                    <input asp-for="Phone" class="form-control" placeholder="Enter your phone number" type="tel" required />
+                    <label asp-for="Phone" class="control-label">Telefon Nummer</label>
+                    <input asp-for="Phone" class="form-control" placeholder="Indtast Telefon Nummer" type="tel" required />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
                 <!-- Age -->
                 <div class="form-group">
-                    <label asp-for="Age" class="control-label">Age</label>
-                    <input asp-for="Age" class="form-control" placeholder="Enter your age" type="number" min="18" required />
+                    <label asp-for="Age" class="control-label">Alder</label>
+                    <input asp-for="Age" class="form-control" placeholder="Indtast Alder" type="number" min="18" required />
                     <span asp-validation-for="Age" class="text-danger"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                <button type="submit" class="btn btn-primary btn-block">Opret Bruger</button>
             </form>
 
             <div class="text-center mt-3">
-                <a href="@Url.Action("Index", "Home")">Already have an account? Log in</a>
+                <a href="@Url.Action("Index", "Home")">Bruger allerede oprettet? Log in</a>
             </div>
         </div>
     </div>
