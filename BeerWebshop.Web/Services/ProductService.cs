@@ -4,12 +4,12 @@ using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.Web.Services
 {
-    public class BeerService
+    public class ProductService
     {
         private readonly IProductAPIClient _productAPIClient;
         private readonly ICategoryAPIClient _categoryAPIClient;
 
-        public BeerService(IProductAPIClient restClient, ICategoryAPIClient categoryAPIClient)
+        public ProductService(IProductAPIClient restClient, ICategoryAPIClient categoryAPIClient)
         {
             _productAPIClient = restClient;
             _categoryAPIClient = categoryAPIClient;

@@ -9,11 +9,11 @@ namespace BeerWebshop.Web.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
-        private readonly BeerService _beerService;
-        public CartController(ICartService cartService, BeerService beerService)
+        private readonly ProductService _productService;
+        public CartController(ICartService cartService, ProductService productService)
         {
             _cartService = cartService;
-            _beerService = beerService;
+            _productService = productService;
         }
 
 
@@ -128,7 +128,7 @@ namespace BeerWebshop.Web.Controllers
         {
             try
             {
-                ProductDTO? product = await _beerService.GetProductFromId(productId);
+                ProductDTO? product = await _productService.GetProductFromId(productId);
 
                 if(product == null)
                 {
@@ -148,12 +148,12 @@ namespace BeerWebshop.Web.Controllers
 
         private async Task<bool> HasEnoughStock(int productId, int newQuantity)
         {
-            ProductDTO? beer = await _beerService.GetProductFromId(productId);
-            if(beer == null)
+            ProductDTO? product = await _productService.GetProductFromId(productId);
+            if(product == null)
             {
-                throw new Exception("Beer not found");
+                throw new Exception("product not found");
             }
-            return _cartService.HasEnoughStock(beer, newQuantity);
+            return _cartService.HasEnoughStock(product, newQuantity);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace BeerWebshop.Web
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Register application services
-            builder.Services.AddScoped<BeerService>();
+            builder.Services.AddScoped<ProductService>();
             builder.Services.AddScoped<CookieService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<CheckoutService>();
