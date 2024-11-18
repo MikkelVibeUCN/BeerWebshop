@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
+using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers;
@@ -20,7 +21,7 @@ public class AccountsController : ControllerBase
     {
         try
         {
-            Customer customer = MapToCustomer(customerDTO);
+            Customer customer = MappingHelper.MapToCustomer(customerDTO);
 
             int customerId = await _accountService.SaveCustomerAsync(customer);
             return Ok(customerId);
@@ -48,16 +49,4 @@ public class AccountsController : ControllerBase
         }
     }
 
-    private static Customer MapToCustomer(CustomerDTO customer)
-    {
-        return new Customer
-        {
-            Name = customer.Name,
-            Address = customer.Address,
-            Email = customer.Email,
-            Phone = customer.Phone,
-            Password = customer.Password,
-            Age = customer.Age,
-        };
-    }
 }
