@@ -31,6 +31,11 @@ namespace BeerWebshop.RESTAPI.Services
 			return await _categoryDAO.GetByIdAsync(id);
 		}
 
+		public async Task<bool> DeleteCategoryAsync(int id)
+		{
+			return await _categoryDAO.DeleteAsync(id);
+		}
+
 
 
 	}

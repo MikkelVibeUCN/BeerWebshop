@@ -56,7 +56,7 @@ namespace BeerWebshop.RESTAPI.Services
 					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity);
 					if (!success)
 					{
-						throw new InvalidOperationException("The product stock was modified by another transaction.");
+						throw new InvalidOperationException("Insufficient stock.");
 					}
 				}
 
