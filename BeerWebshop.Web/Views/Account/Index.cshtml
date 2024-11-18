@@ -1,6 +1,6 @@
-﻿@model BeerWebshop.APIClientLibrary.ApiClient.DTO.LoginDTO
+﻿@model BeerWebshop.Web.Models.LoginViewModel
 
-<h2>Login</h2>
+<h2>Log ind</h2>
 
 <form asp-action="Login" method="post">
     <div class="form-group">
@@ -15,5 +15,9 @@
     </div>
     <button type="submit" class="btn btn-primary">Login</button>
 </form>
+
+<div class="text-center mt-3">
+    <a href="@Url.Action("CreateAccount", "Account")">Har du ikke en konto? Opret en her</a>
+</div>
 
 

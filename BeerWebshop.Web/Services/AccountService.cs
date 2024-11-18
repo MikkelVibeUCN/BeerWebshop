@@ -58,67 +58,58 @@ namespace BeerWebshop.Web.Services
 
 		}
 
+		public AuthCookie GetAuthCookie()
+		{
+			AuthCookie? authCookie = _cookieService.GetObjectFromCookie<AuthCookie>(AuthCookieKey);
+            if (authCookie == null)
+			{
+				authCookie = new()
+				{
+					PasswordHash = "",
+					Email = "",
+				};
+				SaveAuthCookie(authCookie);
+            }
+            return authCookie;
+        }
 
 		public void RemoveAuthCookie()
 		{
-			_cookieService.RemoveCookies<string>(AuthCookieKey);
+			_cookieService.RemoveCookies<AuthCookie>(AuthCookieKey);
 		}
 		public string? GetHashedPasswordFromCookie()
 		{
-			var authDataJson = _cookieService.GetObjectFromCookie<string>(AuthCookieKey);
-			if (authDataJson != null)
-			{
-				var authData = JsonConvert.DeserializeObject<dynamic>(authDataJson);
-				return authData.HashedPassword;
-			}
-			return null;
-		}
+			return GetAuthCookie().PasswordHash;
+        }
 		// Set auth cookie with hashed password and email
-		public void SetAuthCookie(string hashedPassword, string email, int customerId)
+		public void SaveAuthCookie(AuthCookie authCookie)
 		{
-			var authData = new
-			{
-				Email = email,
-				HashedPassword = hashedPassword,
-				CustomerId = customerId
-
-			};
-
-			var authDataJson = JsonConvert.SerializeObject(authData);
-
-			var cookieOptions = new CookieOptions
-			{
-				HttpOnly = true,
-				Secure = true,
-				SameSite = SameSiteMode.Strict,
-				Expires = DateTimeOffset.UtcNow.AddHours(1)
-			};
-
-			_cookieService.SaveCookie(authDataJson, AuthCookieKey, cookieOptions);
+			_cookieService.SaveCookie<AuthCookie>(authCookie, AuthCookieKey);
 		}
 
-		public int GetCustomerIdFromCookie()
+		public async Task<int?> GetCustomerIdFromCookie()
 		{
-			var authDataJson = _cookieService.GetObjectFromCookie<string>(AuthCookieKey);
-			if (authDataJson != null)
+			AuthCookie authCookie = GetAuthCookie();
+			if (!string.IsNullOrEmpty(authCookie.Email)) 
 			{
-				var authData = JsonConvert.DeserializeObject<dynamic>(authDataJson);
-				return authData.CustomerId;
+				CustomerDTO? customer = await GetCustomerByEmailAsync(authCookie.Email);
+				if (customer != null)
+				{
+					return customer.Id;
+				}
 			}
-			return 0;
+			return null;	
 		}
 		// Authenticate user and return hashed password if successful
-		public async Task<string?> AuthenticateAndGetHashedPasswordAsync(LoginDTO loginDTO)
+		public async Task<string?> AuthenticateAndGetHashedPasswordAsync(LoginViewModel loginViewModel)
 		{
-			var customerDTO = await _accountAPIClient.GetByEmailAsync(loginDTO.Email);
-			if (customerDTO != null && BCrypt.Net.BCrypt.Verify(loginDTO.Password, customerDTO.Password))
+			var customerDTO = await _accountAPIClient.GetByEmailAsync(loginViewModel.Email);
+			if (customerDTO != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, customerDTO.Password))
 			{
 				return customerDTO.Password; // Return the hashed password to store in the cookie
 			}
 			return null;
 		}
-
-		
 
 	}
 }
