@@ -34,9 +34,9 @@ namespace BeerWebshop.Web.Controllers
                 Cart = cart,
                 Checkout = _checkoutService.GetCheckout()
             };
-
             return View(model);
         }
+
         // POST: CheckoutController
         [HttpPost]  
         [ValidateAntiForgeryToken]
