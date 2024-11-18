@@ -25,6 +25,7 @@ namespace BeerWebshop.Web.Models
         [Required]
         [DataType(DataType.Password)]
         [RegularExpression(@"^(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?])(?=.*\d)(?=.*[A-Za-z]).{8,}$", ErrorMessage = "Password must contain 8 letters, one special character and a number")]
+
         public string Password { get; set; }
         [Required]
         [DataType(DataType.PhoneNumber)]

@@ -4,12 +4,13 @@ namespace BeerWebshop.Web.Models
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email er påkrævet")]
+        [EmailAddress(ErrorMessage = "Indtast en gyldig emailadresse")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
+        [Required(ErrorMessage = "Adgangskode er påkrævet")]
         [DataType(DataType.Password)]
+        [RegularExpression(@"^(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?])(?=.*\d)(?=.*[A-Za-z]).{8,}$", ErrorMessage = "Adgangskoden skal indeholde mindst 8 tegn, et specialtegn og et tal")]
         public string Password { get; set; }
     }
 }
