@@ -8,12 +8,14 @@ internal static class MappingHelper
 
 	public static Order MapOrderDTOToEntity(OrderDTO dto, List<OrderLine> orderLines)
 	{
-		return new Order
+		Customer customer = MapToEntity(dto.CustomerDTO);
+
+        return new Order
 		{
 			CreatedAt = dto.Date,
 			DeliveryAddress = dto.CustomerDTO?.Address,
 			IsDelivered = dto.IsDelivered,
-			CustomerId_FK = dto.CustomerDTO?.Id,
+			Customer = customer,
 			OrderLines = orderLines
 		};
 	}
@@ -38,12 +40,8 @@ internal static class MappingHelper
 			OrderLines = order.OrderLines != null
 				? order.OrderLines.Select(MapOrderLineEntityToDTO).ToList()
 				: new List<OrderLineDTO>(),
-			CustomerDTO = order.CustomerId_FK.HasValue ? new CustomerDTO
-			{
-				Id = order.CustomerId_FK.Value,
-				Address = order.DeliveryAddress
-			} : null
-		};
+			CustomerDTO = MapToDTO(order.Customer)
+        };
 	}
 
 	public static OrderLineDTO MapOrderLineEntityToDTO(OrderLine entity)
@@ -118,7 +116,7 @@ internal static class MappingHelper
 			Name = brewery.Name
 		};
 	}
-	public static Customer MapToCustomer(CustomerDTO customer)
+	public static Customer MapToEntity(CustomerDTO customer)
 	{
 		return new Customer
 		{
@@ -128,7 +126,8 @@ internal static class MappingHelper
 			Phone = customer.Phone,
 			Password = customer.Password,
 			Age = customer.Age,
-		};
+			Id = (int)customer.Id
+        };
 	}
 	public static CustomerDTO MapToDTO(Customer customer)
 	{

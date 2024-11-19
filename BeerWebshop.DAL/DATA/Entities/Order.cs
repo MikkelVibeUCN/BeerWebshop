@@ -8,9 +8,9 @@ public class Order
 	public bool IsDelivered { get; set; }
 	public int? Id { get; set; }
 	public bool IsDeleted { get; set; }
-	public int? CustomerId_FK { get; set; }
+	public Customer Customer { get; set; }
 
-	public float TotalPrice
+    public float TotalPrice
 	{
 		get
 		{
@@ -19,14 +19,14 @@ public class Order
 	}
 	public Order() { }
 
-	public Order(DateTime createdAt, List<OrderLine> orderLines, bool isDelivered, string? deliveryAddress = null, int? customerId_FK = null, int? id = null)
+	public Order(DateTime createdAt, List<OrderLine> orderLines, bool isDelivered, Customer customer, string? deliveryAddress = null, int? id = null)
 	{
 		CreatedAt = createdAt;
 		OrderLines = orderLines;
 		DeliveryAddress = deliveryAddress;
 		IsDelivered = isDelivered;
 		Id = id;
-		CustomerId_FK = customerId_FK;
+		Customer = customer;
 
 	}
 

@@ -12,41 +12,77 @@ namespace BeerWebshop.Web.Controllers
         private readonly ICartService _cartService;
         private readonly OrderService _orderService;
         private readonly CheckoutService _checkoutService;
-
-        public CheckoutController(ICartService cartService, CheckoutService checkoutService, OrderService orderService)
+        private readonly AccountService _accountService;
+        public CheckoutController(ICartService cartService, CheckoutService checkoutService, OrderService orderService, AccountService accountService)
         {
             _cartService = cartService;
             _checkoutService = checkoutService;
             _orderService = orderService;
+            _accountService = accountService;
         }
 
         // GET: CheckoutController
-        public ActionResult Index()
+        public async Task<ActionResult> Index([FromBody] CheckoutViewModel? viewModel)
         {
-            ShoppingCart cart = _cartService.GetCart();
-            if(cart.OrderLines.Count == 0)
+            if(viewModel == null)
+            {
+                viewModel = new CheckoutViewModel
+                {
+                    Cart = _cartService.GetCart(),
+                    Checkout = _checkoutService.GetCheckout(),
+                    Customer = await _accountService.GetCustomerFromLoginCookie()
+                };
+            }
+            if (viewModel.Cart.OrderLines.Count == 0)
             {
                 return Redirect("/Cart");
             }
 
-            CheckoutViewModel model = new CheckoutViewModel
-            {
-                Cart = cart,
-                Checkout = _checkoutService.GetCheckout()
-            };
-            return View(model);
+            return View(viewModel);
         }
 
-        // POST: CheckoutController
-        [HttpPost]  
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index([FromForm] Checkout checkout)
         {
-            ShoppingCart cart = _cartService.GetCart();
+            CheckoutViewModel viewModel = new CheckoutViewModel
+            {
+                Checkout = _checkoutService.GetCheckout(),
+                Cart = _cartService.GetCart(),
+                Customer = await _accountService.GetCustomerFromLoginCookie()
+            };
+
+            if (viewModel.Customer == null)
+            {
+                // Attach errors to the Checkout object within the viewModel
+                if (string.IsNullOrWhiteSpace(checkout.Firstname))
+                {
+                    ModelState.AddModelError($"Checkout.{nameof(checkout.Firstname)}", "Fornavn mangler.");
+                }
+                if (string.IsNullOrWhiteSpace(checkout.Lastname))
+                {
+                    ModelState.AddModelError($"Checkout.{nameof(checkout.Lastname)}", "Efternavn mangler.");
+                }
+                if (string.IsNullOrWhiteSpace(checkout.Phonenumber))
+                {
+                    ModelState.AddModelError($"Checkout.{nameof(checkout.Phonenumber)}", "Telefonnummer mangler.");
+                }
+                if (string.IsNullOrWhiteSpace(checkout.Email))
+                {
+                    ModelState.AddModelError($"Checkout.{nameof(checkout.Email)}", "Email mangler.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            _checkoutService.SaveCheckout(checkout);
 
             try
             {
-                int id = await _orderService.SaveOrder(checkout, cart);
+                int id = await _orderService.SaveOrder(viewModel);
 
                 _cartService.ClearCartCookies();
 
@@ -59,24 +95,19 @@ namespace BeerWebshop.Web.Controllers
             }
         }
 
+
         [HttpPost]
         public IActionResult SaveCheckout([FromBody] Checkout checkout)
         {
-            if (ModelState.IsValid)
-            {
-                // Save the checkout information using your service
-                _checkoutService.UpdateCheckout(checkout);
-
-                return Ok(new { success = true });
-            }
-            return BadRequest(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
+            _checkoutService.UpdateCheckout(checkout);
+            return Ok(new { success = true });
         }
 
         // GET: Order Confirmation
         public async Task<ActionResult> OrderConfirmation(int orderId)
         {
             OrderDTO? order = await _orderService.GetOrderFromId(orderId);
-            if(order == null)
+            if (order == null)
             {
                 return BadRequest("Order not found");
             }
