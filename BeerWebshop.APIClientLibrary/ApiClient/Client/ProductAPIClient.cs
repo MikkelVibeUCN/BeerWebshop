@@ -18,7 +18,7 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
         }
         public async Task<IEnumerable<string>> GetProductCategoriesAsync()
         {
-            return await GetAllAsync<string>("Products/Categories");
+            return await GetAllAsync<string>($"{_defaultEndPoint}/Categories");
         }
 
         public async Task<int> GetProductCountAsync(ProductQueryParameters parameters)
