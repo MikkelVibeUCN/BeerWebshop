@@ -28,7 +28,7 @@ namespace BeerWebshop.RESTAPI.Services
         }
         public async Task DeleteCustomer(int id)
         {
-            await _accountDAO.DeleteCustomerAsync(id);
+            await _accountDAO.DeleteAsync(id);
         }
     }
 }

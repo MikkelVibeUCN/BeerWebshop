@@ -8,8 +8,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 {
     public class OrderDAO : IOrderDAO
     {
-        private readonly string _connectionString;
 
+        #region Sql Query
         private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, CustomerId_FK) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @CustomerId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
@@ -55,26 +55,39 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			LEFT JOIN Customers cu ON o.CustomerId_FK = cu.Id
 			LEFT JOIN Address a ON a.CustomerId_FK = cu.Id
 			LEFT JOIN Postalcode po ON a.Postalcode_FK = po.Postalcode";
+        #endregion
+        #region Dependency injection
 
-
+        private readonly string _connectionString;
         public OrderDAO(string connectionString)
         {
             _connectionString = connectionString;
         }
-
-        public async Task<bool> DeleteOrderByIdAsync(int orderId)
+        #endregion
+        #region BaseDAO Methods
+        public async Task<int> CreateAsync(Order order)
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
+            using var transaction = await connection.BeginTransactionAsync();
 
             try
             {
-                var rowsAffected = await connection.ExecuteAsync(DeleteOrderByIdSql, new { Id = orderId });
-                return rowsAffected > 0;
+                var orderId = await InsertOrderAsync(connection, transaction, order);
+
+                foreach (var orderLine in order.OrderLines)
+                {
+                    await InsertOrderLineAsync(connection, transaction, orderLine, orderId);
+                }
+
+                await transaction.CommitAsync();
+
+                return orderId;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error deleting order with ID: {orderId}: {ex.Message}", ex);
+                await transaction.RollbackAsync();
+                throw new Exception($"Error inserting order: {ex.Message}", ex);
             }
         }
 
@@ -119,7 +132,73 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception($"Error getting order from database: {ex.Message}", ex);
             }
         }
+        public Task<bool> UpdateAsync(Order entity)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<bool> DeleteAsync(int orderId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
 
+            try
+            {
+                var rowsAffected = await connection.ExecuteAsync(DeleteOrderByIdSql, new { Id = orderId });
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting order with ID: {orderId}: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<IEnumerable<Order>> GetAllAsync()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            try
+            {
+                var orders = new List<Order>();
+
+                var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
+                    BaseOrderSql,
+                    (order, orderLine, product, category, brewery) =>
+                    {
+                        var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
+                        if (existingOrder == null)
+                        {
+                            existingOrder = order;
+                            existingOrder.OrderLines = new List<OrderLine>();
+                            orders.Add(existingOrder);
+                        }
+
+                        if (product != null)
+                        {
+                            product.Brewery = brewery;
+                            product.Category = category;
+                        }
+
+                        if (orderLine != null)
+                        {
+                            orderLine.Product = product;
+                            existingOrder.OrderLines.Add(orderLine);
+                        }
+
+                        return existingOrder;
+                    },
+                    splitOn: "Quantity,Id,Id,Id"
+                );
+
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting orders from database: {ex.Message}", ex);
+            }
+        }
+        #endregion
+        #region IOrderDAO Methods
 
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
         {
@@ -169,87 +248,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception($"Error getting orders for customerId {customerId} from database: {ex.Message}", ex);
             }
         }
-
-
-
-        #region IOrderDAO Methods
-
-
-
-        public async Task<IEnumerable<Order>> GetAllOrdersAsync()
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            try
-            {
-                var orders = new List<Order>();
-
-                var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
-                    BaseOrderSql,
-                    (order, orderLine, product, category, brewery) =>
-                    {
-                        var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
-                        if (existingOrder == null)
-                        {
-                            existingOrder = order;
-                            existingOrder.OrderLines = new List<OrderLine>();
-                            orders.Add(existingOrder);
-                        }
-
-                        if (product != null)
-                        {
-                            product.Brewery = brewery;
-                            product.Category = category;
-                        }
-
-                        if (orderLine != null)
-                        {
-                            orderLine.Product = product;
-                            existingOrder.OrderLines.Add(orderLine);
-                        }
-
-                        return existingOrder;
-                    },
-                    splitOn: "Quantity,Id,Id,Id"
-                );
-
-                return orders;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error getting orders from database: {ex.Message}", ex);
-            }
-        }
-
-
-
-        public async Task<int> InsertCompleteOrderAsync(Order order)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-            using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                var orderId = await InsertOrderAsync(connection, transaction, order);
-
-                foreach (var orderLine in order.OrderLines)
-                {
-                    await InsertOrderLineAsync(connection, transaction, orderLine, orderId);
-                }
-
-                await transaction.CommitAsync();
-
-                return orderId;
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                throw new Exception($"Error inserting order: {ex.Message}", ex);
-            }
-        }
-
+        #endregion
+        #region Create Order helper methods
         private async Task<int> InsertOrderAsync(SqlConnection connection, IDbTransaction transaction, Order order)
         {
             var parameters = new
@@ -275,6 +275,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             await connection.ExecuteAsync(InsertOrderLineSql, parameters, transaction);
         }
+
+       
     }
 }
 #endregion
