@@ -32,7 +32,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         WHERE 
             c.Id = @Id;";
 
-
         private const string _saveCustomer = @"
             INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, Age, Email, IsDeleted)
             VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @Age, @Email, 0);
