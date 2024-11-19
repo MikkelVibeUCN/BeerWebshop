@@ -21,7 +21,7 @@ public class AccountsController : ControllerBase
     {
         try
         {
-            Customer customer = MappingHelper.MapToCustomer(customerDTO);
+            Customer customer = MappingHelper.MapToEntity(customerDTO);
 
             int customerId = await _accountService.SaveCustomerAsync(customer);
             return Ok(customerId);

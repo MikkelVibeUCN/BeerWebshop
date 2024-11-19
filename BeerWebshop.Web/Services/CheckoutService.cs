@@ -36,8 +36,6 @@ namespace BeerWebshop.Web.Services
 
         public void UpdateCheckout(Checkout checkout)
         {
-            DeleteCheckout(checkout);
-
             SaveCheckout(checkout);
         }
 

@@ -26,5 +26,9 @@ namespace BeerWebshop.RESTAPI.Services
 
             return MappingHelper.MapToDTO(customer);
         }
+        public async Task DeleteCustomer(int id)
+        {
+            await _accountDAO.DeleteCustomerAsync(id);
+        }
     }
 }

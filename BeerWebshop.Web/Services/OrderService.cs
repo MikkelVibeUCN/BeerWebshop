@@ -25,14 +25,17 @@ namespace BeerWebshop.Web.Services
 			
 		}
 
-		public async Task<int> SaveOrder(Checkout checkout, ShoppingCart cart)
+		public async Task<int> SaveOrder(CheckoutViewModel checkout)
 		{
-			CustomerDTO customerDTO = CreateCustomerFromCheckout(checkout);
+			if(checkout.Customer == null)
+			{
+                checkout.Customer = CreateCustomerFromCheckout(checkout.Checkout);
+            }
 
 			OrderDTO orderDTO = new OrderDTO
 			{
-				CustomerDTO = customerDTO,
-				OrderLines = cart.OrderLines,
+				CustomerDTO = checkout.Customer,
+				OrderLines = checkout.Cart.OrderLines,
 				Date = DateTime.Now,
 			};
 
