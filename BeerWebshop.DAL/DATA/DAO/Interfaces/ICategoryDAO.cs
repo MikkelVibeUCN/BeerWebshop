@@ -2,11 +2,8 @@
 
 namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 
-public interface ICategoryDAO
+public interface ICategoryDAO : IBaseDAO<Category>
 {
-	Task<int> CreateAsync(Category category);
-	Task<bool> DeleteAsync(int id);
-	Task<IEnumerable<Category>> GetAllCategories();
 	Task<int?> GetCategoryIdByName(string categoryName);
-	Task<Category?> GetByIdAsync(int categoryId);
+	
 }

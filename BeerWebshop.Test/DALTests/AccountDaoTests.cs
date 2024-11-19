@@ -38,11 +38,11 @@ public class AccountDaoTests
             Age = 18
         };
 
-        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        int customerId = await _accountDAO.CreateAsync(customer);
 
         _customersCreated.Add(customerId);
 
-        var customerFound = await _accountDAO.GetCustomerByIdAsync(customerId);
+        var customerFound = await _accountDAO.GetByIdAsync(customerId);
 
         Assert.That(customer != null);
         Assert.That(customer.Id == customerFound.Id);
@@ -66,7 +66,7 @@ public class AccountDaoTests
             Phone = "60170091",
             Age = 18
         };
-        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
     }
 
@@ -85,7 +85,7 @@ public class AccountDaoTests
 
         Assert.ThrowsAsync<Exception>(async () =>
         {
-            int customerId = await _accountDAO.SaveCustomerAsync(customer);
+            int customerId = await _accountDAO.CreateAsync(customer);
             _customersCreated.Add(customerId);
         });
     }
@@ -105,7 +105,7 @@ public class AccountDaoTests
         };
 
 
-        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
 
         var customer2 = new Customer()
@@ -120,7 +120,7 @@ public class AccountDaoTests
 
         Assert.ThrowsAsync<Exception>(async () =>
         {
-            int customerId = await _accountDAO.SaveCustomerAsync(customer2);
+            int customerId = await _accountDAO.CreateAsync(customer2);
             _customersCreated.Add(customerId);
         });
     }
@@ -138,10 +138,10 @@ public class AccountDaoTests
             Age = 30
         };
 
-        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
 
-        var customerFromDb = await _accountDAO.GetCustomerByIdAsync(customerId);
+        var customerFromDb = await _accountDAO.GetByIdAsync(customerId);
 
         Assert.That(customerFromDb.Address, Is.EqualTo("Testvej 10 1000 København"));
     }
@@ -158,14 +158,14 @@ public class AccountDaoTests
             Age = 30
         };
 
-        int customerId = await _accountDAO.SaveCustomerAsync(customer);
+        int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
 
-        bool isDeleted = await _accountDAO.DeleteCustomerAsync(customerId);
+        bool isDeleted = await _accountDAO.DeleteAsync(customerId);
 
         Assert.That(isDeleted, Is.True);
 
-        var customerFromDb = await _accountDAO.GetCustomerByIdAsync(customerId);
+        var customerFromDb = await _accountDAO.GetByIdAsync(customerId);
         Assert.That(customerFromDb, Is.Null);
     }
     [Test]
@@ -183,7 +183,7 @@ public class AccountDaoTests
 
         var exception = Assert.ThrowsAsync<Exception>(async () =>
         {
-            int customerId = await _accountDAO.SaveCustomerAsync(customer);
+            int customerId = await _accountDAO.CreateAsync(customer);
             _customersCreated.Add(customerId);
         });
 
@@ -201,7 +201,7 @@ public class AccountDaoTests
     {
         foreach (var id in _customersCreated)
         {
-            await _accountDAO.DeleteCustomerAsync(id);
+            await _accountDAO.DeleteAsync(id);
         }
     }
 }

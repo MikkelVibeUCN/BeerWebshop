@@ -16,7 +16,7 @@ namespace BeerWebshop.RESTAPI.Services
 
         public async Task<int> SaveCustomerAsync(Customer customer)
         {
-            return await _accountDAO.SaveCustomerAsync(customer);
+            return await _accountDAO.CreateAsync(customer);
         }
 
         public async Task<CustomerDTO?> GetByEmail(string email)
