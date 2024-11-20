@@ -7,4 +7,5 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client;
 public class CategoryAPIClient : BaseClient<CategoryDTO>, ICategoryAPIClient
 {
 	public CategoryAPIClient(string uri) : base(uri, "Categories") { }
+
 }

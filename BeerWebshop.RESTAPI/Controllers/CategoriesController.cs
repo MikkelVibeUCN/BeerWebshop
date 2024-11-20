@@ -60,4 +60,19 @@ public class CategoriesController : ControllerBase
 		}
 	}
 
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteCategoryAsync(int id)
+	{
+		try
+		{
+			await _categoryService.DeleteCategoryAsync(id);
+
+			return Ok();
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, ex.Message);
+		}
+	}
+	
 }
