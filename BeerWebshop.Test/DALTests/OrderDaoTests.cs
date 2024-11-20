@@ -12,6 +12,7 @@ public class OrderDaoTests
 	private ProductDAO _productDao;
 	private BreweryDAO _breweryDao;
 	private CategoryDAO _categoryDao;
+	private AccountDAO _accountDao;
 
 	private string _testSuffix = "_Test";
 
@@ -20,6 +21,7 @@ public class OrderDaoTests
 	{
 		var connectionString = DBConnection.ConnectionString();
 
+		_accountDao = new AccountDAO(connectionString);
 		_orderDao = new OrderDAO(connectionString);
 		_productDao = new ProductDAO(connectionString);
 		_breweryDao = new BreweryDAO(connectionString);
@@ -29,7 +31,17 @@ public class OrderDaoTests
 	[Test]
 	public async Task InsertCompleteOrderAsync_WhenCalled_ShouldInsertOrderAndOrderLinesWithCorrectPrice()
 	{
-		var categoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
+		Customer customer = new Customer
+		{
+			Name = $"Test{_testSuffix} Test{_testSuffix}",
+			Phone = "12345678",
+			Password = "password",
+			Age = 20,
+			Email = $"dsajkdkjjhad@dsasdaad",
+			Address = "Street number 9000 aalborg"
+		};
+        //var customerId = await 
+        var categoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
 		var breweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
 		var productId = await _productDao.CreateAsync(new Product
 		{
@@ -60,12 +72,12 @@ public class OrderDaoTests
 			CreatedAt = DateTime.Now,
 			DeliveryAddress = "Smith Residence",
 			IsDelivered = false,
-			CustomerId_FK = null,
+			Customer = customer,
 			IsDeleted = false,
 			OrderLines = new List<OrderLine> { orderLine }
 		};
 
-		var orderId = await _orderDao.InsertCompleteOrderAsync(order);
+		var orderId = await _orderDao.CreateAsync(order);
 
 		Assert.That(orderId, Is.GreaterThan(0), "Order ID should be a positive integer.");
 
@@ -77,7 +89,7 @@ public class OrderDaoTests
 		Assert.That(orderLineData.Count, Is.EqualTo(1), "There should be exactly one order line with the specified OrderId and ProductId.");
 		Assert.That(orderLineData.SumTotal, Is.EqualTo(expectedTotal).Within(0.01), "The order line total should match the expected calculated price.");
 
-		await _orderDao.DeleteOrderByIdAsync(orderId);
+		await _orderDao.DeleteAsync(orderId);
 		await _productDao.DeleteAsync(productId);
 		await _breweryDao.DeleteAsync(breweryId);
 		await _categoryDao.DeleteAsync(categoryId);

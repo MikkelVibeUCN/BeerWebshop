@@ -21,7 +21,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<Brewery?> GetBreweryById(int id)
 		{
-			return await _breweryDAO.GetBreweryById(id);
+			return await _breweryDAO.GetByIdAsync(id);
 		}
 
 		public async Task<bool> DeleteBreweryAsync(int id)
@@ -31,7 +31,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<IEnumerable<Brewery>> GetBreweriesAsync()
 		{
-			return await _breweryDAO.GetAllBreweriesAsync();
+			return await _breweryDAO.GetAllAsync();
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<IEnumerable<Category>> GetAlLCategories()
 		{
-			return await _categoryDAO.GetAllCategories();
+			return await _categoryDAO.GetAllAsync();
 		}
 
 		public async Task<int> CreateCategoryAsync(Category category)

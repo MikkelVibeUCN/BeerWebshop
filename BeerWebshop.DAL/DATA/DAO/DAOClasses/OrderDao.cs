@@ -6,231 +6,277 @@ using System.Data.SqlClient;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 {
-	public class OrderDAO : IOrderDAO
-	{
-		private readonly string _connectionString;
+    public class OrderDAO : IOrderDAO
+    {
 
-		private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted);";
-		private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
-		private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
-		private const string BaseOrderSql = @"SELECT o.Id, o.CreatedAt, o.IsDelivered, o.IsDeleted, ol.Quantity, ol.Total, 
-												p.Id, p.Name, p.Price, p.Description, p.Stock, p.Abv, p.ImageUrl, p.RowVersion, c.Id, c.Name, c.IsDeleted, b.Id, b.Name, b.IsDeleted
-												FROM Orders o
-												LEFT JOIN OrderLines ol ON o.Id = ol.OrderId
-												LEFT JOIN Products p ON ol.ProductId = p.Id
-												LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
-												LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id";
+        #region Sql Query
+        private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, CustomerId_FK) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @CustomerId);";
+        private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
+        private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
+        private const string BaseOrderSql = @"
+            SELECT 
+				o.Id, 
+				o.CreatedAt, 
+				o.IsDelivered, 
+				o.IsDeleted, 
+				ol.Quantity, 
+				ol.Total, 
+				p.Id, 
+				p.Name, 
+				p.Price, 
+				p.Description, 
+				p.Stock, 
+				p.Abv, 
+				p.ImageUrl, 
+				p.RowVersion, 
+				c.Id, 
+				c.Name, 
+				c.IsDeleted, 
+				b.Id, 
+				b.Name, 
+				b.IsDeleted, 
+				cu.Id, 
+				CONCAT(cu.FirstName, ' ', cu.LastName) AS Name, 
+				cu.Phone, 
+				cu.PasswordHash, 
+				cu.IsDeleted, 
+				cu.Age, 
+				cu.Email,
+				CONCAT(
+					a.Street, ' ', a.StreetNumber, 
+					CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 
+					' ', po.Postalcode, ' ', po.City
+				) AS CustomerAddress
+			FROM Orders o
+			LEFT JOIN OrderLines ol ON o.Id = ol.OrderId
+			LEFT JOIN Products p ON ol.ProductId = p.Id
+			LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
+			LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id
+			LEFT JOIN Customers cu ON o.CustomerId_FK = cu.Id
+			LEFT JOIN Address a ON a.CustomerId_FK = cu.Id
+			LEFT JOIN Postalcode po ON a.Postalcode_FK = po.Postalcode";
+        #endregion
+        #region Dependency injection
 
-		public OrderDAO(string connectionString)
-		{
-			_connectionString = connectionString;
-		}
+        private readonly string _connectionString;
+        public OrderDAO(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+        #endregion
+        #region BaseDAO Methods
+        public async Task<int> CreateAsync(Order order)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+            using var transaction = await connection.BeginTransactionAsync();
 
-		public async Task<bool> DeleteOrderByIdAsync(int orderId)
-		{
-			using var connection = new SqlConnection(_connectionString);
-			await connection.OpenAsync();
+            try
+            {
+                var orderId = await InsertOrderAsync(connection, transaction, order);
 
-			try
-			{
-				var rowsAffected = await connection.ExecuteAsync(DeleteOrderByIdSql, new { Id = orderId });
-				return rowsAffected > 0;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error deleting order with ID: {orderId}: {ex.Message}", ex);
-			}
-		}
+                foreach (var orderLine in order.OrderLines)
+                {
+                    await InsertOrderLineAsync(connection, transaction, orderLine, orderId);
+                }
 
-		public async Task<Order?> GetByIdAsync(int id)
-		{
-			using var connection = new SqlConnection(_connectionString);
-			await connection.OpenAsync();
+                await transaction.CommitAsync();
 
-			try
-			{
-				Order? orderResult = null;
-				var sqlQuery = $"{BaseOrderSql} WHERE o.id = @Id";
+                return orderId;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception($"Error inserting order: {ex.Message}", ex);
+            }
+        }
 
-				var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
-					BaseOrderSql,
-					(order, orderLine, product, category, brewery) =>
-					{
-						if (orderResult == null)
-						{
-							orderResult = order;
-							orderResult.OrderLines = new List<OrderLine>();
-						}
+        public async Task<Order?> GetByIdAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
 
-						product.Brewery = brewery;
-						product.Category = category;
+            try
+            {
+                Order? orderResult = null;
+                var sqlQuery = $"{BaseOrderSql} WHERE o.id = @Id";
 
-						orderLine.Product = product;
-						orderResult.OrderLines.Add(orderLine);
+                var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Customer, Order>(
+                    sqlQuery,
+                    (order, orderLine, product, category, brewery, customer) =>
+                    {
+                        if (orderResult == null)
+                        {
+                            orderResult = order;
+                            orderResult.OrderLines = new List<OrderLine>();
+                        }
 
-						return order;
-					},
-					new { Id = id },
-					splitOn: "Quantity,Id,Id,Id"
-				);
+                        product.Brewery = brewery;
+                        product.Category = category;
 
-				return orderResult;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error getting order from database: {ex.Message}", ex);
-			}
-		}
+                        orderLine.Product = product;
+                        orderResult.OrderLines.Add(orderLine);
 
-		public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
-		{
-			using var connection = new SqlConnection(_connectionString);
-			await connection.OpenAsync();
+                        orderResult.Customer = customer;
 
-			try
-			{
-				var orders = new List<Order>();
-				var sqlQuery = $"{BaseOrderSql} WHERE o.CustomerId_FK = @CustomerId";
+                        return order;
+                    },
+                    new { Id = id },
+                    splitOn: "Quantity,Id,Id,Id,Id"
+                );
 
-				var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
-					sqlQuery,
-					(order, orderLine, product, category, brewery) =>
-					{
-						var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
-						if (existingOrder == null)
-						{
-							existingOrder = order;
-							existingOrder.OrderLines = new List<OrderLine>();
-							orders.Add(existingOrder);
-						}
+                return orderResult;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting order from database: {ex.Message}", ex);
+            }
+        }
+        public Task<bool> UpdateAsync(Order entity)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<bool> DeleteAsync(int orderId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
 
-						if (product != null)
-						{
-							product.Brewery = brewery;
-							product.Category = category;
-						}
+            try
+            {
+                var rowsAffected = await connection.ExecuteAsync(DeleteOrderByIdSql, new { Id = orderId });
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting order with ID: {orderId}: {ex.Message}", ex);
+            }
+        }
 
-						if (orderLine != null)
-						{
-							orderLine.Product = product;
-							existingOrder.OrderLines.Add(orderLine);
-						}
+        public async Task<IEnumerable<Order>> GetAllAsync()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
 
-						return existingOrder;
-					},
-					new { CustomerId = customerId },
-					splitOn: "Quantity,Id,Id,Id"
-				);
+            try
+            {
+                var orders = new List<Order>();
 
-				return orders;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error getting orders for customerId {customerId} from database: {ex.Message}", ex);
-			}
-		}
+                var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
+                    BaseOrderSql,
+                    (order, orderLine, product, category, brewery) =>
+                    {
+                        var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
+                        if (existingOrder == null)
+                        {
+                            existingOrder = order;
+                            existingOrder.OrderLines = new List<OrderLine>();
+                            orders.Add(existingOrder);
+                        }
 
+                        if (product != null)
+                        {
+                            product.Brewery = brewery;
+                            product.Category = category;
+                        }
 
+                        if (orderLine != null)
+                        {
+                            orderLine.Product = product;
+                            existingOrder.OrderLines.Add(orderLine);
+                        }
 
+                        return existingOrder;
+                    },
+                    splitOn: "Quantity,Id,Id,Id"
+                );
 
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting orders from database: {ex.Message}", ex);
+            }
+        }
+        #endregion
+        #region IOrderDAO Methods
 
-		public async Task<IEnumerable<Order>> GetAllOrdersAsync()
-		{
-			using var connection = new SqlConnection(_connectionString);
-			await connection.OpenAsync();
+        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
 
-			try
-			{
-				var orders = new List<Order>();
+            try
+            {
+                var orders = new List<Order>();
+                var sqlQuery = $"{BaseOrderSql} WHERE o.CustomerId_FK = @CustomerId";
 
-				var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
-					BaseOrderSql,
-					(order, orderLine, product, category, brewery) =>
-					{
-						var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
-						if (existingOrder == null)
-						{
-							existingOrder = order;
-							existingOrder.OrderLines = new List<OrderLine>();
-							orders.Add(existingOrder);
-						}
+                var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Customer, Order>(
+                    sqlQuery,
+                    (order, orderLine, product, category, brewery, customer) =>
+                    {
+                        var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
+                        if (existingOrder == null)
+                        {
+                            existingOrder = order;
+                            existingOrder.OrderLines = new List<OrderLine>();
+                            existingOrder.Customer = customer; 
+                            orders.Add(existingOrder);
+                        }
 
-						if (product != null)
-						{
-							product.Brewery = brewery;
-							product.Category = category;
-						}
+                        if (product != null)
+                        {
+                            product.Brewery = brewery;
+                            product.Category = category;
+                        }
 
-						if (orderLine != null)
-						{
-							orderLine.Product = product;
-							existingOrder.OrderLines.Add(orderLine);
-						}
+                        if (orderLine != null)
+                        {
+                            orderLine.Product = product;
+                            existingOrder.OrderLines.Add(orderLine);
+                        }
 
-						return existingOrder;
-					},
-					splitOn: "Quantity,Id,Id,Id"
-				);
+                        return existingOrder;
+                    },
+                    new { CustomerId = customerId },
+                    splitOn: "Quantity,Id,Id,Id,Id" 
+                );
 
-				return orders;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error getting orders from database: {ex.Message}", ex);
-			}
-		}
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting orders for customerId {customerId} from database: {ex.Message}", ex);
+            }
+        }
+        #endregion
+        #region Create Order helper methods
+        private async Task<int> InsertOrderAsync(SqlConnection connection, IDbTransaction transaction, Order order)
+        {
+            var parameters = new
+            {
+                CreatedAt = order.CreatedAt,
+                IsDelivered = order.IsDelivered,
+                IsDeleted = order.IsDeleted,
+                CustomerId = order.Customer.Id
+            };
 
+            return await connection.QuerySingleAsync<int>(InsertOrderSql, parameters, transaction);
+        }
 
+        private async Task InsertOrderLineAsync(SqlConnection connection, IDbTransaction transaction, OrderLine orderLine, int orderId)
+        {
+            var parameters = new
+            {
+                OrderId = orderId,
+                ProductId = orderLine.Product.Id,
+                Quantity = orderLine.Quantity,
+                Total = orderLine.SubTotal
+            };
 
-		public async Task<int> InsertCompleteOrderAsync(Order order)
-		{
-			using var connection = new SqlConnection(_connectionString);
-			await connection.OpenAsync();
-			using var transaction = await connection.BeginTransactionAsync();
+            await connection.ExecuteAsync(InsertOrderLineSql, parameters, transaction);
+        }
 
-			try
-			{
-				var orderId = await InsertOrderAsync(connection, transaction, order);
-
-				foreach (var orderLine in order.OrderLines)
-				{
-					await InsertOrderLineAsync(connection, transaction, orderLine, orderId);
-				}
-
-				await transaction.CommitAsync();
-
-				return orderId;
-			}
-			catch (Exception ex)
-			{
-				await transaction.RollbackAsync();
-				throw new Exception($"Error inserting order: {ex.Message}", ex);
-			}
-		}
-
-		private async Task<int> InsertOrderAsync(SqlConnection connection, IDbTransaction transaction, Order order)
-		{
-			var parameters = new
-			{
-				CreatedAt = order.CreatedAt,
-				IsDelivered = order.IsDelivered,
-				IsDeleted = order.IsDeleted
-			};
-
-			return await connection.QuerySingleAsync<int>(InsertOrderSql, parameters, transaction);
-		}
-
-		private async Task InsertOrderLineAsync(SqlConnection connection, IDbTransaction transaction, OrderLine orderLine, int orderId)
-		{
-			var parameters = new
-			{
-				OrderId = orderId,
-				ProductId = orderLine.Product.Id,
-				Quantity = orderLine.Quantity,
-				Total = orderLine.SubTotal
-			};
-
-			await connection.ExecuteAsync(InsertOrderLineSql, parameters, transaction);
-		}
-	}
+       
+    }
 }
+#endregion

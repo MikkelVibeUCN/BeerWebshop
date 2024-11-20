@@ -2,6 +2,7 @@
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
+using Castle.Core.Resource;
 
 namespace BeerWebshop.Test.RestServicesTests;
 
@@ -13,6 +14,7 @@ public class OrderServiceTests
 	private string _connectionString = DBConnection.ConnectionString();
 	private CategoryService _categoryService;
 	private BreweryService _breweryService;
+	private AccountService _accountService;
 
 	private int _createdOrderId;
 
@@ -23,8 +25,10 @@ public class OrderServiceTests
 		var orderDao = new OrderDAO(_connectionString);
 		var categoryDao = new CategoryDAO(_connectionString);
 		var breweryDao = new BreweryDAO(_connectionString);
+		var accountDao = new AccountDAO(_connectionString);
 
-		_categoryService = new CategoryService(categoryDao);
+		_accountService = new AccountService(accountDao);
+        _categoryService = new CategoryService(categoryDao);
 		_breweryService = new BreweryService(breweryDao);
 		_productService = new ProductService(productDao, _categoryService, _breweryService);
 		_orderService = new OrderService(orderDao, _productService, _connectionString);
@@ -63,12 +67,24 @@ public class OrderServiceTests
 		var productId = await _productService.CreateProductAsync(testProductDTO);
 		var testProduct = await _productService.GetProductEntityByIdAsync(productId);
 
-		var testOrder = new Order
+        Customer customer = new Customer
+        {
+            Name = $"Test Test",
+            Phone = "12345678",
+            Password = "password",
+            Age = 20,
+            Email = $"dsajkdkjjhad@dsasdaad",
+            Address = "Street number 9000 aalborg"
+        };
+
+		int customerId = await _accountService.SaveCustomerAsync(customer);
+
+        var testOrder = new Order
 		{
 			CreatedAt = DateTime.Now,
 			DeliveryAddress = "123 Smiths Residence",
 			IsDelivered = false,
-			CustomerId_FK = null,
+			Customer = customer,
 			OrderLines = new List<OrderLine>
 			{
 				new OrderLine
@@ -90,7 +106,8 @@ public class OrderServiceTests
 		await _productService.DeleteProductByIdAsync(productId);
 		await _breweryService.DeleteBreweryAsync(breweryId);
 		await _categoryService.DeleteCategoryAsync(categoryId);
-	}
+		await _accountService.DeleteCustomer(customerId);
+    }
 
 	[Test]
 	public async Task CreateOrderAsync_WhenProductStockIsInsufficient_ShouldThrowInvalidOperationException()
@@ -125,12 +142,24 @@ public class OrderServiceTests
 		var productId = await _productService.CreateProductAsync(testProductDTO);
 		var testProduct = await _productService.GetProductEntityByIdAsync(productId);
 
-		var testOrder = new Order
+        Customer customer = new Customer
+        {
+            Name = $"Test Test",
+            Phone = "12345678",
+            Password = "password",
+            Age = 20,
+            Email = $"dsajkdkjjhad@dsasdaad",
+            Address = "Street number 9000 aalborg"
+        };
+
+        int customerId = await _accountService.SaveCustomerAsync(customer);
+
+        var testOrder = new Order
 		{
 			CreatedAt = DateTime.Now,
 			DeliveryAddress = "321 Smiths Residence",
 			IsDelivered = false,
-			CustomerId_FK = null,
+			Customer = customer,
 			OrderLines = new List<OrderLine>
 			{
 				new OrderLine
@@ -151,10 +180,11 @@ public class OrderServiceTests
 		await _productService.DeleteProductByIdAsync(productId);
 		await _breweryService.DeleteBreweryAsync(breweryId);
 		await _categoryService.DeleteCategoryAsync(categoryId);
-	}
+        await _accountService.DeleteCustomer(customerId);
+    }
 
 
-	[TearDown]
+    [TearDown]
 	public async Task TearDown()
 	{
 		if (_createdOrderId > 0)

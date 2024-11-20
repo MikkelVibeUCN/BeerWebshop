@@ -10,7 +10,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
 public class ProductDAO : IProductDAO
 {
-	private const string InsertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
+    #region Sql query
+    private const string InsertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
         VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
         SELECT CAST(SCOPE_IDENTITY() AS int);";
 	private const string GetByIdSql = @"
@@ -43,15 +44,18 @@ public class ProductDAO : IProductDAO
             INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
             INNER JOIN Categories c ON p.CategoryId_FK = c.Id
             WHERE p.IsDeleted = 0";
+    #endregion
 
-
-	private readonly string _connectionString;
-
+    #region Dependency injection
+    private readonly string _connectionString;
 	public ProductDAO(string connectionString)
 	{
 		_connectionString = connectionString;
 	}
-	public async Task<int> CreateAsync(Product product)
+    #endregion
+
+    #region BaseDAO Methods
+    public async Task<int> CreateAsync(Product product)
 	{
 		try
 		{
@@ -80,8 +84,31 @@ public class ProductDAO : IProductDAO
 			throw new Exception($"Error creating product: {ex.Message}", ex);
 		}
 	}
+	public async Task<Product?> GetByIdAsync(int id)
+	{
+		try
+		{
+			using var connection = new SqlConnection(_connectionString);
 
+			var result = await connection.QueryAsync<Product, Category, Brewery, Product>(
+				GetByIdSql,
+				(product, category, brewery) =>
+				{
+					product.Category = category;
+					product.Brewery = brewery;
 
+					return product;
+				},
+				param: new { Id = id },
+				splitOn: "Id,Id"
+			);
+			return result.FirstOrDefault();
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"Error getting product by id: {ex.Message}", ex);
+		}
+	}
 	public async Task<bool> UpdateAsync(Product product)
 	{
 
@@ -116,34 +143,30 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
-	public async Task<Product?> GetByIdAsync(int id)
-	{
-		try
-		{
-			using var connection = new SqlConnection(_connectionString);
+    public async Task<bool> DeleteAsync(int id)
+    {
+        using var connection = new SqlConnection(_connectionString);
 
-			var result = await connection.QueryAsync<Product, Category, Brewery, Product>(
-				GetByIdSql,
-				(product, category, brewery) =>
-				{
-					product.Category = category;
-					product.Brewery = brewery;
+        try
+        {
+            var rowsAffected = await connection.ExecuteAsync(DeleteByIdSql, new { Id = id });
+            return rowsAffected > 0;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error deleting product by id: {ex.Message}", ex);
+        }
+    }
 
-					return product;
-				},
-				param: new { Id = id },
-				splitOn: "Id,Id"
-			);
-			return result.FirstOrDefault();
-		}
-		catch (Exception ex)
-		{
-			throw new Exception($"Error getting product by id: {ex.Message}", ex);
-		}
-	}
+    public Task<IEnumerable<Product>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+    #endregion
 
-	//TODO Timeout ved deadlock.
-	public async Task<bool> UpdateStockAsync(int productId, int quantity)
+    #region IProductDAO Methods
+    //TODO Timeout ved deadlock.
+    public async Task<bool> UpdateStockAsync(int productId, int quantity)
 	{
 		using var connection = new SqlConnection(_connectionString);
 		await connection.OpenAsync();
@@ -202,20 +225,7 @@ public class ProductDAO : IProductDAO
 		}
 	}
 
-	public async Task<bool> DeleteAsync(int id)
-	{
-		using var connection = new SqlConnection(_connectionString);
-
-		try
-		{
-			var rowsAffected = await connection.ExecuteAsync(DeleteByIdSql, new { Id = id });
-			return rowsAffected > 0;
-		}
-		catch (Exception ex)
-		{
-			throw new Exception($"Error deleting product by id: {ex.Message}", ex);
-		}
-	}
+	
 
 	// Ny implementering af getproducts som kan tage søgekriterier med
 	public async Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters)
@@ -296,3 +306,4 @@ public class ProductDAO : IProductDAO
 		return productCount;
 	}
 }
+#endregion

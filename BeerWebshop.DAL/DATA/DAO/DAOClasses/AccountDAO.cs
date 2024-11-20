@@ -8,8 +8,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 {
     public class AccountDAO : IAccountDAO
     {
-        private readonly string _connectionString;
-
+        #region Sql query
         private const string _getCustomerById = @"SELECT 
         c.Id AS Id, 
         CONCAT(c.FirstName, ' ', c.LastName) AS Name, 
@@ -32,7 +31,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         WHERE 
             c.Id = @Id;";
 
-
         private const string _saveCustomer = @"
             INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, Age, Email, IsDeleted)
             VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @Age, @Email, 0);
@@ -50,12 +48,133 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string _deleteCustomerById = @"DELETE FROM Customers WHERE Id = @Id;";
 
         private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
-        
+        #endregion
+
+        #region Dependency injection
+        private readonly string _connectionString;
         public AccountDAO(string connectionString)
         {
             _connectionString = connectionString;
         }
+        #endregion
 
+        #region BaseDAO methods
+        public async Task<int> CreateAsync(Customer customer)
+        {
+            if(customer.Email == null) { throw new Exception("Email cannot be null"); }
+            if(await DoesCustomerWithEmailExist(customer.Email)) { throw new Exception("Customer with this email already exists"); }
+
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var transaction = connection.BeginTransaction();
+
+
+            // Split the full name into first and last names
+            var parts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            string firstName = parts[0];
+            string lastName = parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "";
+
+            var parameters = new
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Phone = customer.Phone,
+                PasswordHash = BCryptTool.HashPassword(customer.Password),
+                Age = customer.Age,
+                Email = customer.Email
+            };
+
+            try
+            {
+                int customerId = await connection.QuerySingleAsync<int>(_saveCustomer, parameters, transaction);
+
+                customer.Id = customerId;
+
+                await CreateAddress(customer, connection, transaction);
+
+                await transaction.CommitAsync();
+
+                return customerId;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("Error saving customer", ex);
+            }
+        }
+
+        public async Task<Customer?> GetByIdAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            try
+            {
+                var parameters = new { Id = id };
+                return await connection.QuerySingleOrDefaultAsync<Customer>(_getCustomerById, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting customer from database: {ex.Message}", ex);
+            }
+        }
+
+        public Task<bool> UpdateAsync(Customer entity)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<bool> DeleteAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            try
+            {
+                var parameters = new { Id = id };
+                await connection.ExecuteAsync(_deleteCustomerById, parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting the customer: {ex.Message}");
+            }
+        }
+
+        public Task<IEnumerable<Customer>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region IAccountDAO methods
+        public async Task<Customer?> GetByEmail(string email)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            try
+            {
+                var parameters = new { Email = email };
+                int? customerId = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, parameters);
+
+                await connection.CloseAsync();
+
+                return await GetByIdAsync((int)customerId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting customer from database: {ex.Message}", ex);
+            }
+        }
+        public Task<int> LoginAsync(string email, string password)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Helper methods for creating customer and validations
         public async Task<bool> DoesCustomerWithEmailExist(string email)
         {
             try
@@ -168,109 +287,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception("Error checking if zip exists.");
             }
         }
-
-        public async Task<Customer?> GetByEmail(string email)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            try
-            {
-                var parameters = new { Email = email };
-                int? customerId = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, parameters);
-
-                await connection.CloseAsync();
-
-                return await GetCustomerByIdAsync((int)customerId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error getting customer from database: {ex.Message}", ex);
-            }
-        }
-
-        public async Task<Customer?> GetCustomerByIdAsync(int id)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            try
-            {
-                var parameters = new { Id = id };
-                return await connection.QuerySingleOrDefaultAsync<Customer>(_getCustomerById, parameters);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error getting customer from database: {ex.Message}", ex);
-            }
-        }
-
-        public async Task<int> SaveCustomerAsync(Customer customer)
-        {
-            if(customer.Email == null) { throw new Exception("Email cannot be null"); }
-            if(await DoesCustomerWithEmailExist(customer.Email)) { throw new Exception("Customer with this email already exists"); }
-
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            using var transaction = connection.BeginTransaction();
-
-
-            // Split the full name into first and last names
-            var parts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            string firstName = parts[0];
-            string lastName = parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "";
-
-            var parameters = new
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Phone = customer.Phone,
-                PasswordHash = BCryptTool.HashPassword(customer.Password),
-                Age = customer.Age,
-                Email = customer.Email
-            };
-
-            try
-            {
-                int customerId = await connection.QuerySingleAsync<int>(_saveCustomer, parameters, transaction);
-
-                customer.Id = customerId;
-
-                await CreateAddress(customer, connection, transaction);
-
-                await transaction.CommitAsync();
-
-                return customerId;
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                throw new Exception("Error saving customer", ex);
-            }
-        }
-
-
-        public async Task<bool> DeleteCustomerAsync(int id)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            try
-            {
-                var parameters = new { Id = id };
-                await connection.ExecuteAsync(_deleteCustomerById, parameters);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error deleting the customer: {ex.Message}");
-            }
-        }
-        public Task<int> LoginAsync(string email, string password)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
+#endregion

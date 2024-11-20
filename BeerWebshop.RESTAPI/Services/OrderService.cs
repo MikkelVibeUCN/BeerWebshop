@@ -60,7 +60,7 @@ namespace BeerWebshop.RESTAPI.Services
 					}
 				}
 
-				var orderId = await _orderDao.InsertCompleteOrderAsync(order);
+				var orderId = await _orderDao.CreateAsync(order);
 				await transaction.CommitAsync();
 				return orderId;
 			}
@@ -86,7 +86,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<IEnumerable<OrderDTO>> GetOrdersAsync()
 		{
-			var orders = await _orderDao.GetAllOrdersAsync();
+			var orders = await _orderDao.GetAllAsync();
 			return orders.Select(MappingHelper.MapOrderEntityToDTO).ToList();
 		}
 
@@ -99,7 +99,7 @@ namespace BeerWebshop.RESTAPI.Services
 
 		public async Task<bool> DeleteOrderByIdAsync(int orderId)
 		{
-			return await _orderDao.DeleteOrderByIdAsync(orderId);
+			return await _orderDao.DeleteAsync(orderId);
 		}
 
 

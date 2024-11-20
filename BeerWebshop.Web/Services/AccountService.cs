@@ -58,6 +58,16 @@ namespace BeerWebshop.Web.Services
 
 		}
 
+		public async Task<CustomerDTO?> GetCustomerFromLoginCookie()
+		{
+			AuthCookie authCookie = GetAuthCookie();
+			if(!string.IsNullOrEmpty(authCookie.Email))
+			{
+				return await GetCustomerByEmailAsync(authCookie.Email);
+            }
+			return null;
+		} 
+
 		public AuthCookie GetAuthCookie()
 		{
 			AuthCookie? authCookie = _cookieService.GetObjectFromCookie<AuthCookie>(AuthCookieKey);
