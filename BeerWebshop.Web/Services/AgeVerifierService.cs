@@ -29,8 +29,7 @@ namespace BeerWebshop.Web.Services
 
         public bool IsUserAbove18()
         {
-            AgeCookie ageCookie = GetAgeCookie();
-            return ageCookie.IsOver18;
+            return GetAgeCookie().IsOver18;
         }
 
         public void SaveCookie(AgeCookie ageCookie)

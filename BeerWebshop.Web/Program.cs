@@ -4,6 +4,7 @@ using BeerWebshop.Web.Services;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.APIClientLibrary.ApiClient;
 using static System.Net.WebRequestMethods;
+using BeerWebshop.Web.Filter;
 
 
 namespace BeerWebshop.Web
@@ -34,6 +35,7 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<OrderService>();
             builder.Services.AddScoped<AgeVerifierService>();
 			builder.Services.AddScoped<AccountService>();
+			builder.Services.AddScoped<AgeVerificationFilter>();
 
             // Use a stub for the IOrderApiClient
 

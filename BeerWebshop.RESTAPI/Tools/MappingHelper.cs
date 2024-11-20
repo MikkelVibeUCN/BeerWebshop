@@ -126,7 +126,6 @@ internal static class MappingHelper
 			Phone = customer.Phone,
 			Password = customer.Password,
 			Age = customer.Age,
-			Id = (int)customer.Id
         };
 	}
 	public static CustomerDTO MapToDTO(Customer customer)
