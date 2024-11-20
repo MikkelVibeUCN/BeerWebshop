@@ -34,7 +34,7 @@ namespace BeerWebshop.DesktopClient
             UpdateUi();
 
         }
-    
+
         private async Task LoadData()
         {
             try
@@ -123,6 +123,11 @@ namespace BeerWebshop.DesktopClient
         private void btnBack_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void lblStock_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

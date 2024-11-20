@@ -150,9 +150,9 @@ namespace BeerWebshop.DesktopClient
             label4.Font = new Font("Segoe UI", 12F);
             label4.Location = new Point(45, 319);
             label4.Name = "label4";
-            label4.Size = new Size(165, 28);
+            label4.Size = new Size(64, 28);
             label4.TabIndex = 13;
-            label4.Text = "Lagerbeholdning:";
+            label4.Text = "Lager:";
             // 
             // label3
             // 
@@ -191,7 +191,7 @@ namespace BeerWebshop.DesktopClient
             btnBack.Name = "btnBack";
             btnBack.Size = new Size(86, 31);
             btnBack.TabIndex = 9;
-            btnBack.Text = "&Back";
+            btnBack.Text = "&Tilbage";
             btnBack.UseVisualStyleBackColor = true;
             btnBack.Click += btnBack_Click;
             // 
@@ -202,7 +202,7 @@ namespace BeerWebshop.DesktopClient
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(97, 31);
             btnDelete.TabIndex = 8;
-            btnDelete.Text = "&Delete";
+            btnDelete.Text = "&Slet";
             btnDelete.UseVisualStyleBackColor = true;
             btnDelete.Click += btnDelete_Click;
             // 
@@ -213,7 +213,7 @@ namespace BeerWebshop.DesktopClient
             btnEdit.Name = "btnEdit";
             btnEdit.Size = new Size(107, 31);
             btnEdit.TabIndex = 7;
-            btnEdit.Text = "&Edit";
+            btnEdit.Text = "&Redigér";
             btnEdit.UseVisualStyleBackColor = true;
             btnEdit.Click += btnEdit_Click;
             // 
@@ -255,6 +255,7 @@ namespace BeerWebshop.DesktopClient
             lblStock.Size = new Size(60, 28);
             lblStock.TabIndex = 3;
             lblStock.Text = "Stock";
+            lblStock.Click += lblStock_Click;
             // 
             // lblPrice
             // 

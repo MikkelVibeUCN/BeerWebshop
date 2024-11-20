@@ -13,9 +13,9 @@ namespace BeerWebshop.DesktopClient
 			_orderController = new OrderController(new OrderApiClient("https://localhost:7244/api/v1/"));
 			_productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
 			InitializeComponent();
+            
 
-
-		}
+        }
 
 		private void btnAddProducts_Click(object sender, EventArgs e)
 		{
