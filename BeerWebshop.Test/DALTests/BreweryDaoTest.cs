@@ -1,62 +1,55 @@
 ﻿using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BeerWebshop.Test.DALTests
+namespace BeerWebshop.Test.DALTests;
+
+[TestFixture]
+public class BreweryDaoTest
 {
-    public class BreweryDaoTest
-    {
-        private BreweryDAO _breweryDAO;
-        private string _testSuffix = "_Test";
+	private BreweryDAO _breweryDAO;
+	private readonly string _testSuffix = "_Test";
+	private readonly List<int> _breweryIdsCreated = new();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _breweryDAO = new BreweryDAO(DBConnection.ConnectionString());
-        }
-        [Test]
-        public async Task CreateAsync_WhenBreweryDoesNotExist_ShouldCreateBrewery()
-        {
-            
-            var breweryName = $"Brewery{_testSuffix}";
-            var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+	[SetUp]
+	public void SetUp()
+	{
+		_breweryDAO = new BreweryDAO(DBConnection.ConnectionString());
+	}
 
-            
-            var breweryId = await _breweryDAO.CreateAsync(brewery);
+	[TearDown]
+	public async Task TearDownAsync()
+	{
+		foreach (var breweryId in _breweryIdsCreated)
+		{
+			await _breweryDAO.DeleteAsync(breweryId);
+		}
+	}
 
-            
-            Assert.That(breweryId, Is.GreaterThan(0));
+	[Test]
+	public async Task CreateAsync_WhenBreweryDoesNotExist_ShouldCreateBrewery()
+	{
+		var breweryName = $"Brewery{_testSuffix}";
+		var brewery = new Brewery { Name = breweryName, IsDeleted = false };
 
-            
-            var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await _breweryDAO.CreateAsync(brewery));
-            Assert.That(exception.Message, Is.EqualTo($"Brewery with name '{breweryName}' already exists."));
+		var breweryId = await _breweryDAO.CreateAsync(brewery);
+		_breweryIdsCreated.Add(breweryId);
 
-            
-            await _breweryDAO.DeleteAsync(breweryId);
-        }
+		Assert.That(breweryId, Is.GreaterThan(0));
 
-        [Test]
-        public async Task CreateAsync_WhenBreweryExists_ShouldThrowInvalidOperationException()
-        {
-            
-            var breweryName = "Overtone";
-            var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+		var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await _breweryDAO.CreateAsync(brewery));
+		Assert.That(exception.Message, Is.EqualTo($"Brewery with name '{breweryName}' already exists."));
+	}
 
-            
-            var existingBreweryId = await _breweryDAO.CreateAsync(brewery);
+	[Test]
+	public async Task CreateAsync_WhenBreweryExists_ShouldThrowInvalidOperationException()
+	{
+		var breweryName = $"Brewery{_testSuffix}";
+		var brewery = new Brewery { Name = breweryName, IsDeleted = false };
 
-            
-            var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await _breweryDAO.CreateAsync(brewery));
-            Assert.That(exception.Message, Does.Contain($"Brewery with name '{breweryName}' already exists."));
+		var breweryId = await _breweryDAO.CreateAsync(brewery);
+		_breweryIdsCreated.Add(breweryId);
 
-            
-            await _breweryDAO.DeleteAsync(existingBreweryId);
-        }
-
-
-    }
+		var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await _breweryDAO.CreateAsync(brewery));
+		Assert.That(exception.Message, Does.Contain($"Brewery with name '{breweryName}' already exists."));
+	}
 }

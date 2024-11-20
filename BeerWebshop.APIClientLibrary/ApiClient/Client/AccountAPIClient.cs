@@ -6,10 +6,10 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client;
 
 public class AccountAPIClient : BaseClient<CustomerDTO>, IAccountAPIClient
 {
-
     public AccountAPIClient(string uri) : base(uri, "accounts")
     {
     }
+
     public async Task<CustomerDTO?> GetByEmailAsync(string email)
     {
         return await GetByStringAsync(email);

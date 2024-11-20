@@ -14,10 +14,17 @@ public class OrderDaoTests
 	private CategoryDAO _categoryDao;
 	private AccountDAO _accountDao;
 
-	private string _testSuffix = "_Test";
+	private readonly string _testSuffix = "_Test";
+
+	private int _testBreweryId;
+	private int _testCategoryId;
+	private int _testProductId;
+	private int _testOrderId;
+	private int _testCustomerId;
+	private Customer _testCustomer;
 
 	[SetUp]
-	public void SetUp()
+	public async Task SetUp()
 	{
 		var connectionString = DBConnection.ConnectionString();
 
@@ -26,28 +33,25 @@ public class OrderDaoTests
 		_productDao = new ProductDAO(connectionString);
 		_breweryDao = new BreweryDAO(connectionString);
 		_categoryDao = new CategoryDAO(connectionString);
-	}
 
-	[Test]
-	public async Task InsertCompleteOrderAsync_WhenCalled_ShouldInsertOrderAndOrderLinesWithCorrectPrice()
-	{
-		Customer customer = new Customer
+		_testCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
+		_testBreweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
+
+		_testCustomer = new Customer
 		{
 			Name = $"Test{_testSuffix} Test{_testSuffix}",
 			Phone = "12345678",
 			Password = "password",
 			Age = 20,
-			Email = $"dsajkdkjjhad@dsasdaad",
-			Address = "Street number 9000 aalborg"
+			Email = $"test{_testSuffix}@example.com",
+			Address = "Street number 9000 Aalborg"
 		};
-        //var customerId = await 
-        var categoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
-		var breweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
-		var productId = await _productDao.CreateAsync(new Product
+
+		_testProductId = await _productDao.CreateAsync(new Product
 		{
 			Name = $"Product{_testSuffix}",
-			Category = new Category { Id = categoryId },
-			Brewery = new Brewery { Id = breweryId },
+			Category = await _categoryDao.GetByIdAsync(_testCategoryId),
+			Brewery = await _breweryDao.GetByIdAsync(_testBreweryId),
 			Price = 50f,
 			Description = "Test product description.",
 			Stock = 5,
@@ -56,44 +60,51 @@ public class OrderDaoTests
 			IsDeleted = false
 		});
 
-		var product = await _productDao.GetByIdAsync(productId);
+		_testCustomerId = await _accountDao.CreateAsync(_testCustomer);
+		_testCustomer = await _accountDao.GetByIdAsync(_testCustomerId);
+	}
+
+	[Test]
+	public async Task InsertCompleteOrderAsync_WhenCalled_ShouldInsertOrderAndOrderLinesWithCorrectPrice()
+	{
+		var product = await _productDao.GetByIdAsync(_testProductId);
 
 		var quantity = 2;
 		var expectedTotal = quantity * product!.Price;
-
-		var orderLine = new OrderLine
-		{
-			Quantity = quantity,
-			Product = product
-		};
 
 		var order = new Order
 		{
 			CreatedAt = DateTime.Now,
 			DeliveryAddress = "Smith Residence",
 			IsDelivered = false,
-			Customer = customer,
+			Customer = _testCustomer,
 			IsDeleted = false,
-			OrderLines = new List<OrderLine> { orderLine }
+			OrderLines = new List<OrderLine>
+			{
+				new OrderLine { Quantity = quantity, Product = product }
+			}
 		};
 
-		var orderId = await _orderDao.CreateAsync(order);
+		_testOrderId = await _orderDao.CreateAsync(order);
 
-		Assert.That(orderId, Is.GreaterThan(0), "Order ID should be a positive integer.");
+		Assert.That(_testOrderId, Is.GreaterThan(0), "Order ID should be a positive integer.");
 
 		using var connection = new SqlConnection(DBConnection.ConnectionString());
 		var orderLineData = await connection.QuerySingleAsync<(int Count, float SumTotal)>(
 			"SELECT COUNT(1) AS Count, SUM(Total) AS SumTotal FROM OrderLines WHERE OrderId = @OrderId AND ProductId = @ProductId",
-			new { OrderId = orderId, ProductId = productId });
+			new { OrderId = _testOrderId, ProductId = _testProductId });
 
-		Assert.That(orderLineData.Count, Is.EqualTo(1), "There should be exactly one order line with the specified OrderId and ProductId.");
+		Assert.That(orderLineData.Count, Is.EqualTo(1), "There should be exactly one order line for the order and product.");
 		Assert.That(orderLineData.SumTotal, Is.EqualTo(expectedTotal).Within(0.01), "The order line total should match the expected calculated price.");
-
-		await _orderDao.DeleteAsync(orderId);
-		await _productDao.DeleteAsync(productId);
-		await _breweryDao.DeleteAsync(breweryId);
-		await _categoryDao.DeleteAsync(categoryId);
 	}
-	//Kan ikke teste på at der ikke er nok stock i DAO, da checket sker i OrderService
 
+	[TearDown]
+	public async Task TearDown()
+	{
+		await _categoryDao.DeleteAsync(_testCategoryId);
+		await _breweryDao.DeleteAsync(_testBreweryId);
+		await _orderDao.DeleteAsync(_testOrderId);
+		await _productDao.DeleteAsync(_testProductId);
+		await _accountDao.DeleteAsync(_testCustomerId);
+	}
 }

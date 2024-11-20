@@ -7,29 +7,38 @@ namespace BeerWebshop.Test.DALTests;
 public class CategoryDaoTests
 {
 	private CategoryDAO _categoryDao;
-	private string _testSuffix = "_Test";
+	private readonly string _testSuffix = "_Test";
+
+	private readonly List<int> _categoryIdsCreated = new();
 
 	[SetUp]
-
 	public void SetUp()
 	{
 		_categoryDao = new CategoryDAO(DBConnection.ConnectionString());
 	}
 
+	[TearDown]
+	public async Task TearDownAsync()
+	{
+		foreach (var categoryId in _categoryIdsCreated)
+		{
+			await _categoryDao.DeleteAsync(categoryId);
+		}
+	}
+
 	[Test]
-	public async Task CreateAsync_WhenCategoryExist_ShouldThrowSqlException()
+	public async Task CreateAsync_WhenCategoryExists_ShouldThrowInvalidOperationException()
 	{
 		var categoryName = $"Category{_testSuffix}";
 
-		var category = new Category{Name = categoryName, IsDeleted = false};
+		var category = new Category { Name = categoryName, IsDeleted = false };
 
-		var accountId = await _categoryDao.CreateAsync(category);
+		var categoryId = await _categoryDao.CreateAsync(category);
+		_categoryIdsCreated.Add(categoryId);
 
 		var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await _categoryDao.CreateAsync(category));
 
 		Assert.That(exception.Message, Is.EqualTo($"Category with name '{categoryName}' already exists."));
-
-		await _categoryDao.DeleteAsync(accountId);
 	}
 
 	[Test]
@@ -42,6 +51,4 @@ public class CategoryDaoTests
 		Assert.That(exception, Is.Not.Null);
 		Assert.That(exception.Message, Does.Contain("Category name cant be null or empty."));
 	}
-
-
 }
