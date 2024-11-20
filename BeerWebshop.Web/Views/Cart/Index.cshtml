@@ -1,5 +1,7 @@
 ﻿@model BeerWebshop.Web.Models.ShoppingCart
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
     .btn-light-green {
         background-color: #32AA32; /* Light green background */
@@ -35,17 +37,21 @@
         }
 </style>
 
-<h1>Indkøbskurv</h1>
+<h1>
+    <i class="bi bi-cart-fill"></i> Indkøbskurv
+</h1>
 
 <div>
     <hr />
 
     @Html.Partial("_CartPartial", Model.OrderLines)
 
-    <h4>Total beløb <span id="total-price">@Model.TotalPrice.ToString("F2") kr.</span></h4>
+    <h4>
+        <i class="bi bi-currency-dollar"></i> Total beløb <span id="total-price">@Model.TotalPrice.ToString("F2") kr.</span>
+    </h4>
     <button type="button" class="btn btn-light-green rounded-pill py-2 px-4" id="pay-button">
-        Gå til kassen
-    </button> <!-- Betal Button -->
+        <i class="bi bi-credit-card"></i> Gå til kassen
+    </button>
     <!-- Notification Popup -->
     <div id="notification" class="notification"></div>
 </div>
