@@ -32,7 +32,7 @@ public class CategoriesController : ControllerBase
 
 			categoryDTO.Id = categoryId;
 
-			return Ok();
+			return Ok(categoryId);
 		}
 		catch (Exception ex)
 		{

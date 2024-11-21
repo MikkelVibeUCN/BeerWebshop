@@ -15,7 +15,7 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 		private CategoryAPIClient _categoryApiClient;
 		private BreweryAPIClient _breweryApiClient;
 
-		private readonly string _testSuffix = $"_Test";
+		private readonly string _testSuffix = $"_Test_{new Guid()}";
 		private readonly List<int> _createdProductIds = new();
 		private readonly List<int> _createdCategoryIds = new();
 		private readonly List<int> _createdBreweryIds = new();
