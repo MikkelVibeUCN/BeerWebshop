@@ -11,6 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DesktopClientTests\**" />
+    <Compile Remove="WebTests\**" />
+    <EmbeddedResource Remove="DesktopClientTests\**" />
+    <EmbeddedResource Remove="WebTests\**" />
+    <None Remove="DesktopClientTests\**" />
+    <None Remove="WebTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.json" />
   </ItemGroup>
@@ -41,11 +50,6 @@
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DesktopClientTests\" />
-    <Folder Include="WebTests\" />
   </ItemGroup>
 
   <ItemGroup>

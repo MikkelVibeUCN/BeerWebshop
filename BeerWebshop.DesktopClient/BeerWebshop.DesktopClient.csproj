@@ -9,8 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="HelperClasses\" />
-    <Folder Include="Windows\" />
+    <Compile Remove="HelperClasses\**" />
+    <Compile Remove="Windows\**" />
+    <EmbeddedResource Remove="HelperClasses\**" />
+    <EmbeddedResource Remove="Windows\**" />
+    <None Remove="HelperClasses\**" />
+    <None Remove="Windows\**" />
   </ItemGroup>
 
   <ItemGroup>

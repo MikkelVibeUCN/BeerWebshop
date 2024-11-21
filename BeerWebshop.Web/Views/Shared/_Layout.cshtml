@@ -11,11 +11,15 @@
 
     <style>
         html, body {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            margin: 0;
-            font-family: 'Helvetica Neue', sans-serif;
-            background: url('~/images/beer-background.jpg') center/cover no-repeat, linear-gradient(to bottom, #ffed8a, #f4f4f4);
-            color: #333;
+            background: url('@Url.Content("~/FrontPage/beer-background.jpg")') center/cover no-repeat;
+            background-color: rgba(0, 0, 0, 0.4); /* Darken with black */
+            z-index: -1;
         }
 
         .main-container {
@@ -28,14 +32,22 @@
             background: rgba(0, 0, 0, 0.85);
         }
 
+        /* Navbar Brand Color */
         .navbar-brand {
-            color: #f2a900 !important;
+            color: white !important; /* Default color to white */
             font-size: 2rem;
-            font-family: 'Georgia', serif;
+            font-family: 'Helvetica Neue', sans-serif;
             font-weight: bold;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
             text-transform: uppercase;
+            transition: color 0.3s ease;
         }
+
+            /* Hover effect: Yellow color */
+            .navbar-brand:hover {
+                color: #f2a900 !important; /* Yellow on hover */
+                text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); /* Slight increase in shadow for hover */
+            }
 
         .navbar-nav .nav-item .nav-link {
             font-size: 1.1rem;
@@ -108,6 +120,7 @@
             }
         }
     </style>
+
 
 </head>
 <body>
