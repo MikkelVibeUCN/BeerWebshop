@@ -1,4 +1,4 @@
-﻿namespace BeerWebshop.Web.Models
+﻿namespace BeerWebshop.Web.Cookies
 {
     public class AgeCookie
     {

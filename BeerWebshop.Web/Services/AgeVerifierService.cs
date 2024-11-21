@@ -1,4 +1,4 @@
-﻿using BeerWebshop.Web.Models;
+﻿using BeerWebshop.Web.Cookies;
 
 namespace BeerWebshop.Web.Services
 {
@@ -29,8 +29,7 @@ namespace BeerWebshop.Web.Services
 
         public bool IsUserAbove18()
         {
-            AgeCookie ageCookie = GetAgeCookie();
-            return ageCookie.IsOver18;
+            return GetAgeCookie().IsOver18;
         }
 
         public void SaveCookie(AgeCookie ageCookie)

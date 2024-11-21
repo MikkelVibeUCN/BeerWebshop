@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BeerWebshop.Web.Models
+namespace BeerWebshop.Web.Cookies
 {
     public class Checkout
     {

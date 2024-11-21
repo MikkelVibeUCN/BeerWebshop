@@ -32,6 +32,7 @@
             const formData = new FormData(form);
 
             try {
+                // Make the AJAX request
                 const response = await fetch(form.action, {
                     method: form.method,
                     body: formData,
@@ -40,8 +41,15 @@
                     }
                 });
 
+                // Check if the response was successful (status code 200-299)
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                // Parse the JSON response
                 const result = await response.json();
 
+                // Handle the success or failure
                 if (result.success) {
                     window.location.href = result.redirectUrl; // Redirect on success
                 } else {
@@ -49,9 +57,9 @@
                     window.showNotification(errorMessage, 'error'); // Show error notification
                 }
             } catch (error) {
+                console.error(error);
                 window.showNotification("An unexpected error occurred. Please try again later.", 'error');
             }
         });
-
     </script>
 }

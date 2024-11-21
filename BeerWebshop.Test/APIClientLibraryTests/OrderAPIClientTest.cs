@@ -8,18 +8,22 @@ public class OrderApiClientTests
 {
 	private OrderApiClient _orderApiClient;
 	private ProductAPIClient _productApiClient;
+	private AccountAPIClient _accountApiClient;
 
-	private string _baseUri = "https://localhost:7244/api/v1/";
+
+    private string _baseUri = "https://localhost:7244/api/v1/";
 	private int _createdOrderId;
 	private int _createdProductId;
+	private int _createdCustomerId;
 
 	[SetUp]
 	public void SetUp()
 	{
 		_orderApiClient = new OrderApiClient(_baseUri);
 		_productApiClient = new ProductAPIClient(_baseUri);
-		_createdOrderId = 0;
+		_accountApiClient = new AccountAPIClient(_baseUri);
 
+        _createdOrderId = 0;
 	}
 
 	[Test]

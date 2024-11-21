@@ -1,4 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.Web.Cookies;
 using BeerWebshop.Web.Models;
 using BeerWebshop.Web.Services;
 using Microsoft.AspNetCore.Http;

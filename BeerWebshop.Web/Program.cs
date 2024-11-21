@@ -1,9 +1,8 @@
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.Web.Services;
-using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using BeerWebshop.APIClientLibrary.ApiClient;
-using static System.Net.WebRequestMethods;
+using BeerWebshop.Web.Filter;
+using BeerWebshop.Web.Properties;
 
 
 namespace BeerWebshop.Web
@@ -18,6 +17,9 @@ namespace BeerWebshop.Web
 
 			string uri = "https://localhost:7244/api/v1/";
 
+            builder.Services.Configure<BeerWebshop.Web.Properties.JwtSettings>(
+				builder.Configuration.GetSection("JwtSettings"));
+
             // Register API clients with the base URI
             builder.Services.AddScoped<IProductAPIClient>(provider => new ProductAPIClient(uri));
             builder.Services.AddScoped<ICategoryAPIClient>(provider => new CategoryAPIClient(uri));
@@ -25,6 +27,8 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<IAccountAPIClient>(provider => new AccountAPIClient(uri));
 			// Register HttpContextAccessor for CookieService and other services
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddScoped<JWTService>();
+
 
             // Register application services
             builder.Services.AddScoped<ProductService>();
@@ -34,8 +38,7 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<OrderService>();
             builder.Services.AddScoped<AgeVerifierService>();
 			builder.Services.AddScoped<AccountService>();
-
-            // Use a stub for the IOrderApiClient
+			builder.Services.AddScoped<AgeVerificationFilter>();
 
 
 			var app = builder.Build();

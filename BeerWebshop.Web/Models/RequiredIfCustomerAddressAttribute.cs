@@ -1,4 +1,4 @@
-﻿using BeerWebshop.Web.Models;
+﻿using BeerWebshop.Web.Cookies;
 using System;
 using System.ComponentModel.DataAnnotations;
 

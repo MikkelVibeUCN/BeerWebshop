@@ -18,10 +18,11 @@ namespace BeerWebshop.Web.Controllers
 
         public async Task<ActionResult> Index(LoginViewModel? login)
         {
-            if (await _accountService.GetCustomerIdFromCookie() != null)
+            if (await _accountService.GetCustomerFromLoginCookie() != null)
             {
                 return RedirectToAction("AccountOverview", "Account");
             }
+            _accountService.RemoveTokenCookie();
 
             if(login == null) { login = new LoginViewModel(); }
 
@@ -41,31 +42,21 @@ namespace BeerWebshop.Web.Controllers
 
             try
             {
-                var customer = await _accountService.GetCustomerByEmailAsync(loginViewModel.Email);
-                if (customer == null)
+                var token = await _accountService.AuthenticateAndGetTokenAsync(loginViewModel);
+                if (!string.IsNullOrEmpty(token))
                 {
-                    ModelState.AddModelError("", "Invalid email or password.");
-                    return View(loginViewModel);
-                }
+                    _accountService.SaveTokenCookie(token);
 
-                var hashedPassword = await _accountService.AuthenticateAndGetHashedPasswordAsync(loginViewModel);
-                if (hashedPassword != null)
-                {
-                    AuthCookie newAuthCookie = new AuthCookie
-                    {
-                        Email = loginViewModel.Email,
-                        PasswordHash = hashedPassword
-                    };
-                    _accountService.SaveAuthCookie(newAuthCookie);
-                    return RedirectToAction("Index", "Account"); 
+                    // Return the redirect URL as part of the JSON response
+                    return Json(new { success = true, redirectUrl = Url.Action("Index", "Account") });
                 }
 
                 ModelState.AddModelError("", "Invalid email or password.");
-                return View(loginViewModel);
+                return Json(new { success = false, errorMessage = "Invalid email or password." });
             }
             catch
             {
-                return Json(new { success = false, errorMessage = "Forkert email eller adgangskode"} );
+                return Json(new { success = false, errorMessage = "Forkert email eller adgangskode" });
             }
         }
 
@@ -73,7 +64,7 @@ namespace BeerWebshop.Web.Controllers
         [HttpPost]
         public IActionResult Logout()
         {
-            _accountService.RemoveAuthCookie();
+            _accountService.RemoveTokenCookie();
             return RedirectToAction("Index", "Account");
         }
 
@@ -87,17 +78,22 @@ namespace BeerWebshop.Web.Controllers
 
             try
             {
-                await _accountService.CreateCustomerAsync(viewModel);
-
-                _accountService.SaveAuthCookie(new AuthCookie
+                LoginViewModel loginViewModel = new LoginViewModel
                 {
                     Email = viewModel.Email,
-                    PasswordHash = await _accountService.AuthenticateAndGetHashedPasswordAsync(new LoginViewModel
-                    {
-                        Email = viewModel.Email,
-                        Password = viewModel.Password
-                    })
-                });
+                    Password = viewModel.Password
+                };
+
+                await _accountService.CreateCustomerAsync(viewModel);
+
+                string? token = await _accountService.AuthenticateAndGetTokenAsync(loginViewModel);
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return Json(new { success = false, errorMessage = "Kunne ikke bekfæfte token" });
+                }
+
+                _accountService.SaveTokenCookie(token);
 
                 return Json(new { success = true, redirectUrl = Url.Action("Index", "Account") });
             }
@@ -112,10 +108,9 @@ namespace BeerWebshop.Web.Controllers
             }
         }
 
-
         public async Task<IActionResult> AccountOverview()
         {
-            int? customerId = await _accountService.GetCustomerIdFromCookie();
+            int? customerId = await _accountService.GetCustomerIdFromToken();
 
             if (customerId == null)
             {

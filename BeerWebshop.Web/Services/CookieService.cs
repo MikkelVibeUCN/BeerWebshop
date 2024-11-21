@@ -59,6 +59,7 @@ namespace BeerWebshop.Web.Services
             {
                 Expires = DateTime.Now.AddDays(30),
                 HttpOnly = true,
+                Secure = true,
                 SameSite = SameSiteMode.Lax
             };
 
