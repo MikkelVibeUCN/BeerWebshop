@@ -26,7 +26,7 @@ namespace BeerWebshop.Web.Models
         public string? City { get; set; }
 
         [Required(ErrorMessage = "Kortnummer mangler")]
-        [CreditCard(ErrorMessage = "Forkert format.")]
+        [RegularExpression(@"^\d{16}$", ErrorMessage = "Kortnummer skal bestå af præcis 16 cifre.")]
         public string? CreditCard { get; set; }
 
         [Required(ErrorMessage = "Udløbsdato mangler.")]
