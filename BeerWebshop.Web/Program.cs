@@ -17,6 +17,13 @@ namespace BeerWebshop.Web
 
 			string uri = "https://localhost:7244/api/v1/";
 
+            builder.Services.AddScoped<AgeVerificationFilter>();
+
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<AgeVerificationFilter>(); // Adds the filter globally
+            });
+
             builder.Services.Configure<BeerWebshop.Web.Properties.JwtSettings>(
 				builder.Configuration.GetSection("JwtSettings"));
 
@@ -38,7 +45,6 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<OrderService>();
             builder.Services.AddScoped<AgeVerifierService>();
 			builder.Services.AddScoped<AccountService>();
-			builder.Services.AddScoped<AgeVerificationFilter>();
 
 
 			var app = builder.Build();
