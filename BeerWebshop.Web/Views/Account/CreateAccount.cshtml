@@ -4,125 +4,118 @@
     ViewData["Title"] = "Opret konto";
 }
 
+<!-- Bootstrap Icons CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="card p-4 shadow" style="max-width: 500px; width: 100%;">
         <div class="card-body">
-            <h3 class="card-title text-center mb-4">@ViewData["Title"]</h3>
+            <h3 class="card-title text-center mb-4">
+                <i class="bi bi-person-plus-fill text-primary"></i> @ViewData["Title"]
+            </h3>
             <form id="createAccountForm" asp-action="CreateAccount" asp-controller="Account" method="post">
                 @Html.AntiForgeryToken()
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="form-group">
-                    <label asp-for="FirstName" class="control-label">Fornavn</label>
+                    <label asp-for="FirstName" class="control-label">
+                        <i class="bi bi-person-fill"></i> Fornavn
+                    </label>
                     <input asp-for="FirstName" class="form-control" placeholder="Indtast dit fornavn" required />
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="LastName" class="control-label">Efternavn</label>
+                    <label asp-for="LastName" class="control-label">
+                        <i class="bi bi-person-lines-fill"></i> Efternavn
+                    </label>
                     <input asp-for="LastName" class="form-control" placeholder="Indtast dit efternavn" required />
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Street" class="control-label">Vej</label>
+                    <label asp-for="Street" class="control-label">
+                        <i class="bi bi-house-door-fill"></i> Vej
+                    </label>
                     <input asp-for="Street" class="form-control" placeholder="Indtast din vej" required />
                     <span asp-validation-for="Street" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="StreetNumber" class="control-label">Vejnummer</label>
+                    <label asp-for="StreetNumber" class="control-label">
+                        <i class="bi bi-123"></i> Vejnummer
+                    </label>
                     <input asp-for="StreetNumber" class="form-control" placeholder="Indtast dit vejnummer" required />
                     <span asp-validation-for="StreetNumber" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="ApartmentNumber" class="control-label">Lejlighedsnummer</label>
+                    <label asp-for="ApartmentNumber" class="control-label">
+                        <i class="bi bi-building"></i> Lejlighedsnummer
+                    </label>
                     <input asp-for="ApartmentNumber" class="form-control" placeholder="Indtast dit lejlighedsnummer (Valgfri)" />
                     <span asp-validation-for="ApartmentNumber" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="PostalCode" class="control-label">Postnummer</label>
+                    <label asp-for="PostalCode" class="control-label">
+                        <i class="bi bi-mailbox"></i> Postnummer
+                    </label>
                     <input asp-for="PostalCode" class="form-control" placeholder="Indtast dit postnummer" required />
                     <span asp-validation-for="PostalCode" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="City" class="control-label">By</label>
+                    <label asp-for="City" class="control-label">
+                        <i class="bi bi-geo-alt-fill"></i> By
+                    </label>
                     <input asp-for="City" class="form-control" placeholder="Indtast din by" required />
                     <span asp-validation-for="City" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Email" class="control-label">Email</label>
+                    <label asp-for="Email" class="control-label">
+                        <i class="bi bi-envelope-fill"></i> Email
+                    </label>
                     <input asp-for="Email" class="form-control" placeholder="Indtast din email" type="email" required />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Password" class="control-label">Kodeord</label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="Vælg et kodeord" 
-                           required minlength="8" />
+                    <label asp-for="Password" class="control-label">
+                        <i class="bi bi-lock-fill"></i> Kodeord
+                    </label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Vælg et kodeord" required minlength="8" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Phone" class="control-label">Telefonnummer</label>
+                    <label asp-for="Phone" class="control-label">
+                        <i class="bi bi-telephone-fill"></i> Telefonnummer
+                    </label>
                     <input asp-for="Phone" class="form-control" placeholder="Indtast dit telefonnummer" type="tel" required />
                     <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Age" class="control-label">Alder</label>
+                    <label asp-for="Age" class="control-label">
+                        <i class="bi bi-calendar-fill"></i> Alder
+                    </label>
                     <input asp-for="Age" class="form-control" placeholder="Indtast din alder" type="number" min="18" required />
                     <span asp-validation-for="Age" class="text-danger"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Opret konto</button>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="bi bi-check-circle-fill"></i> Opret konto
+                </button>
             </form>
 
             <div class="text-center mt-3">
-                <a href="@Url.Action("Index", "Account")">Har du allerede en konto? Log ind her</a>
+                <a href="@Url.Action("Index", "Account")">
+                    <i class="bi bi-box-arrow-in-right"></i> Har du allerede en konto? Log ind her
+                </a>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
-    <script>
-        document.getElementById("createAccountForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const form = event.target;
-            const formData = new FormData(form);
-
-            try {
-                const response = await fetch(form.action, {
-                    method: form.method,
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    window.location.href = result.redirectUrl; // Redirect on success
-                } else {
-                    const errorMessage = result.errorMessage || "An unexpected error occurred.";
-                    window.showNotification(errorMessage, 'error'); // Show error notification
-                }
-            } catch (error) {
-                window.showNotification("An unexpected error occurred. Please try again later.", 'error');
-            }
-        });
-    </script>
-
-}
