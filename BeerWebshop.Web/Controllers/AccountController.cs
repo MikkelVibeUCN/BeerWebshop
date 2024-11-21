@@ -30,8 +30,43 @@ namespace BeerWebshop.Web.Controllers
 
         public IActionResult CreateAccount() => View();
 
+		[HttpPost]
+		public async Task<IActionResult> CreateAccount(AccountCreationViewModel viewModel)
+		{
+			if (viewModel.Age < 18)
+			{
+				return Json(new { success = false, errorMessage = "Du skal være mindst 18 år gammel for at oprette en konto." });
+			}
 
-        [HttpPost]
+			try
+			{
+				await _accountService.CreateCustomerAsync(viewModel);
+
+				_accountService.SaveAuthCookie(new AuthCookie
+				{
+					Email = viewModel.Email,
+					PasswordHash = await _accountService.AuthenticateAndGetHashedPasswordAsync(new LoginViewModel
+					{
+						Email = viewModel.Email,
+						Password = viewModel.Password
+					})
+				});
+
+				return Json(new { success = true, redirectUrl = Url.Action("Index", "Account") });
+			}
+			catch (Exception ex)
+			{
+				string message = "Der skete en fejl under oprettelsen af din konto. Prøv venligst igen.";
+				if (ex.Message.ToLower().Contains("email"))
+				{
+					message = "Den indtastede email er allerede i brug.";
+				}
+				return Json(new { success = false, errorMessage = message });
+			}
+		}
+
+
+		[HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
             if (!ModelState.IsValid)
@@ -77,40 +112,7 @@ namespace BeerWebshop.Web.Controllers
             return RedirectToAction("Index", "Account");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateAccount(AccountCreationViewModel viewModel)
-        {
-            if (viewModel.Age < 18)
-            {
-                return Json(new { success = false, errorMessage = "Du skal være mindst 18 år gammel for at oprette en konto." });
-            }
-
-            try
-            {
-                await _accountService.CreateCustomerAsync(viewModel);
-
-                _accountService.SaveAuthCookie(new AuthCookie
-                {
-                    Email = viewModel.Email,
-                    PasswordHash = await _accountService.AuthenticateAndGetHashedPasswordAsync(new LoginViewModel
-                    {
-                        Email = viewModel.Email,
-                        Password = viewModel.Password
-                    })
-                });
-
-                return Json(new { success = true, redirectUrl = Url.Action("Index", "Account") });
-            }
-            catch (Exception ex)
-            {
-                string message = "Der skete en fejl under oprettelsen af din konto. Prøv venligst igen.";
-                if (ex.Message.ToLower().Contains("email"))
-                {
-                    message = "Den indtastede email er allerede i brug.";
-                }
-                return Json(new { success = false, errorMessage = message});
-            }
-        }
+        
 
 
         public async Task<IActionResult> AccountOverview()

@@ -42,6 +42,7 @@ namespace BeerWebshop.Web.Services
 
 				CustomerDTO customer = new CustomerDTO
 				{
+					Id = 0,
 					Name = $"{viewModel.FirstName} {viewModel.LastName}",
 					Address = address,
 					Email = viewModel.Email,
