@@ -28,12 +28,7 @@ namespace BeerWebshop.Web.Services
 
 		public async Task<int> SaveOrder(CheckoutViewModel checkout)
 		{
-			if(checkout.Customer == null)
-			{
-                checkout.Customer = CreateCustomerFromCheckout(checkout.Checkout);
-            }
-
-			OrderDTO orderDTO = new OrderDTO
+            OrderDTO orderDTO = new OrderDTO
 			{
 				CustomerDTO = checkout.Customer,
 				OrderLines = checkout.Cart.OrderLines,
@@ -41,21 +36,6 @@ namespace BeerWebshop.Web.Services
 			};
 
 			return await _orderAPIClient.CreateAsync(orderDTO);
-		}
-
-		private CustomerDTO CreateCustomerFromCheckout(Checkout checkout)
-		{
-			// TODO: Add email and password to this
-			string name = checkout.Firstname + " " + checkout.Lastname;
-
-			string address = checkout.Street + " " + checkout.Number + ", " + checkout.PostalCode + " " + checkout.City;
-
-			return new CustomerDTO
-			{
-				Name = name,
-				Address = address,
-				Phone = checkout.Phonenumber
-			};
 		}
 
 	}

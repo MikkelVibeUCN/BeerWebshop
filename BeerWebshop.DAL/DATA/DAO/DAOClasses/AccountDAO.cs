@@ -66,9 +66,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
-
             using var transaction = connection.BeginTransaction();
-
 
             // Split the full name into first and last names
             var parts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -81,7 +79,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 FirstName = firstName,
                 LastName = lastName,
                 Phone = customer.Phone,
-                PasswordHash = BCryptTool.HashPassword(customer.Password),
+                PasswordHash = customer.Password != null ? BCryptTool.HashPassword(customer.Password) : null,
                 Age = customer.Age,
                 Email = customer.Email
             };

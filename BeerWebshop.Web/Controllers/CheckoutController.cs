@@ -79,10 +79,20 @@ namespace BeerWebshop.Web.Controllers
                 return View(viewModel);
             }
 
-            _checkoutService.SaveCheckout(checkout);
-
             try
             {
+                if(viewModel.Customer == null)
+                {
+                    viewModel.Customer = new CustomerDTO
+                    {
+                        Name = $"{checkout.Firstname} {checkout.Lastname}",
+                        Phone = checkout.Phonenumber,
+                        Email = checkout.Email,
+                        Address = $"{checkout.Street} {checkout.Number} {checkout.PostalCode} {checkout.City}"
+                    };
+                    viewModel.Customer.Id = await _accountService.CreateCustomerAsync(viewModel.Customer);
+                }
+
                 int id = await _orderService.SaveOrder(viewModel);
 
                 _cartService.ClearCartCookies();

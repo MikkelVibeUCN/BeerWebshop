@@ -57,8 +57,12 @@ namespace BeerWebshop.Web.Services
 			}
 
 		}
+		public async Task<int> CreateCustomerAsync(CustomerDTO customer)
+        {
+            return await _accountAPIClient.CreateAsync(customer);
+        }
 
-		public async Task<CustomerDTO?> GetCustomerFromLoginCookie()
+        public async Task<CustomerDTO?> GetCustomerFromLoginCookie()
 		{
             string? token = GetTokenCookie();
             string? email = _jwtService.GetEmailFromToken(token);
