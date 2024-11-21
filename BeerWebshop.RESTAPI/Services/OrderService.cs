@@ -53,7 +53,7 @@ namespace BeerWebshop.RESTAPI.Services
 			{
 				foreach (var orderLine in order.OrderLines)
 				{
-					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity);
+					var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity, connection, transaction);
 					if (!success)
 					{
 						throw new InvalidOperationException("Insufficient stock.");

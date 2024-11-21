@@ -196,7 +196,6 @@ public class ProductDAO : IProductDAO
 			throw new InvalidOperationException("Error updating stock.");
 		}
 
-		transaction.Commit();
 		return true;
 	}
 

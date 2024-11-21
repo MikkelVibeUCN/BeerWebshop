@@ -77,13 +77,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                     await InsertOrderLineAsync(connection, transaction, orderLine, orderId);
                 }
 
-                await transaction.CommitAsync();
-
                 return orderId;
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 throw new Exception($"Error inserting order: {ex.Message}", ex);
             }
         }
