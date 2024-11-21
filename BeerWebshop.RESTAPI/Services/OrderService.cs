@@ -60,7 +60,7 @@ namespace BeerWebshop.RESTAPI.Services
 					}
 				}
 
-				var orderId = await _orderDao.CreateAsync(order);
+				var orderId = await _orderDao.CreateAsync(order, connection, transaction);
 				await transaction.CommitAsync();
 				return orderId;
 			}

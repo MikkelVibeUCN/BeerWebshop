@@ -2,9 +2,11 @@
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text;
+using System.Transactions;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 
@@ -55,11 +57,11 @@ public class ProductDAO : IProductDAO
     #endregion
 
     #region BaseDAO Methods
-    public async Task<int> CreateAsync(Product product)
+    public async Task<int> CreateAsync(Product product, SqlConnection? connection, DbTransaction? transaction)
 	{
 		try
 		{
-			using var connection = new SqlConnection(_connectionString);
+			connection = new SqlConnection(_connectionString);
 			var parameters = new
 			{
 				product.Name,
@@ -166,12 +168,15 @@ public class ProductDAO : IProductDAO
 
     #region IProductDAO Methods
     //TODO Timeout ved deadlock.
-    public async Task<bool> UpdateStockAsync(int productId, int quantity)
+    public async Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null)
 	{
-		using var connection = new SqlConnection(_connectionString);
-		await connection.OpenAsync();
+		if(connection == null && transaction == null )
+		{
+			connection = new SqlConnection(_connectionString);
+			await connection.OpenAsync();
 
-		using var transaction = connection.BeginTransaction();
+			transaction = await connection.BeginTransactionAsync();
+        }
 
 		var parameters = new DynamicParameters();
 		parameters.Add("@ProductId", productId);
@@ -305,5 +310,14 @@ public class ProductDAO : IProductDAO
 		}
 		return productCount;
 	}
+
+    public async Task<int> CreateAsync(Product entity)
+    {
+        using var connection = new SqlConnection(_connectionString);
+		await connection.OpenAsync();
+		var transaction = await connection.BeginTransactionAsync();
+		return await CreateAsync(entity, connection, transaction);
+
+    }
 }
 #endregion

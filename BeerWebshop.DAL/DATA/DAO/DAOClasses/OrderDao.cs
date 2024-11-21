@@ -2,6 +2,7 @@
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
@@ -65,12 +66,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         }
         #endregion
         #region BaseDAO Methods
-        public async Task<int> CreateAsync(Order order)
+        public async Task<int> CreateAsync(Order order, SqlConnection connection, DbTransaction transaction)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-            using var transaction = await connection.BeginTransactionAsync();
-
             try
             {
                 var orderId = await InsertOrderAsync(connection, transaction, order);
@@ -276,7 +273,13 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             await connection.ExecuteAsync(InsertOrderLineSql, parameters, transaction);
         }
 
-       
+        public async Task<int> CreateAsync(Order entity)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+            var transaction = await connection.BeginTransactionAsync();
+            return await CreateAsync(entity, connection, transaction);
+        }
     }
 }
 #endregion

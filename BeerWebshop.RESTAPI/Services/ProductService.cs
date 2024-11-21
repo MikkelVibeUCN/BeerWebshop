@@ -3,6 +3,8 @@ using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Tools;
+using System.Data.Common;
+using System.Data.SqlClient;
 
 namespace BeerWebshop.RESTAPI.Services;
 
@@ -51,9 +53,9 @@ public class ProductService
 		return products.Select(MappingHelper.MapProductEntityToDTO).ToList();
 	}
 
-	public async Task<bool> UpdateStockAsync(int productId, int quantity)
+	public async Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null)
 	{
-		return await _productDAO.UpdateStockAsync(productId, quantity);
+		return await _productDAO.UpdateStockAsync(productId, quantity, connection, transaction);
 	}
 
 	public async Task<int> GetProductsCount(ProductQueryParameters parameters)
