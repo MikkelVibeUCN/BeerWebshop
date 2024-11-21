@@ -1,5 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using BeerWebshop.Web.Models;
+using BeerWebshop.Web.Cookies;
 using System.Linq;
 
 namespace BeerWebshop.Web.Services

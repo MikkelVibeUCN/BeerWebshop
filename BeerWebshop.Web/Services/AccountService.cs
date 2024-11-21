@@ -6,22 +6,21 @@ using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 
-
-
-
 namespace BeerWebshop.Web.Services
 {
 	public class AccountService
 	{
 		private readonly IAccountAPIClient _accountAPIClient;
 		private readonly CookieService _cookieService;
+		private readonly JWTService _jwtService;
 		private const string AuthCookieKey = "AuthCookie";
 
-		public AccountService(IAccountAPIClient accountAPIClient, CookieService cookieService)
+		public AccountService(IAccountAPIClient accountAPIClient, CookieService cookieService, JWTService jwtService)
 		{
 			_accountAPIClient = accountAPIClient;
 			_cookieService = cookieService;
-		}
+            _jwtService = jwtService;
+        }
 
 		public async Task<CustomerDTO?> GetCustomerByEmailAsync(string email)
 		{
@@ -60,75 +59,48 @@ namespace BeerWebshop.Web.Services
 
 		public async Task<CustomerDTO?> GetCustomerFromLoginCookie()
 		{
-			AuthCookie authCookie = GetAuthCookie();
-			if(!string.IsNullOrEmpty(authCookie.Email))
-			{
-				return await GetCustomerByEmailAsync(authCookie.Email);
-            }
-			return null;
-		} 
+            string? token = GetTokenCookie();
+            string? email = _jwtService.GetEmailFromToken(token);
 
-		public AuthCookie GetAuthCookie()
-		{
-			AuthCookie? authCookie = _cookieService.GetObjectFromCookie<AuthCookie>(AuthCookieKey);
-            if (authCookie == null)
-			{
-				authCookie = new()
-				{
-					PasswordHash = "",
-					Email = "",
-				};
-				SaveAuthCookie(authCookie);
+            if (!string.IsNullOrEmpty(email))
+            {
+                CustomerDTO? customer = await GetCustomerByEmailAsync(email);
+                if (customer != null)
+                {
+                    return customer;
+                }
             }
-            return authCookie;
+            return null;
+        } 
+
+		public string? GetTokenCookie()
+		{
+            return _cookieService.GetObjectFromCookie<string>(AuthCookieKey);
         }
 
-		public void RemoveAuthCookie()
+		public void RemoveTokenCookie()
 		{
-			_cookieService.RemoveCookies<AuthCookie>(AuthCookieKey);
+			_cookieService.RemoveCookies<string>(AuthCookieKey);
 		}
-		public string? GetHashedPasswordFromCookie()
+		public void SaveTokenCookie(string token)
 		{
-			return GetAuthCookie().PasswordHash;
-        }
-		// Set auth cookie with hashed password and email
-		public void SaveAuthCookie(AuthCookie authCookie)
-		{
-			_cookieService.SaveCookie<AuthCookie>(authCookie, AuthCookieKey);
+			_cookieService.SaveCookie<string>(token, AuthCookieKey);
 		}
 
-		public async Task<int?> GetCustomerIdFromCookie()
-		{
-			AuthCookie authCookie = GetAuthCookie();
-			if (!string.IsNullOrEmpty(authCookie.Email)) 
-			{
-				CustomerDTO? customer = await GetCustomerByEmailAsync(authCookie.Email);
-				if (customer != null)
-				{
-					return customer.Id;
-				}
-			}
-			return null;	
-		}
-		// Authenticate user and return hashed password if successful
-		public async Task<string?> AuthenticateAndGetHashedPasswordAsync(LoginViewModel loginViewModel)
+        public async Task<int?> GetCustomerIdFromToken()
+        {
+            CustomerDTO? customer = await GetCustomerFromLoginCookie();
+            return customer != null ? customer.Id : null;
+        }
+		public async Task<string?> AuthenticateAndGetTokenAsync(LoginViewModel loginViewModel)
 		{
 			var customerDTO = await _accountAPIClient.GetByEmailAsync(loginViewModel.Email);
 			if (customerDTO != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, customerDTO.Password))
 			{
-				return customerDTO.Password; // Return the hashed password to store in the cookie
-			}
-			return null;
+				return _jwtService.GenerateJwtToken(customerDTO.Email);
+            }
+            return null;
 		}
 
 	}
 }
-
-
-
-
-
-
-
-
-

@@ -1,12 +1,13 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.Web.Cookies;
 using BeerWebshop.Web.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.Web.Services
 {
-	public class OrderService
+    public class OrderService
 	{
 		private readonly IOrderApiClient _orderAPIClient;
 		public OrderService(IOrderApiClient orderAPIClient)

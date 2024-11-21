@@ -1,6 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
-namespace BeerWebshop.Web.Models
+namespace BeerWebshop.Web.Cookies
 {
     public class ShoppingCart
     {
@@ -10,7 +10,7 @@ namespace BeerWebshop.Web.Models
         {
             get
             {
-                if(OrderLines.Count == 0)
+                if (OrderLines.Count == 0)
                 {
                     return 0;
                 }

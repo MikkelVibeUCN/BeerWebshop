@@ -87,17 +87,22 @@ namespace BeerWebshop.Web.Controllers
 
             try
             {
-                await _accountService.CreateCustomerAsync(viewModel);
-
-                _accountService.SaveAuthCookie(new AuthCookie
+                LoginViewModel loginViewModel = new LoginViewModel
                 {
                     Email = viewModel.Email,
-                    PasswordHash = await _accountService.AuthenticateAndGetHashedPasswordAsync(new LoginViewModel
-                    {
-                        Email = viewModel.Email,
-                        Password = viewModel.Password
-                    })
-                });
+                    Password = viewModel.Password
+                };
+
+                string? token = await _accountService.AuthenticateAndGetTokenAsync(loginViewModel);
+
+                if(string.IsNullOrEmpty(token))
+                {
+                    return Json(new { success = false, errorMEssage = "Kunne ikke bekfæfte token" });
+                }
+
+                await _accountService.CreateCustomerAsync(viewModel);
+
+                _accountService.SaveTokenCookie(token);
 
                 return Json(new { success = true, redirectUrl = Url.Action("Index", "Account") });
             }
@@ -115,7 +120,7 @@ namespace BeerWebshop.Web.Controllers
 
         public async Task<IActionResult> AccountOverview()
         {
-            int? customerId = await _accountService.GetCustomerIdFromCookie();
+            int? customerId = await _accountService.GetCustomerIdFromToken();
 
             if (customerId == null)
             {

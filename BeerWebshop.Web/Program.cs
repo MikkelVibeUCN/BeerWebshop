@@ -5,6 +5,7 @@ using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.APIClientLibrary.ApiClient;
 using static System.Net.WebRequestMethods;
 using BeerWebshop.Web.Filter;
+using BeerWebshop.Web.Properties;
 
 
 namespace BeerWebshop.Web
@@ -19,6 +20,8 @@ namespace BeerWebshop.Web
 
 			string uri = "https://localhost:7244/api/v1/";
 
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
             // Register API clients with the base URI
             builder.Services.AddScoped<IProductAPIClient>(provider => new ProductAPIClient(uri));
             builder.Services.AddScoped<ICategoryAPIClient>(provider => new CategoryAPIClient(uri));
@@ -26,6 +29,8 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<IAccountAPIClient>(provider => new AccountAPIClient(uri));
 			// Register HttpContextAccessor for CookieService and other services
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddSingleton<JWTService>();
+
 
             // Register application services
             builder.Services.AddScoped<ProductService>();
