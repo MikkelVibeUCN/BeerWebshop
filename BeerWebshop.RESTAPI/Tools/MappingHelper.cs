@@ -120,7 +120,8 @@ internal static class MappingHelper
 	{
 		return new Customer
 		{
-			Name = customer.Name,
+			Id = customer.Id??0,
+            Name = customer.Name,
 			Address = customer.Address,
 			Email = customer.Email,
 			Phone = customer.Phone,
