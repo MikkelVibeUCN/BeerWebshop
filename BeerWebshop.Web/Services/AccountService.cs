@@ -84,7 +84,14 @@ namespace BeerWebshop.Web.Services
 		}
 		public void SaveTokenCookie(string token)
 		{
-			_cookieService.SaveCookie<string>(token, AuthCookieKey);
+			CookieOptions options = new CookieOptions
+            {
+                Expires = System.DateTime.Now.AddMinutes(60),
+                HttpOnly = true,
+				Secure = true,
+				SameSite = SameSiteMode.Lax
+            };
+            _cookieService.SaveCookie<string>(token, AuthCookieKey, options);
 		}
 
         public async Task<int?> GetCustomerIdFromToken()
