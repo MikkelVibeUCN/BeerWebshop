@@ -161,15 +161,16 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 var orders = new List<Order>();
 
-                var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Order>(
+                var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Customer, Order>(
                     BaseOrderSql,
-                    (order, orderLine, product, category, brewery) =>
+                    (order, orderLine, product, category, brewery, customer) =>
                     {
                         var existingOrder = orders.FirstOrDefault(o => o.Id == order.Id);
                         if (existingOrder == null)
                         {
                             existingOrder = order;
                             existingOrder.OrderLines = new List<OrderLine>();
+                            existingOrder.Customer = customer;
                             orders.Add(existingOrder);
                         }
 
@@ -187,7 +188,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
                         return existingOrder;
                     },
-                    splitOn: "Quantity,Id,Id,Id"
+                    splitOn: "Quantity,Id,Id,Id,Id"
                 );
 
                 return orders;
