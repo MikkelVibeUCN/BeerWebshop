@@ -17,22 +17,24 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('@Url.Content("~/FrontPage/beer-background.jpg")') center/cover no-repeat;
-            background-color: rgba(0, 0, 0, 0.4); /* Darken with black */
+            /* background: url('@Url.Content("~/FrontPage/Special-ol.jpeg")') center/cover no-repeat; */
+            background-color: palegoldenrod; 
             z-index: -1;
         }
 
         .main-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 100%;
+            background: none; 
         }
 
         header {
             background: rgba(0, 0, 0, 0.85);
         }
 
-        /* Navbar Brand Color */
+        
         .navbar-brand {
             color: white !important; /* Default color to white */
             font-size: 2rem;
@@ -66,7 +68,6 @@
         .content {
             flex: 1;
             padding: 2rem;
-            background: rgba(255, 255, 255, 0.85);
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
