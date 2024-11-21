@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
 using BeerWebshop.Web.Properties;
+using Microsoft.Extensions.Options;
 
 namespace BeerWebshop.Web.Services
 {
@@ -12,9 +13,9 @@ namespace BeerWebshop.Web.Services
     {
         private readonly JwtSettings _jwtSettings;
 
-        public JWTService(JwtSettings jwtSettings, AccountService userRepository)
+        public JWTService(IOptions<JwtSettings> jwtSettings)
         {
-            _jwtSettings = jwtSettings;
+            _jwtSettings = jwtSettings.Value;
         }
 
         public string GenerateJwtToken(string email)
@@ -26,7 +27,9 @@ namespace BeerWebshop.Web.Services
             {
                 new Claim(JwtRegisteredClaimNames.Email, email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString())
+                new Claim(JwtRegisteredClaimNames.Iat,
+                new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(),
+                    ClaimValueTypes.Integer64) // Correct format for 'iat'
             };
 
             var token = new JwtSecurityToken(
@@ -39,6 +42,8 @@ namespace BeerWebshop.Web.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
 
         public ClaimsPrincipal? ValidateJwtToken(string token)
         {
@@ -67,7 +72,7 @@ namespace BeerWebshop.Web.Services
         public string? GetEmailFromToken(string token)
         {
             var claimsPrincipal = ValidateJwtToken(token);
-            return claimsPrincipal?.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+            return claimsPrincipal?.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
         }
     }
 }
