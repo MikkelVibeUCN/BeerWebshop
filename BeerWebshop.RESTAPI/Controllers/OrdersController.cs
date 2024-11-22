@@ -3,6 +3,7 @@ using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BeerWebshop.RESTAPI.Controllers
 {
@@ -14,25 +15,46 @@ namespace BeerWebshop.RESTAPI.Controllers
 		private readonly ProductService _productService;
 		private readonly CategoryService _categoryService;
 		private readonly BreweryService _breweryService;
+		private readonly AccountService _accountService;
 
-		public OrdersController(OrderService orderService, ProductService productService, CategoryService categoryService, BreweryService breweryService)
+		public OrdersController(OrderService orderService, ProductService productService, CategoryService categoryService, BreweryService breweryService, AccountService accountService)
 		{
 			_orderService = orderService;
 			_productService = productService;
 			_categoryService = categoryService;
 			_breweryService = breweryService;
-		}
+            _accountService = accountService;
+        }
 
 		[HttpGet("{id}", Name = "GetOrderId")]
+		[Authorize]
 		public async Task<ActionResult> GetOrderByIdAsync(int id)
 		{
-			try
-			{
-				var order = await _orderService.GetOrderByIdAsync(id);
-				if (order == null)
-					return NotFound();
+            var email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
 
-				var orderDTO = MappingHelper.MapOrderEntityToDTO(order);
+            if (string.IsNullOrEmpty(email))
+            {
+                return Unauthorized("Not logged in");
+            }
+
+            try
+			{
+				var orders = await _orderService.GetOrdersByCustomerIdAsync(_accountService.GetByEmail(email).Id);
+
+                if (!orders.Any(o => o.Id == id))
+                {
+                    return Unauthorized("Not authorized to view this order");
+                }
+
+                var order = await _orderService.GetOrderByIdAsync(id);
+				if (order == null)
+				{
+                    return NotFound();
+
+                }
+
+                var orderDTO = MappingHelper.MapOrderEntityToDTO(order);
+
 				return Ok(orderDTO);
 			}
 			catch (Exception ex)
@@ -57,14 +79,23 @@ namespace BeerWebshop.RESTAPI.Controllers
 			}
 		}
 
-		[HttpGet("{customerId}/orders")]
+		[HttpGet("LoggedInOrders")]
 		[Authorize]
 		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetLoggedInCustomersOrders()
 		{
+            var email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
 
-			try
+			if(string.IsNullOrEmpty(email)) 
 			{
-				var ordersDtos = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+				return Unauthorized("Not logged in");
+			}
+
+            try
+			{
+				var customerId = _accountService.GetByEmail(email).Id;
+
+                var ordersDtos = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+
 				return Ok(ordersDtos);
 
 			}

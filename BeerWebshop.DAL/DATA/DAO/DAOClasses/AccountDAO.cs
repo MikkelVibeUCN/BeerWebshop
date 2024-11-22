@@ -158,6 +158,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 int? customerId = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, parameters);
 
                 await connection.CloseAsync();
+                
+                if(customerId == null)
+                {
+                    return null;
+                }
 
                 return await GetByIdAsync((int)customerId);
             }

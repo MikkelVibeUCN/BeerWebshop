@@ -2,7 +2,6 @@ using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.Web.Services;
 using BeerWebshop.Web.Filter;
-using BeerWebshop.Web.Properties;
 
 
 namespace BeerWebshop.Web
@@ -24,8 +23,7 @@ namespace BeerWebshop.Web
                 options.Filters.Add<AgeVerificationFilter>(); // Adds the filter globally
             });
 
-            builder.Services.Configure<BeerWebshop.Web.Properties.JwtSettings>(
-				builder.Configuration.GetSection("JwtSettings"));
+            
 
             // Register API clients with the base URI
             builder.Services.AddScoped<IProductAPIClient>(provider => new ProductAPIClient(uri));
@@ -34,8 +32,6 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<IAccountAPIClient>(provider => new AccountAPIClient(uri));
 			// Register HttpContextAccessor for CookieService and other services
 			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.AddScoped<JWTService>();
-
 
             // Register application services
             builder.Services.AddScoped<ProductService>();

@@ -18,7 +18,9 @@ namespace BeerWebshop.Web.Controllers
 
         public async Task<ActionResult> Index(LoginViewModel? login)
         {
-            if (await _accountService.GetCustomerFromLoginCookie() != null)
+            CustomerDTO? customer = await _accountService.GetCustomerFromLoginCookie();
+
+            if (customer != null)
             {
                 return RedirectToAction("AccountOverview", "Account");
             }
@@ -42,12 +44,12 @@ namespace BeerWebshop.Web.Controllers
 
             try
             {
-                var token = await _accountService.AuthenticateAndGetTokenAsync(loginViewModel);
+                string? token = await _accountService.GetLoginToken(loginViewModel);
+
                 if (!string.IsNullOrEmpty(token))
                 {
                     _accountService.SaveTokenCookie(token);
 
-                    // Return the redirect URL as part of the JSON response
                     return Json(new { success = true, redirectUrl = Url.Action("Index", "Account") });
                 }
 
@@ -78,15 +80,7 @@ namespace BeerWebshop.Web.Controllers
 
             try
             {
-                LoginViewModel loginViewModel = new LoginViewModel
-                {
-                    Email = viewModel.Email,
-                    Password = viewModel.Password
-                };
-
-                await _accountService.CreateCustomerAsync(viewModel);
-
-                string? token = await _accountService.AuthenticateAndGetTokenAsync(loginViewModel);
+                string? token = await _accountService.CreateCustomerAsync(viewModel);
 
                 if (string.IsNullOrEmpty(token))
                 {
@@ -110,16 +104,22 @@ namespace BeerWebshop.Web.Controllers
 
         public async Task<IActionResult> AccountOverview()
         {
-            int? customerId = await _accountService.GetCustomerIdFromToken();
+            string? token = _accountService.GetTokenCookie();
 
-            if (customerId == null)
+            if (string.IsNullOrEmpty(token))
             {
                 return RedirectToAction("Index", "Account");
             }
-            var orders = await _orderService.GetOrdersByCustomerIdAsync((int)customerId);
-			return View(orders);
-		}
+            try
+            {
+                var orders = await _orderService.GetLoggedInCustomerOrders(token);
 
-        
+                return View(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 	}
 }

@@ -22,12 +22,9 @@ namespace BeerWebshop.RESTAPI.Services
             return await _accountDAO.CreateAsync(customer);
         }
 
-        public async Task<CustomerDTO?> GetByEmail(string email)
+        public async Task<Customer?> GetByEmail(string email)
         {
-            var customer = await _accountDAO.GetByEmail(email);
-            if(customer == null) { return null; }
-
-            return MappingHelper.MapToDTO(customer);
+            return await _accountDAO.GetByEmail(email);
         }
         public async Task DeleteCustomer(int id)
         {
@@ -44,5 +41,6 @@ namespace BeerWebshop.RESTAPI.Services
             return null;
         }
 
+        
     }
 }

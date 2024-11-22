@@ -1,5 +1,6 @@
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
+using BeerWebshop.RESTAPI.Properties;
 using BeerWebshop.RESTAPI.Services;
 
 namespace BeerWebshop.RESTAPI
@@ -27,7 +28,12 @@ namespace BeerWebshop.RESTAPI
 					provider.GetRequiredService<CategoryService>(),
 					provider.GetRequiredService<BreweryService>()
 				));
-			builder.Services.AddScoped<AccountService>(provider => new AccountService(provider.GetRequiredService<IAccountDAO>()));
+            builder.Services.Configure<JWTSettings>(
+                builder.Configuration.GetSection("JwtSettings"));
+
+            builder.Services.AddScoped<JWTService>();
+
+            builder.Services.AddScoped<AccountService>(provider => new AccountService(provider.GetRequiredService<IAccountDAO>(), provider.GetRequiredService<JWTService>()));
 
             builder.Services.AddScoped<OrderService>(provider =>
 			{

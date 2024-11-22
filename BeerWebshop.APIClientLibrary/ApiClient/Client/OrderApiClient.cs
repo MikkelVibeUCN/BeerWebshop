@@ -8,12 +8,9 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
     {
         public OrderApiClient(string uri) : base(uri, "orders") { }
 
-        public async Task<IEnumerable<OrderDTO>> GetOrdersByCustomerIdAsync(int customerId, string? endpoint = null)
+        public async Task<IEnumerable<OrderDTO>> GetLoggedInCustomerOrders(string jwtToken)
         {
-            endpoint ??= _defaultEndPoint;
-            var completeEndpoint = $"{endpoint}/{customerId}/orders";
-
-            return await GetByStringAsync<IEnumerable<OrderDTO>>(string.Empty, completeEndpoint);
+            return await GetAllAsync($"{_defaultEndPoint}/LoggedInOrders", jwtToken);
         }
 
     }

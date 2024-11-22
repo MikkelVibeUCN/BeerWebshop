@@ -4,6 +4,7 @@ using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BeerWebshop.RESTAPI.Controllers;
 
@@ -68,8 +69,9 @@ public class AccountsController : ControllerBase
     [Authorize]
     public async Task<ActionResult> GetLoggedInCustomer()
     {
-        var email = User.Identity?.Name;
-        if(string.IsNullOrEmpty(email)) 
+        var email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+
+        if (string.IsNullOrEmpty(email)) 
         {
             return Unauthorized("User not authenticated");
         }

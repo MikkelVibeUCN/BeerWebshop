@@ -20,10 +20,9 @@ namespace BeerWebshop.Web.Services
 			return await _orderAPIClient.GetAsync(id);
 		}
 
-		public async Task<IEnumerable<OrderDTO>> GetOrdersByCustomerIdAsync(int customerId)
+		public async Task<IEnumerable<OrderDTO>> GetLoggedInCustomerOrders(string jwtToken)
 		{
-			return await _orderAPIClient.GetOrdersByCustomerIdAsync(customerId);
-			
+			return await _orderAPIClient.GetLoggedInCustomerOrders(jwtToken);
 		}
 
 		public async Task<int> SaveOrder(CheckoutViewModel checkout)
@@ -37,6 +36,5 @@ namespace BeerWebshop.Web.Services
 
 			return await _orderAPIClient.CreateAsync(orderDTO);
 		}
-
 	}
 }
