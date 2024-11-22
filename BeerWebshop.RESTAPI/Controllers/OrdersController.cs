@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers
@@ -57,8 +58,10 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpGet("{customerId}/orders")]
-		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrdersByCustomerIdAsync(int customerId)
+		[Authorize]
+		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetLoggedInCustomersOrders()
 		{
+
 			try
 			{
 				var ordersDtos = await _orderService.GetOrdersByCustomerIdAsync(customerId);

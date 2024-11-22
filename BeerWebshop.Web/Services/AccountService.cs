@@ -104,15 +104,7 @@ namespace BeerWebshop.Web.Services
             CustomerDTO? customer = await GetCustomerFromLoginCookie();
             return customer != null ? customer.Id : null;
         }
-		public async Task<string?> AuthenticateAndGetTokenAsync(LoginViewModel loginViewModel)
-		{
-			var customerDTO = await _accountAPIClient.GetByEmailAsync(loginViewModel.Email);
-			if (customerDTO != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, customerDTO.Password))
-			{
-				return _jwtService.GenerateJwtToken(customerDTO.Email);
-            }
-            return null;
-		}
+		
 
 	}
 }
