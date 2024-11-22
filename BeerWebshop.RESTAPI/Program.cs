@@ -28,6 +28,8 @@ namespace BeerWebshop.RESTAPI
 					provider.GetRequiredService<CategoryService>(),
 					provider.GetRequiredService<BreweryService>()
 				));
+
+
             builder.Services.Configure<JWTSettings>(
                 builder.Configuration.GetSection("JwtSettings"));
 
