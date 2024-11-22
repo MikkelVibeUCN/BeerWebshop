@@ -214,7 +214,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         {
                             existingOrder = order;
                             existingOrder.OrderLines = new List<OrderLine>();
-                            existingOrder.Customer = customer; 
+                            existingOrder.Customer = customer;
                             orders.Add(existingOrder);
                         }
 
@@ -233,7 +233,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         return existingOrder;
                     },
                     new { CustomerId = customerId },
-                    splitOn: "Quantity,Id,Id,Id,Id" 
+                    splitOn: "Quantity,Id,Id,Id,Id"
                 );
 
                 return orders;
@@ -252,7 +252,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 CreatedAt = order.CreatedAt,
                 IsDelivered = order.IsDelivered,
                 IsDeleted = order.IsDeleted,
-                CustomerId = order.Customer.Id
+                CustomerId = order.Customer?.Id
             };
 
             return await connection.QuerySingleAsync<int>(InsertOrderSql, parameters, transaction);

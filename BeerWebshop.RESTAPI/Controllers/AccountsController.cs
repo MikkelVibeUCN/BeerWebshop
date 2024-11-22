@@ -33,7 +33,7 @@ public class AccountsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetCustomerFromEmail([FromBody]string email)
+    public async Task<ActionResult> GetCustomerFromEmail([FromBody] string email)
     {
         try
         {
@@ -46,6 +46,20 @@ public class AccountsController : ControllerBase
                 return BadRequest(e.Message);
 
             }
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteCustomer(int id)
+    {
+        try
+        {
+            await _accountService.DeleteCustomer(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 
