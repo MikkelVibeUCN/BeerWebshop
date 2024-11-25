@@ -25,6 +25,5 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
         public string Phone { get; set; }
       
         public int? Age { get; set; }
-
-	}
+    }
 }

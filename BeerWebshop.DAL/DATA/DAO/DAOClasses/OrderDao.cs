@@ -36,13 +36,13 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 				b.Id, 
 				b.Name, 
 				b.IsDeleted, 
-				cu.Id, 
+				cu.AccountId, 
 				CONCAT(cu.FirstName, ' ', cu.LastName) AS Name, 
 				cu.Phone, 
-				cu.PasswordHash, 
+				ac.PasswordHash, 
 				cu.IsDeleted, 
 				cu.Age, 
-				cu.Email,
+				ac.Email,
 				CONCAT(
 					a.Street, ' ', a.StreetNumber, 
 					CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 
@@ -53,8 +53,9 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			LEFT JOIN Products p ON ol.ProductId = p.Id
 			LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
 			LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id
-			LEFT JOIN Customers cu ON o.CustomerId_FK = cu.Id
-			LEFT JOIN Address a ON a.CustomerId_FK = cu.Id
+			LEFT JOIN Customers cu ON o.CustomerId_FK = cu.AccountId
+            LEFT JOIN Accounts ac ON cu.AccountId = ac.Id
+			LEFT JOIN Address a ON a.CustomerId_FK = cu.AccountId
 			LEFT JOIN Postalcode po ON a.Postalcode_FK = po.Postalcode";
         #endregion
         #region Dependency injection
@@ -116,7 +117,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         return order;
                     },
                     new { Id = id },
-                    splitOn: "Quantity,Id,Id,Id,Id"
+                    splitOn: "Quantity,Id,Id,Id,AccountId"
                 );
 
                 return orderResult;
@@ -233,7 +234,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         return existingOrder;
                     },
                     new { CustomerId = customerId },
-                    splitOn: "Quantity,Id,Id,Id,Id" 
+                    splitOn: "Quantity,Id,Id,Id,AccountId" 
                 );
 
                 return orders;

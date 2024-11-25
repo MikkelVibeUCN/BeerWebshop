@@ -33,10 +33,10 @@ namespace BeerWebshop.RESTAPI.Services
 
         public async Task<string?> AuthenticateAndGetTokenAsync(LoginViewModel loginViewModel)
         {
-            var customerDTO = await _accountDAO.GetByEmail(loginViewModel.Email);
-            if (customerDTO != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, customerDTO.Password))
+            var customer = await _accountDAO.GetByEmail(loginViewModel.Email);
+            if (customer != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, customer.PasswordHash))
             {
-                return _jwtService.GenerateJwtToken(customerDTO.Email);
+                return _jwtService.GenerateJwtToken(customer.Email, "User");
             }
             return null;
         }

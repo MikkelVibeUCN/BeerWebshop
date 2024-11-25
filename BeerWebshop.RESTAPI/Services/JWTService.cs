@@ -6,6 +6,7 @@ using System.Text;
 using BCrypt.Net;
 using Microsoft.Extensions.Options;
 using BeerWebshop.RESTAPI.Properties;
+using System.Data;
 
 namespace BeerWebshop.RESTAPI.Services
 {
@@ -18,7 +19,7 @@ namespace BeerWebshop.RESTAPI.Services
             _jwtSettings = jwtSettings.Value;
         }
 
-        public string GenerateJwtToken(string email)
+        public string GenerateJwtToken(string email, string role)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -26,6 +27,7 @@ namespace BeerWebshop.RESTAPI.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,
                 new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(),

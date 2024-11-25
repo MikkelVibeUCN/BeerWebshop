@@ -2,6 +2,10 @@ using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.RESTAPI.Properties;
 using BeerWebshop.RESTAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 namespace BeerWebshop.RESTAPI
 {
@@ -29,9 +33,9 @@ namespace BeerWebshop.RESTAPI
 					provider.GetRequiredService<BreweryService>()
 				));
 
+			var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
 
-            builder.Services.Configure<JWTSettings>(
-                builder.Configuration.GetSection("JwtSettings"));
+            builder.Services.Configure<JWTSettings>(jwtSettingsSection);
 
             builder.Services.AddScoped<JWTService>();
 
@@ -47,12 +51,41 @@ namespace BeerWebshop.RESTAPI
 
 
 
+
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
 
-			var app = builder.Build();
+
+            var jwtSettings = jwtSettingsSection.Get<JWTSettings>();
+            var key = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
+
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .			AddJwtBearer(options =>
+			{
+				options.TokenValidationParameters = new TokenValidationParameters
+				{
+					ValidateIssuer = true,
+					ValidateAudience = true,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+					ValidIssuer = jwtSettings.Issuer,
+					ValidAudience = jwtSettings.Audience,
+					IssuerSigningKey = new SymmetricSecurityKey(key),
+                    RoleClaimType = ClaimTypes.Role
+                };
+			});
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+            });
+
+
+            var app = builder.Build();
 
 
 
@@ -64,10 +97,11 @@ namespace BeerWebshop.RESTAPI
 
 			app.UseHttpsRedirection();
 
-			app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
 
-			app.MapControllers();
+            app.MapControllers();
 
 			app.Run();
 		}

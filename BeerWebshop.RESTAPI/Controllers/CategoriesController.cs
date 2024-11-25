@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers;
@@ -17,7 +18,8 @@ public class CategoriesController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> CreateCategoryAsync([FromBody] CategoryDTO categoryDTO)
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<IActionResult> CreateCategoryAsync([FromBody] CategoryDTO categoryDTO)
 	{
 		if (!ModelState.IsValid)
 		{
@@ -61,7 +63,8 @@ public class CategoriesController : ControllerBase
 	}
 
 	[HttpDelete("{id}")]
-	public async Task<IActionResult> DeleteCategoryAsync(int id)
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<IActionResult> DeleteCategoryAsync(int id)
 	{
 		try
 		{

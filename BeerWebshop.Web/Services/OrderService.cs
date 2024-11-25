@@ -4,6 +4,8 @@ using BeerWebshop.Web.Cookies;
 using BeerWebshop.Web.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Abstractions;
+using System.Data;
 
 namespace BeerWebshop.Web.Services
 {
@@ -15,9 +17,9 @@ namespace BeerWebshop.Web.Services
 			_orderAPIClient = orderAPIClient;
 		}
 
-		public async Task<OrderDTO?> GetOrderFromId(int id)
+		public async Task<OrderDTO?> GetOrderFromId(int id, string token)
 		{
-			return await _orderAPIClient.GetAsync(id);
+			return await _orderAPIClient.GetAsync(id, null, token);
 		}
 
 		public async Task<IEnumerable<OrderDTO>> GetLoggedInCustomerOrders(string jwtToken)

@@ -1,4 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Authorization;
@@ -26,31 +27,29 @@ namespace BeerWebshop.RESTAPI.Controllers
             _accountService = accountService;
         }
 
-		[HttpGet("{id}", Name = "GetOrderId")]
+		[HttpGet("{id}")]
 		[Authorize]
 		public async Task<ActionResult> GetOrderByIdAsync(int id)
 		{
-            var email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+            var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
 
             if (string.IsNullOrEmpty(email))
             {
                 return Unauthorized("Not logged in");
             }
-
             try
 			{
-				var orders = await _orderService.GetOrdersByCustomerIdAsync(_accountService.GetByEmail(email).Id);
+				var order = await _orderService.GetOrderByIdAsync(id);
 
-                if (!orders.Any(o => o.Id == id))
+                if (order == null)
                 {
-                    return Unauthorized("Not authorized to view this order");
-                }
-
-                var order = await _orderService.GetOrderByIdAsync(id);
-				if (order == null)
-				{
                     return NotFound();
 
+                }
+
+                if (!order.Customer.Email.Equals(email))
+                {
+                    return Unauthorized("Not authorized to view this order");
                 }
 
                 var orderDTO = MappingHelper.MapOrderEntityToDTO(order);
@@ -65,7 +64,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrdersAsync()
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrdersAsync()
 		{
 			try
 			{
@@ -80,23 +80,29 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpGet("LoggedInOrders")]
-		[Authorize]
+		[Authorize(Policy = "UserOnly")]
 		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetLoggedInCustomersOrders()
 		{
-            var email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+            var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
 
-			if(string.IsNullOrEmpty(email)) 
+
+            if (string.IsNullOrEmpty(email)) 
 			{
 				return Unauthorized("Not logged in");
 			}
 
+            Customer? customer = await _accountService.GetByEmail(email);
+
+            if (customer == null)
+            {
+                return BadRequest("Customr not found");
+            }
+
             try
-			{
-				var customerId = _accountService.GetByEmail(email).Id;
+            {
+                var orderDtos = await _orderService.GetOrdersByCustomerIdAsync((int)customer.Id);
 
-                var ordersDtos = await _orderService.GetOrdersByCustomerIdAsync(customerId);
-
-				return Ok(ordersDtos);
+				return Ok(orderDtos);
 
 			}
 			catch (Exception ex)
@@ -106,7 +112,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -125,7 +132,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<ActionResult> DeleteOrderAsync(int id)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult> DeleteOrderAsync(int id)
 		{
 			try
 			{

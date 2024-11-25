@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.APIClientLibrary;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.RESTAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers
@@ -20,7 +21,7 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpGet("{id}", Name = "GetProductById")]
-		public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
 		{
 			try
 			{
@@ -39,7 +40,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateProductAsync([FromBody] ProductDTO productDTO)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> CreateProductAsync([FromBody] ProductDTO productDTO)
 		{
 			if (!ModelState.IsValid) return BadRequest();
 
@@ -59,7 +61,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteProductByIdAsync(int id)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> DeleteProductByIdAsync(int id)
 		{
 			var result = await _productService.DeleteProductByIdAsync(id);
 			if (!result)
@@ -74,6 +77,11 @@ namespace BeerWebshop.RESTAPI.Controllers
 		{
 			try
 			{
+				if(parameters.PageSize > 21)
+				{
+					return BadRequest(parameters.PageSize + " is too high");
+                }
+
 				var productDTOs = await _productService.GetProductsAsync(parameters);
 				return Ok(productDTOs);
 			}
@@ -98,7 +106,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateProductAsync(int id, [FromBody] ProductDTO productDTO)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateProductAsync(int id, [FromBody] ProductDTO productDTO)
 		{
 			if (!ModelState.IsValid || productDTO.Id != id ) return BadRequest();
 

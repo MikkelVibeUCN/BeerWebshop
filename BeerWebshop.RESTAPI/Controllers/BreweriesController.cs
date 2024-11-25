@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerWebshop.RESTAPI.Controllers;
@@ -37,7 +38,8 @@ public class BreweriesController : ControllerBase
     }
 
 	[HttpPost]
-	public async Task<IActionResult> CreateBreweryAsync([FromBody] BreweryDTO breweryDTO)
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<IActionResult> CreateBreweryAsync([FromBody] BreweryDTO breweryDTO)
 	{
 		if (!ModelState.IsValid)
 		{
@@ -59,7 +61,8 @@ public class BreweriesController : ControllerBase
 	}
 
 	[HttpDelete("{id}")]
-	public async Task<IActionResult> DeleteBreweryAsync(int id)
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<IActionResult> DeleteBreweryAsync(int id)
 	{
 		try
 		{

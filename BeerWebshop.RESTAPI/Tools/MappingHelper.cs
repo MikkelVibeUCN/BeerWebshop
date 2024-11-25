@@ -125,7 +125,7 @@ internal static class MappingHelper
 			Address = customer.Address,
 			Email = customer.Email,
 			Phone = customer.Phone,
-			Password = customer.Password,
+			PasswordHash = customer.Password,
 			Age = customer.Age,
         };
 	}
@@ -138,7 +138,7 @@ internal static class MappingHelper
 			Address = customer.Address,
 			Email = customer.Email,
 			Phone = customer.Phone,
-			Password = customer.Password,
+			Password = customer.PasswordHash,
 			Age = customer.Age,
 		};
 	}

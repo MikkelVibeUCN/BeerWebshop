@@ -117,7 +117,13 @@ namespace BeerWebshop.Web.Controllers
         // GET: Order Confirmation
         public async Task<ActionResult> OrderConfirmation(int orderId)
         {
-            OrderDTO? order = await _orderService.GetOrderFromId(orderId);
+            string? token = _accountService.GetTokenCookie();
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Index", "Account");
+            }
+
+            OrderDTO? order = await _orderService.GetOrderFromId(orderId, token);
             if (order == null)
             {
                 return BadRequest("Order not found");

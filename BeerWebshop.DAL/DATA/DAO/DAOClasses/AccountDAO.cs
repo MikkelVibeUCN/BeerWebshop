@@ -2,6 +2,7 @@
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
@@ -9,43 +10,50 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     public class AccountDAO : IAccountDAO
     {
         #region Sql query
-        private const string _getCustomerById = @"SELECT 
-        c.Id AS Id, 
-        CONCAT(c.FirstName, ' ', c.LastName) AS Name, 
-        c.Phone AS Phone, 
-        c.PasswordHash AS Password, 
-        c.IsDeleted AS IsDeleted, 
-        c.Age AS Age, 
-        c.Email AS Email,
-        CONCAT(
-            a.Street, ' ', a.StreetNumber, 
-            CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 
-            ' ', p.Postalcode, ' ', p.City
-        ) AS Address
+        private const string _getCustomerByX = @"SELECT 
+            c.AccountId AS Id, 
+            CONCAT(c.FirstName, ' ', c.LastName) AS Name, 
+            c.Phone AS Phone, 
+            a.PasswordHash AS PasswordHash, 
+            c.IsDeleted AS IsDeleted, 
+            c.Age AS Age, 
+            a.Email AS Email, 
+            a.Role AS Role, 
+            CONCAT(
+                ad.Street, ' ', ad.StreetNumber, 
+                CASE WHEN ad.ApartmentNumber IS NOT NULL THEN CONCAT(' ', ad.ApartmentNumber) ELSE '' END, 
+                ' ', p.Postalcode, ' ', p.City
+            ) AS Address
         FROM 
             Customers c
         JOIN 
-            Address a ON a.CustomerId_FK = c.Id
+            Address ad ON ad.CustomerId_FK = c.AccountId
         JOIN 
-            Postalcode p ON a.Postalcode_FK = p.Postalcode
-        WHERE 
-            c.Id = @Id;";
+            Postalcode p ON ad.Postalcode_FK = p.Postalcode
+        JOIN 
+            Accounts a ON a.Id = c.AccountId
+        WHERE
+            ";
+
+
+        private const string _createAccount = @"INSERT INTO Accounts (Role, Email, PasswordHash)
+            VALUES (@Role, @Email, @PasswordHash) 
+            SELECT CAST(SCOPE_IDENTITY() AS int);";
 
         private const string _saveCustomer = @"
-            INSERT INTO Customers (FirstName, LastName, Phone, PasswordHash, Age, Email, IsDeleted)
-            VALUES (@FirstName, @LastName, @Phone, @PasswordHash, @Age, @Email, 0);
-            SELECT CAST(SCOPE_IDENTITY() AS int);";
+            INSERT INTO Customers (AccountId, FirstName, LastName, Phone, Age, IsDeleted)
+            VALUES (@AccountId, @FirstName, @LastName, @Phone, @Age, 0);";
 
         private const string _createAddress = @"
             INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK, CustomerId_FK)
             VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode, @CustomerId)
             SELECT CAST(SCOPE_IDENTITY() AS int);";
 
-        private const string _customerWithEmailExists = @"SELECT Id FROM Customers WHERE Email = @Email;";
+        private const string _accountWithEmailExists = @"SELECT Id FROM Accounts WHERE Email = @Email;";
 
         private const string _createZipCode = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
 
-        private const string _deleteCustomerById = @"DELETE FROM Customers WHERE Id = @Id;";
+        private const string _deleteCustomerById = @"DELETE FROM Customers WHERE AccountId = @Id;";
 
         private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
         #endregion
@@ -62,39 +70,43 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         public async Task<int> CreateAsync(Customer customer)
         {
             if(customer.Email == null) { throw new Exception("Email cannot be null"); }
-            if(await DoesCustomerWithEmailExist(customer.Email)) { throw new Exception("Customer with this email already exists"); }
+            if(await DoesAccountWithEmailExist(customer.Email)) { throw new Exception("Customer with this email already exists"); }
 
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
             using var transaction = connection.BeginTransaction();
+
+            var PasswordHash = customer.PasswordHash != null ? BCryptTool.HashPassword(customer.PasswordHash) : null;
 
             // Split the full name into first and last names
             var parts = customer.Name?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             string firstName = parts[0];
             string lastName = parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "";
-
-            var parameters = new
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Phone = customer.Phone,
-                PasswordHash = customer.Password != null ? BCryptTool.HashPassword(customer.Password) : null,
-                Age = customer.Age,
-                Email = customer.Email
-            };
-
+            
             try
             {
-                int customerId = await connection.QuerySingleAsync<int>(_saveCustomer, parameters, transaction);
+                int? accountId = await CreateAccount("User", PasswordHash, customer.Email, connection, transaction);
 
-                customer.Id = customerId;
+                customer.Id = accountId ?? throw new Exception("Account wasn't created");
+
+                var parameters = new
+                {
+                    AccountId = accountId,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Phone = customer.Phone,
+                    Age = customer.Age
+                };
+
+
+                await connection.QueryAsync(_saveCustomer, parameters, transaction);
 
                 await CreateAddress(customer, connection, transaction);
 
                 await transaction.CommitAsync();
 
-                return customerId;
+                return customer.Id;
             }
             catch (Exception ex)
             {
@@ -110,8 +122,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             try
             {
+                var updatedQuery = _getCustomerByX + "c.Id = @Id;";
+
                 var parameters = new { Id = id };
-                return await connection.QuerySingleOrDefaultAsync<Customer>(_getCustomerById, parameters);
+                var customer =  await connection.QuerySingleOrDefaultAsync<Customer>(updatedQuery, parameters);
+                return customer;
             }
             catch (Exception ex)
             {
@@ -154,17 +169,14 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             try
             {
+                var updatedQuery = _getCustomerByX + "a.Email = @Email;";
+
                 var parameters = new { Email = email };
-                int? customerId = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, parameters);
+                var customer = await connection.QuerySingleOrDefaultAsync<Customer?>(updatedQuery, parameters);
 
                 await connection.CloseAsync();
-                
-                if(customerId == null)
-                {
-                    return null;
-                }
 
-                return await GetByIdAsync((int)customerId);
+                return customer;
             }
             catch (Exception ex)
             {
@@ -178,14 +190,14 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         #endregion
 
         #region Helper methods for creating customer and validations
-        public async Task<bool> DoesCustomerWithEmailExist(string email)
+        public async Task<bool> DoesAccountWithEmailExist(string email)
         {
             try
             {
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var idFound = await connection.QuerySingleOrDefaultAsync<int?>(_customerWithEmailExists, new { Email = email });
+                var idFound = await connection.QuerySingleOrDefaultAsync<int?>(_accountWithEmailExists, new { Email = email });
                 return idFound != null;
             }
             catch (Exception)
@@ -290,6 +302,28 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception("Error checking if zip exists.");
             }
         }
+
+        public async Task<int?> CreateAccount(string role, string passwordHash, string email, SqlConnection connection, DbTransaction transaction)
+        {
+            try
+            {
+                var parameters = new
+                {
+                    Role = role,
+                    PasswordHash = passwordHash,
+                    Email = email
+                };
+                return await connection.QuerySingleOrDefaultAsync<int>(_createAccount, parameters, transaction);
+            }
+            catch
+            {
+                throw new Exception("Failed to create account");
+            }
+        }
     }
+
+
 }
 #endregion
+
+

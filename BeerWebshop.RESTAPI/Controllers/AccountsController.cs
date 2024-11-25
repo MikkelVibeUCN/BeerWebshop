@@ -69,9 +69,9 @@ public class AccountsController : ControllerBase
     [Authorize]
     public async Task<ActionResult> GetLoggedInCustomer()
     {
-        var email = User.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+        var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
 
-        if (string.IsNullOrEmpty(email)) 
+        if (string.IsNullOrEmpty(email))
         {
             return Unauthorized("User not authenticated");
         }
@@ -83,10 +83,7 @@ public class AccountsController : ControllerBase
         }
         catch (Exception e)
         {
-            {
-                return BadRequest(e.Message);
-
-            }
+            return BadRequest(e.Message);
         }
     }
 
