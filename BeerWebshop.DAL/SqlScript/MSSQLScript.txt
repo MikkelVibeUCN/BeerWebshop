@@ -1,72 +1,242 @@
-﻿CREATE TABLE Categories (
-    Id INT PRIMARY KEY,
-    [Name] NVARCHAR(255) NOT NULL,
-    IsDeleted BIT DEFAULT 0 
-);
-
-CREATE TABLE Breweries (
-    Id INT PRIMARY KEY,
-    [Name] NVARCHAR(255) NOT NULL,
-    IsDeleted BIT DEFAULT 0
-);
-
-CREATE TABLE Postalcode (
-    Postalcode INT PRIMARY KEY,
-    City NVARCHAR(255) NOT NULL
-);
-
-CREATE TABLE Address (
-    Id INT PRIMARY KEY IDENTITY,
-    Street NVARCHAR(255) NOT NULL,
-    StreetNumber NVARCHAR(50) NOT NULL,
-    ApartmentNumber NVARCHAR(50) NOT NULL,
-    Postalcode_FK INT NOT NULL,
-    UNIQUE (Street, StreetNumber, ApartmentNumber, Postalcode_FK),
-    FOREIGN KEY (Postalcode_FK) REFERENCES Postalcode (Postalcode)
-);
-
-CREATE TABLE Customers (
-    Id INT PRIMARY KEY IDENTITY,
-    FirstName NVARCHAR(255) NOT NULL,
-    LastName NVARCHAR(255) NOT NULL,
-    Phone NVARCHAR(50) NOT NULL,
-    PasswordHash NVARCHAR(255) NOT NULL,
-    AddressId_FK INT NOT NULL,
-    IsDeleted BIT NOT NULL DEFAULT 0,
-    FOREIGN KEY (AddressId_FK) REFERENCES Address (Id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE Products (
-    Id INT PRIMARY KEY,
-    [Name] NVARCHAR(255) NOT NULL,
-    CategoryId_FK INT,
-    BreweryId_FK INT,
-    Price FLOAT NOT NULL,
-    [Description] NVARCHAR(255),
-    Stock INT DEFAULT 0,
-    Abv FLOAT,
-    [RowVersion] ROWVERSION,
-    ImageUrl NVARCHAR(255),
-    IsDeleted BIT DEFAULT 0, 
-    FOREIGN KEY (CategoryId_FK) REFERENCES Categories (Id) ON DELETE SET NULL,
-    FOREIGN KEY (BreweryId_FK) REFERENCES Breweries (Id) ON DELETE SET NULL
-);
-CREATE TABLE Orders (
-    Id INT PRIMARY KEY,
-    CreatedAt DATETIME NOT NULL,
-    IsDelivered BIT DEFAULT 0,
-    CustomerId_FK INT NOT NULL,
-    IsDeleted BIT DEFAULT 0, 
-    FOREIGN KEY (CustomerId_FK) REFERENCES Customers (Id) ON DELETE CASCADE
-);
-
-CREATE TABLE Orderlines (
-    OrderId INT,
-    ProductId INT,
-    Quantity INT NOT NULL,
-    Total FLOAT NOT NULL,
-    PRIMARY KEY (OrderId, ProductId),
-    FOREIGN KEY (OrderId) REFERENCES Orders (Id) ON DELETE CASCADE,
-    FOREIGN KEY (ProductId) REFERENCES Products (Id) ON DELETE NO ACTION
-);
+﻿USE [BeerWebshop]
+GO
+/****** Object:  Schema [BeerWebShopDatabaseSchema]    Script Date: 26-11-2024 08:38:21 ******/
+CREATE SCHEMA [BeerWebShopDatabaseSchema]
+GO
+/****** Object:  Schema [Beerwebshopschema]    Script Date: 26-11-2024 08:38:21 ******/
+CREATE SCHEMA [Beerwebshopschema]
+GO
+/****** Object:  Table [dbo].[Accounts]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Accounts](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Role] [nvarchar](255) NOT NULL,
+	[Email] [nvarchar](255) NOT NULL,
+	[PasswordHash] [nvarchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Address]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Address](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Street] [nvarchar](255) NOT NULL,
+	[StreetNumber] [nvarchar](50) NOT NULL,
+	[ApartmentNumber] [nvarchar](50) NULL,
+	[Postalcode_FK] [int] NOT NULL,
+	[CustomerId_FK] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[Street] ASC,
+	[StreetNumber] ASC,
+	[ApartmentNumber] ASC,
+	[Postalcode_FK] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Admin]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Admin](
+	[AccountId] [int] NOT NULL,
+	[PermissionLevel] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[AccountId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Breweries]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Breweries](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](255) NOT NULL,
+	[IsDeleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UQ_Brewery_Name] UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Categories]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Categories](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](255) NOT NULL,
+	[IsDeleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [IX_Categories] UNIQUE NONCLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UQ_Categories_Name] UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Customers]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Customers](
+	[AccountId] [int] NOT NULL,
+	[FirstName] [nvarchar](50) NOT NULL,
+	[LastName] [nvarchar](50) NOT NULL,
+	[Phone] [nvarchar](20) NOT NULL,
+	[Age] [int] NOT NULL,
+	[IsDeleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[AccountId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Orderlines]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orderlines](
+	[OrderId] [int] NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[Total] [float] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[OrderId] ASC,
+	[ProductId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Orders]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orders](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[IsDelivered] [bit] NULL,
+	[CustomerId_FK] [int] NULL,
+	[IsDeleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Postalcode]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Postalcode](
+	[Postalcode] [int] NOT NULL,
+	[City] [nvarchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Postalcode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Products]    Script Date: 26-11-2024 08:38:21 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Products](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](255) NOT NULL,
+	[CategoryId_FK] [int] NULL,
+	[BreweryId_FK] [int] NULL,
+	[Price] [float] NOT NULL,
+	[Description] [nvarchar](255) NULL,
+	[Stock] [int] NULL,
+	[Abv] [float] NULL,
+	[RowVersion] [timestamp] NOT NULL,
+	[ImageUrl] [nvarchar](255) NULL,
+	[IsDeleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Breweries] ADD  DEFAULT ((0)) FOR [IsDeleted]
+GO
+ALTER TABLE [dbo].[Categories] ADD  DEFAULT ((0)) FOR [IsDeleted]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ((0)) FOR [IsDelivered]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ((0)) FOR [IsDeleted]
+GO
+ALTER TABLE [dbo].[Products] ADD  DEFAULT ((0)) FOR [Stock]
+GO
+ALTER TABLE [dbo].[Products] ADD  DEFAULT ((0)) FOR [IsDeleted]
+GO
+ALTER TABLE [dbo].[Address]  WITH CHECK ADD FOREIGN KEY([Postalcode_FK])
+REFERENCES [dbo].[Postalcode] ([Postalcode])
+GO
+ALTER TABLE [dbo].[Address]  WITH CHECK ADD  CONSTRAINT [FK_Address_Account] FOREIGN KEY([CustomerId_FK])
+REFERENCES [dbo].[Accounts] ([Id])
+GO
+ALTER TABLE [dbo].[Address] CHECK CONSTRAINT [FK_Address_Account]
+GO
+ALTER TABLE [dbo].[Admin]  WITH CHECK ADD FOREIGN KEY([AccountId])
+REFERENCES [dbo].[Accounts] ([Id])
+GO
+ALTER TABLE [dbo].[Customers]  WITH CHECK ADD  CONSTRAINT [FK_Customer_Account] FOREIGN KEY([AccountId])
+REFERENCES [dbo].[Accounts] ([Id])
+GO
+ALTER TABLE [dbo].[Customers] CHECK CONSTRAINT [FK_Customer_Account]
+GO
+ALTER TABLE [dbo].[Orderlines]  WITH CHECK ADD FOREIGN KEY([OrderId])
+REFERENCES [dbo].[Orders] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Orderlines]  WITH CHECK ADD FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Products] ([Id])
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD  CONSTRAINT [FK_Order_Account] FOREIGN KEY([CustomerId_FK])
+REFERENCES [dbo].[Accounts] ([Id])
+GO
+ALTER TABLE [dbo].[Orders] CHECK CONSTRAINT [FK_Order_Account]
+GO
+ALTER TABLE [dbo].[Products]  WITH CHECK ADD FOREIGN KEY([BreweryId_FK])
+REFERENCES [dbo].[Breweries] ([Id])
+ON DELETE SET NULL
+GO
+ALTER TABLE [dbo].[Products]  WITH CHECK ADD FOREIGN KEY([CategoryId_FK])
+REFERENCES [dbo].[Categories] ([Id])
+ON DELETE SET NULL
+GO
