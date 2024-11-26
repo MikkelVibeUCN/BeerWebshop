@@ -50,14 +50,14 @@ public class AccountsController : ControllerBase
 
             await _accountService.SaveCustomerAsync(customer);
 
-            var token = _accountService.AuthenticateAndGetTokenAsync(new LoginViewModel { Email = viewModel.Email, Password = viewModel.Password });
+            string? Token = await _accountService.AuthenticateAndGetTokenAsync(new LoginViewModel { Email = viewModel.Email, Password = viewModel.Password });
 
-            if(token == null)
+            if(Token == null)
             {
                 return Unauthorized("Failed to authenticate after creation");
             }
 
-            return Ok(new { token });
+            return Ok(new { Token });
         }
         catch (Exception e)
         {
@@ -94,13 +94,13 @@ public class AccountsController : ControllerBase
         {
             return BadRequest("No login information provided");
         }
-        var token = await _accountService.AuthenticateAndGetTokenAsync(loginView);
+        var Token = await _accountService.AuthenticateAndGetTokenAsync(loginView);
 
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(Token))
         {
             return Unauthorized("Invalid credentials");
         }
-        return Ok(new { token });
+        return Ok(new { Token });
     }
 
 

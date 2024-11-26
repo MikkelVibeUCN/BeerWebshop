@@ -112,7 +112,6 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpPost]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
 		{
 			if (!ModelState.IsValid)

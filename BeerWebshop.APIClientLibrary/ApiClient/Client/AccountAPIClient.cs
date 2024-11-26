@@ -35,7 +35,7 @@ public class AccountAPIClient : BaseClient<CustomerDTO>, IAccountAPIClient
         }
         return response.Data.Token;
     }
-
+        
     public async Task<string?> CreateAsync(AccountCreationViewModel viewModel)
     {
         var response = await _restClient.RequestAsync<TokenResponse?>(Method.Post, "accounts/register", viewModel);

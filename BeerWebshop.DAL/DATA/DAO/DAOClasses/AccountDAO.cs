@@ -162,27 +162,56 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         #endregion
 
         #region IAccountDAO methods
-        public async Task<Customer?> GetByEmail(string email)
+        public async Task<Account?> GetAccountByEmail(string email)
+        {
+            var accountType = await GetAccountTypeByEmail(email);
+
+            return accountType switch
+            {
+                "User" => await GetCustomerByEmail(email),
+                "Admin" => await GetAdminByEmail(email),
+                _ => null
+            };
+        }
+
+        private async Task<string?> GetAccountTypeByEmail(string email)
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            try
-            {
-                var updatedQuery = _getCustomerByX + "a.Email = @Email;";
-
-                var parameters = new { Email = email };
-                var customer = await connection.QuerySingleOrDefaultAsync<Customer?>(updatedQuery, parameters);
-
-                await connection.CloseAsync();
-
-                return customer;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error getting customer from database: {ex.Message}", ex);
-            }
+            var query = @"SELECT Role FROM Accounts WHERE Email = @Email;";
+            return await connection.QuerySingleOrDefaultAsync<string>(query, new { Email = email });
         }
+
+        private async Task<Customer?> GetCustomerByEmail(string email)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = _getCustomerByX + "a.Email = @Email;";
+
+            return await connection.QuerySingleOrDefaultAsync<Customer?>(query, new { Email = email });
+        }
+        
+        private async Task<Admin?> GetAdminByEmail(string email)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = @"
+                SELECT 
+                    ad.PermissionLevel
+                    ac.Email, 
+                    ac.Role, 
+                    ac.PasswordHash,
+                    ac.Id
+                FROM Accounts ac 
+                LEFT JOIN Admins ad ON ac.Id = ad.AccountId
+                WHERE ad.Email = @Email;";
+
+            return await connection.QuerySingleOrDefaultAsync<Admin>(query, new { Email = email });
+        }
+
         public Task<int> LoginAsync(string email, string password)
         {
             throw new NotImplementedException();

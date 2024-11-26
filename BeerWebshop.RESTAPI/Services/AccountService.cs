@@ -24,7 +24,12 @@ namespace BeerWebshop.RESTAPI.Services
 
         public async Task<Customer?> GetByEmail(string email)
         {
-            return await _accountDAO.GetByEmail(email);
+            var account = await _accountDAO.GetAccountByEmail(email);
+            if (account is Customer customer)
+            {
+                return customer;
+            }
+            else return null;
         }
         public async Task DeleteCustomer(int id)
         {
@@ -33,10 +38,10 @@ namespace BeerWebshop.RESTAPI.Services
 
         public async Task<string?> AuthenticateAndGetTokenAsync(LoginViewModel loginViewModel)
         {
-            var customer = await _accountDAO.GetByEmail(loginViewModel.Email);
-            if (customer != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, customer.PasswordHash))
+            var account = await _accountDAO.GetAccountByEmail(loginViewModel.Email);
+            if (account != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, account.PasswordHash))
             {
-                return _jwtService.GenerateJwtToken(customer.Email, "User");
+                return _jwtService.GenerateJwtToken(account.Email, account.Role);
             }
             return null;
         }
