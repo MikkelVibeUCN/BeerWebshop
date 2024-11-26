@@ -69,8 +69,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         #region BaseDAO methods
         public async Task<int> CreateAsync(Customer customer)
         {
-            if(customer.Email == null) { throw new Exception("Email cannot be null"); }
-            if(await DoesAccountWithEmailExist(customer.Email)) { throw new Exception("Customer with this email already exists"); }
+            if (customer.Email == null) { throw new Exception("Email cannot be null"); }
+            if (await DoesAccountWithEmailExist(customer.Email)) { throw new Exception("Customer with this email already exists"); }
 
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -83,7 +83,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             string firstName = parts[0];
             string lastName = parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : "";
-            
+
             try
             {
                 int? accountId = await CreateAccount("User", PasswordHash, customer.Email, connection, transaction);
@@ -125,7 +125,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 var updatedQuery = _getCustomerByX + "c.Id = @Id;";
 
                 var parameters = new { Id = id };
-                var customer =  await connection.QuerySingleOrDefaultAsync<Customer>(updatedQuery, parameters);
+                var customer = await connection.QuerySingleOrDefaultAsync<Customer>(updatedQuery, parameters);
                 return customer;
             }
             catch (Exception ex)
@@ -192,7 +192,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             return await connection.QuerySingleOrDefaultAsync<Customer?>(query, new { Email = email });
         }
-        
+
         private async Task<Admin?> GetAdminByEmail(string email)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -200,14 +200,14 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             var query = @"
                 SELECT 
-                    ad.PermissionLevel
+                    ad.PermissionLevel,
                     ac.Email, 
                     ac.Role, 
                     ac.PasswordHash,
                     ac.Id
                 FROM Accounts ac 
-                LEFT JOIN Admins ad ON ac.Id = ad.AccountId
-                WHERE ad.Email = @Email;";
+                LEFT JOIN Admin ad ON ac.Id = ad.AccountId
+                WHERE ac.Email = @Email;";
 
             return await connection.QuerySingleOrDefaultAsync<Admin>(query, new { Email = email });
         }
