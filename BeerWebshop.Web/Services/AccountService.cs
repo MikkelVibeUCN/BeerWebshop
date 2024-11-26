@@ -14,7 +14,6 @@ namespace BeerWebshop.Web.Services
 		private readonly IAccountAPIClient _accountAPIClient;
 		private readonly CookieService _cookieService;
 		private const string AuthCookieKey = "AuthCookie";
-
 		public AccountService(IAccountAPIClient accountAPIClient, CookieService cookieService)
 		{
 			_accountAPIClient = accountAPIClient;
@@ -75,7 +74,7 @@ namespace BeerWebshop.Web.Services
 		
 		public async Task<CustomerDTO?> GetLoggedInCustomer(string token)
 		{
-			return await _accountAPIClient.GetAsync(token);
+			return (CustomerDTO?) await _accountAPIClient.GetAsync(token);
         }
 
 		public async Task<string?> AuthorizeLogin(LoginViewModel loginView)

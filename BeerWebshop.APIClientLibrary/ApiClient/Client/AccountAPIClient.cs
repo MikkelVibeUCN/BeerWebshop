@@ -1,29 +1,37 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO.Validation;
 using RestSharp;
+using System.Text.Json;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client;
 
 public class AccountAPIClient : BaseClient<CustomerDTO>, IAccountAPIClient
 {
+    private readonly AccountDTOConverter converter = new AccountDTOConverter();
     public AccountAPIClient(string uri) : base(uri, "accounts")
     {
     }
 
-    public async Task<CustomerDTO?> GetAsync(string jwtToken, string? endpoint = null)
+    public async Task<AccountDTO?> GetAsync(string jwtToken, string? endpoint = null)
     {
-        RestRequest request = new RestRequest("accounts", Method.Get);
+        RestRequest request = new RestRequest(endpoint ?? "accounts", Method.Get);
         request.AddHeader("Authorization", $"Bearer {jwtToken}");
 
-        var response = await _restClient.ExecuteAsync<CustomerDTO?>(request);
+        var response = await _restClient.ExecuteAsync(request);
 
         if (!response.IsSuccessful)
         {
-            throw new Exception($"Error fetching token message was: {response.Content}");
+            throw new Exception($"Error fetching account: {response.Content}");
         }
-        return response.Data;
-    }
 
+        var options = new JsonSerializerOptions
+        {
+            Converters = { converter }
+        };
+        AccountDTO? accountDTO = JsonSerializer.Deserialize<AccountDTO>(response.Content, options);
+        return accountDTO;
+    }
 
     public async Task<string?> GetLoginToken(LoginViewModel viewModel)
     {

@@ -75,11 +75,18 @@ public class AccountsController : ControllerBase
         {
             return Unauthorized("User not authenticated");
         }
-
         try
         {
-            var customerDTO = await _accountService.GetByEmail(email);
-            return Ok(customerDTO);
+            var accountDTO = await _accountService.GetByEmail(email);
+            switch(accountDTO.Role)
+            {
+                case "User":
+                    return Ok(MappingHelper.MapToDTO(accountDTO as Customer));
+                case "Admin":
+                    return Ok(MappingHelper.MapToDTO(accountDTO as Admin));
+                default:
+                    return BadRequest("Invalid role");
+            }
         }
         catch (Exception e)
         {

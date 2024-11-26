@@ -21,8 +21,6 @@ namespace BeerWebshop.Web.Controllers
             _orderService = orderService;
             _accountService = accountService;
         }
-
-        // GET: CheckoutController
         public async Task<ActionResult> Index([FromBody] CheckoutViewModel? viewModel)
         {
             if(viewModel == null)
@@ -38,7 +36,6 @@ namespace BeerWebshop.Web.Controllers
             {
                 return Redirect("/Cart");
             }
-
             return View(viewModel);
         }
 

@@ -11,7 +11,6 @@ namespace BeerWebshop.Web.Services
         {
             this._cookieService = cookieService;
         }
-
         public AgeCookie GetAgeCookie()
         {
             AgeCookie? ageCookie = _cookieService.GetObjectFromCookie<AgeCookie>(_ageCookieKey);

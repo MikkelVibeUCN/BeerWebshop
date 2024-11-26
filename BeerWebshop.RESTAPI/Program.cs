@@ -23,7 +23,6 @@ namespace BeerWebshop.RESTAPI
 			builder.Services.AddScoped<ICategoryDAO>(_ => new CategoryDAO(connectionString));
             builder.Services.AddScoped<IAccountDAO>(_ => new AccountDAO(connectionString));
 
-
             builder.Services.AddScoped<CategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
 			builder.Services.AddScoped<BreweryService>(provider => new BreweryService(provider.GetRequiredService<IBreweryDAO>()));
 			builder.Services.AddScoped<ProductService>(provider =>
@@ -49,18 +48,12 @@ namespace BeerWebshop.RESTAPI
 					connectionString);
 			});
 
-
-
-
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
-
-
             var jwtSettings = jwtSettingsSection.Get<JWTSettings>();
             var key = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
-
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .			AddJwtBearer(options =>
@@ -84,10 +77,7 @@ namespace BeerWebshop.RESTAPI
                 options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
             });
 
-
             var app = builder.Build();
-
-
 
 			if (app.Environment.IsDevelopment())
 			{
@@ -99,7 +89,6 @@ namespace BeerWebshop.RESTAPI
 
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

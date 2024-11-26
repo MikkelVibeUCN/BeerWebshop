@@ -33,7 +33,6 @@ namespace BeerWebshop.Web.Controllers
 
         public IActionResult CreateAccount() => View();
 		
-
 		[HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {

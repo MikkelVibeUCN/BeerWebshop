@@ -85,13 +85,12 @@ namespace BeerWebshop.RESTAPI.Controllers
 		{
             var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
 
-
             if (string.IsNullOrEmpty(email)) 
 			{
 				return Unauthorized("Not logged in");
 			}
 
-            Customer? customer = await _accountService.GetByEmail(email);
+            Customer? customer = (Customer) await _accountService.GetByEmail(email);
 
             if (customer == null)
             {
