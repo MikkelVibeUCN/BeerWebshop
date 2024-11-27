@@ -75,13 +75,26 @@ namespace BeerWebshop.RESTAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetProducts([FromBody] ProductQueryParameters parameters)
 		{
-			try
-			{
-				if(parameters.PageSize > 21)
-				{
-					return BadRequest(parameters.PageSize + " is too high");
-                }
+            if (parameters.PageSize > 21)
+            {
+                try
+                {
+                    var role = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role")?.Value;
 
+                    if (string.IsNullOrEmpty(role) || !role.Equals("Admin"))
+                    {
+						return BadRequest(parameters.PageSize + "is too high");
+                    }
+                }
+                catch
+                {
+                    return BadRequest(parameters.PageSize + " is too high");
+
+                }
+            }
+            
+            try
+            {
 				var productDTOs = await _productService.GetProductsAsync(parameters);
 				return Ok(productDTOs);
 			}
