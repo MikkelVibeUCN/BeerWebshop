@@ -12,5 +12,4 @@ public interface IProductDAO : IBaseDAO<Product>
 	Task<int> GetProductCountAsync(ProductQueryParameters parameters);
 	Task<IEnumerable<string>> GetProductCategoriesAsync();
 	Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
-	Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null);
 }
