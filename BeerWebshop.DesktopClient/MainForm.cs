@@ -8,20 +8,19 @@ namespace BeerWebshop.DesktopClient
     {
         private readonly ProductController _productController;
         private readonly OrderController _orderController;
-        private readonly string _jwtToken;
+        public string JwtToken;
         public MainForm(string jwtToken)
         {
-            _jwtToken = jwtToken;
-            _orderController = new OrderController(new OrderApiClient("https://localhost:7244/api/v1/"));
-            _productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"));
+            JwtToken = jwtToken;
+            _orderController = new OrderController(new OrderApiClient("https://localhost:7244/api/v1/"), jwtToken);
+            _productController = new ProductController(new ProductAPIClient("https://localhost:7244/api/v1/"), jwtToken);
             InitializeComponent();
-
 
         }
 
         private void btnAddProducts_Click(object sender, EventArgs e)
         {
-            new AddProductForm(_jwtToken).ShowDialog();
+            new AddProductForm(_productController).ShowDialog();
         }
 
         private void btnEditProducts_Click(object sender, EventArgs e)

@@ -13,9 +13,11 @@ namespace BeerWebshop.DesktopClient.Controllers
     public class ProductController
     {
         private IProductAPIClient _productAPIClient;
-        public ProductController(ProductAPIClient productAPIClient)
+        public string JwtToken { get; private set; }
+        public ProductController(ProductAPIClient productAPIClient, string? jwtToken = null)
         {
             _productAPIClient = productAPIClient;
+            JwtToken = jwtToken ?? throw new ArgumentNullException(nameof(jwtToken));
 
         }
 
@@ -38,7 +40,7 @@ namespace BeerWebshop.DesktopClient.Controllers
                     ImageUrl = ""
 				};
 
-               return await _productAPIClient.CreateAsync(newProduct);
+               return await _productAPIClient.CreateAsync(newProduct, "Products", JwtToken);
             }
             catch (Exception ex)
             {
@@ -47,16 +49,16 @@ namespace BeerWebshop.DesktopClient.Controllers
         }
         public async Task<IEnumerable<ProductDTO>> getProducts(ProductQueryParameters productQueryParameters) 
         {
-            return await _productAPIClient.GetProductsAsync(productQueryParameters); 
+            return await _productAPIClient.GetProductsAsync(productQueryParameters, JwtToken); 
         }
 
         public async Task<bool> DeleteProduct(ProductDTO product)
         {
-            return await _productAPIClient.DeleteAsync(product.Id);
+            return await _productAPIClient.DeleteAsync(product.Id, JwtToken);
         }
         public async Task EditProduct(ProductDTO product)
         { 
-            await _productAPIClient.EditProductAsync(product);
+            await _productAPIClient.EditProductAsync(product, JwtToken);
         }
     }
 }

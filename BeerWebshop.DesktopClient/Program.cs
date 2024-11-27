@@ -31,6 +31,7 @@ namespace BeerWebshop.DesktopClient
             }
         }
 
+        
         private static void ConfigureServices(ServiceCollection services)
         {
 

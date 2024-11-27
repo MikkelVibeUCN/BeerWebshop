@@ -1,5 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BeerWebshop.DesktopClient
 {
@@ -34,10 +35,11 @@ namespace BeerWebshop.DesktopClient
             {
                 JwtToken = await _accountAPIClient.GetLoginToken(viewModel);
 
-                if (!string.IsNullOrEmpty(JwtToken))
+                if (!string.IsNullOrEmpty(JwtToken) && IsAdmin(JwtToken))
                 {
                     DialogResult = DialogResult.OK;
                     Close();
+                    
                 }
                 else
                 {
@@ -48,6 +50,19 @@ namespace BeerWebshop.DesktopClient
             {
                 MessageBox.Show($"Der skete en fejl: {ex.Message}", "Fejl", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private bool IsAdmin(string jwtToken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(jwtToken))
+                throw new ArgumentException("Invalid JWT token");
+
+            var token = handler.ReadJwtToken(jwtToken);
+
+            var roleClaim = token.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
+
+            return roleClaim != null && roleClaim.Value == "Admin";
         }
     }
 }

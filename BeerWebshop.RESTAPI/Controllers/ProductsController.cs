@@ -79,7 +79,7 @@ namespace BeerWebshop.RESTAPI.Controllers
             {
                 try
                 {
-                    var role = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role")?.Value;
+                    var role = User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
 
                     if (string.IsNullOrEmpty(role) || !role.Equals("Admin"))
                     {

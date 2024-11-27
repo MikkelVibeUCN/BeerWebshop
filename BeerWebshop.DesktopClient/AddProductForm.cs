@@ -12,10 +12,10 @@ namespace BeerWebshop.DesktopClient.Controllers
         private List<BreweryDTO> _breweries = new List<BreweryDTO>();
         private readonly string BaseUri = "https://localhost:7244/api/v1/";
 
-        public AddProductForm(string jwtToken)
+        public AddProductForm(ProductController productController)
         {
             InitializeComponent();
-            _productController = new ProductController(new ProductAPIClient(BaseUri));
+            _productController = productController;
             _categoryController = new CategoryController(new CategoryAPIClient(BaseUri));
             _breweryController = new BreweryController(new BreweryAPIClient(BaseUri));
             LoadCategories().ConfigureAwait(false);

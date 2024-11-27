@@ -8,9 +8,9 @@ public interface IProductAPIClient
     Task<int> CreateAsync(ProductDTO entity, string? endpoint = null, string? jwtToken = null);
     Task<bool> DeleteAsync(int id, string? endpoint = null, string? jwtToken = null);
     Task<ProductDTO?> GetAsync(int id, string? endpoint = null, string? jwtToken = null);
-    Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters);
+    Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters, string? jwtToken = null);
 	Task<int> GetProductCountAsync(ProductQueryParameters parameters);
-	Task EditProductAsync(ProductDTO product);
+	Task EditProductAsync(ProductDTO product, string? jwtToken = null);
 	
 
 }

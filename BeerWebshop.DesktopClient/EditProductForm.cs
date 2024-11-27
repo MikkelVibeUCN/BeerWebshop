@@ -39,7 +39,7 @@ namespace BeerWebshop.DesktopClient
             {
                 ProductQueryParameters queryParameters = new ProductQueryParameters
                 {
-                    PageSize = 200
+                    PageSize = 100
                 };
                 IEnumerable<ProductDTO> products = await _productController.getProducts(queryParameters);
                 lstProduct.Items.Clear();

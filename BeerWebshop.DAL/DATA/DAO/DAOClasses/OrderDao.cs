@@ -183,7 +183,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
                         return existingOrder;
                     },
-                    splitOn: "Quantity,Id,Id,Id,Id"
+                    splitOn: "Quantity,Id,Id,Id, AccountId"
                 );
 
                 return orders;
