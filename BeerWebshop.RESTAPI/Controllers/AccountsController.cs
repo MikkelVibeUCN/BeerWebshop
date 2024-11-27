@@ -97,10 +97,11 @@ public class AccountsController : ControllerBase
     [HttpPost("CustomerLogin")]
     public async Task<ActionResult> AuthenticateLogin([FromBody] LoginViewModel loginView)
     {
-        if (loginView == null)
+        if (!ModelState.IsValid)
         {
-            return BadRequest("No login information provided");
+            return BadRequest("Invalid state");
         }
+
         var Token = await _accountService.AuthenticateAndGetTokenAsync(loginView);
 
         if (string.IsNullOrEmpty(Token))
@@ -109,6 +110,4 @@ public class AccountsController : ControllerBase
         }
         return Ok(new { Token });
     }
-
-
 }

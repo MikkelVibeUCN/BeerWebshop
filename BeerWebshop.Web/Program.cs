@@ -42,7 +42,6 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<AgeVerifierService>();
 			builder.Services.AddScoped<AccountService>();
 
-
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
