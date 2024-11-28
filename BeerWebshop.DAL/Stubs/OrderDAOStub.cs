@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.DAL.DATA.DAO.Stubs
 {
@@ -13,6 +14,12 @@ namespace BeerWebshop.DAL.DATA.DAO.Stubs
     {
         private List<Order> _orders = new List<Order>();
         private int _nextId = 1;
+
+        public OrderDAOStub()
+        {
+         
+            
+        }
         
 
         // Create a new order
