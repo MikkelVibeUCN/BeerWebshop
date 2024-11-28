@@ -1,4 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
+using BeerWebshop.DAL.DATA.DAO.Stubs;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Tools;
 
@@ -8,10 +10,12 @@ namespace BeerWebshop.RESTAPI.Stubs
     {
 
         private ProductServiceStub _productServiceStub;
+        private IOrderDAO _orderDaoStub;
 
         public OrderServiceStub()
         {
-
+            _orderDaoStub = new OrderDAOStub();
+            _productServiceStub = new ProductServiceStub();
         }
 
 
@@ -22,7 +26,7 @@ namespace BeerWebshop.RESTAPI.Stubs
 
             foreach (var dtoOrderLine in dto.OrderLines)
             {
-                var product = await _productServiceStub.GetProductByIdAsync((int)dtoOrderLine.Product.Id);
+                var product = await _productServiceStub.GetProductEntityByIdAsync((int)dtoOrderLine.Product.Id);
                 if (product == null || product.IsDeleted || product.Stock < dtoOrderLine.Quantity)
                 {
                     throw new InvalidOperationException("Invalid product details or insufficient stock.");
