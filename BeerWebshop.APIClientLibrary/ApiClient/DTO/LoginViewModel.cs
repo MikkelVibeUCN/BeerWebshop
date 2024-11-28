@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BeerWebshop.Web.Models
+namespace BeerWebshop.APIClientLibrary.ApiClient.DTO
 {
     public class LoginViewModel
     {

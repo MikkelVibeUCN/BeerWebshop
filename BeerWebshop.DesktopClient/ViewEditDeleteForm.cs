@@ -42,7 +42,7 @@ namespace BeerWebshop.DesktopClient
             {
                 ProductQueryParameters queryParameters = new ProductQueryParameters
                 {
-                    PageSize = 200
+                    PageSize = 100
                 };
                 IEnumerable<ProductDTO> products = await _productController.getProducts(queryParameters);
                 lstProduct.Items.Clear();
@@ -91,8 +91,8 @@ namespace BeerWebshop.DesktopClient
         }
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            //TODO: Fix så UI opdaterer med det samme når man editer
-            new EditProductForm(_productController).ShowDialog();
+            if(lstProduct.SelectedItem is ProductDTO selectedProduct)
+            new EditProductForm(_productController, selectedProduct).ShowDialog();
 
         }
 

@@ -18,41 +18,55 @@ namespace BeerWebshop.DesktopClient
     public partial class EditProductForm : Form
     {
         private readonly ProductController _productController;
-        public EditProductForm(ProductController productController)
+        private readonly ProductDTO _product;
+        public EditProductForm(ProductController productController, ProductDTO product)
         {
             InitializeComponent();
             _productController = productController;
+            _product = product;
             EditProductForm_Load();
         }
 
-        public async void EditProductForm_Load()
+        public void EditProductForm_Load()
         {
-            await LoadData();
-            lstProduct.DisplayMember = "Name";
-            UpdateUi();
+            LoadProductData();
 
         }
-        private async Task LoadData()
+        private void LoadProductData()
         {
-            try
+            if (_product == null) return;
 
+            txtIdEdit.Text = _product.Id.ToString();
+            txtNameEdit.Text = _product.Name;
+            txtBreweryEdit.Text = _product.BreweryName;
+            txtPriceEdit.Text = _product.Price.ToString("F2");
+            txtStockEdit.Text = _product.Stock.ToString();
+            txtABVEdit.Text = _product.ABV.ToString();
+            txtCategoryEdit.Text = _product.CategoryName;
+            txtDescriptionEdit.Text = _product.Description;
+            txtImageUrlEdit.Text = _product.ImageUrl;
+            lblRowVersionEdit.Text = _product.RowVersion;
+
+            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+            try
             {
-                ProductQueryParameters queryParameters = new ProductQueryParameters
+                if (!string.IsNullOrEmpty(_product.ImageUrl))
                 {
-                    PageSize = 200
-                };
-                IEnumerable<ProductDTO> products = await _productController.getProducts(queryParameters);
-                lstProduct.Items.Clear();
-                foreach (var product in products)
+                    pictureBox.Load(_product.ImageUrl);
+                }
+                else
                 {
-                    lstProduct.Items.Add(product);
+                    pictureBox.Image = null;
+                    var imageUrl = "https://storage.googleapis.com/pod_public/1300/163656.jpg";
+                    pictureBox.Load(imageUrl);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show($"Der skete en fejl med at hente data fra serveren. Fejlen er: '{ex.Message}'", "Communication error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var imageUrl = "https://storage.googleapis.com/pod_public/1300/163656.jpg";
+                pictureBox.Load(imageUrl);
             }
-            if (lstProduct.Items.Count > 0) { lstProduct.SelectedIndex = 0; }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -89,40 +103,9 @@ namespace BeerWebshop.DesktopClient
             }
         }
 
-        private void UpdateUi()
+        private void lblName_Click(object sender, EventArgs e)
         {
-            if (lstProduct.SelectedIndex != -1)
-            {
-                UpdateSelectedProductOnUI();
-                btnCancel.Enabled = true;
-                btnEditProduct.Enabled = true;
-            }
-            else
-            {
-                btnCancel.Enabled = false;
-                btnEditProduct.Enabled = false;
-            }
 
         }
-
-        private async void lstProduct_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateUi();
-        }
-        private void UpdateSelectedProductOnUI()
-        {
-            if (lstProduct.SelectedIndex == -1) { return; }
-            ProductDTO product = (ProductDTO)lstProduct.SelectedItem;
-            txtIdEdit.Text = product.Id.ToString();
-            txtNameEdit.Text = product.Name;
-            txtBreweryEdit.Text = product.BreweryName;
-            txtPriceEdit.Text = product.Price.ToString("F2");
-            txtStockEdit.Text = product.Stock.ToString();
-            txtABVEdit.Text = product.ABV.ToString();
-            txtCategoryEdit.Text = product.CategoryName;
-            txtDescriptionEdit.Text = product.Description;
-            txtImageUrlEdit.Text = product.ImageUrl;
-            lblRowVersionEdit.Text = product.RowVersion;
-        }
     }
-    }
+}

@@ -5,6 +5,7 @@ using BeerWebshop.Web.Models;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
+using System.Runtime.CompilerServices;
 
 namespace BeerWebshop.Web.Services
 {
@@ -12,70 +13,36 @@ namespace BeerWebshop.Web.Services
 	{
 		private readonly IAccountAPIClient _accountAPIClient;
 		private readonly CookieService _cookieService;
-		private readonly JWTService _jwtService;
 		private const string AuthCookieKey = "AuthCookie";
-
-		public AccountService(IAccountAPIClient accountAPIClient, CookieService cookieService, JWTService jwtService)
+		public AccountService(IAccountAPIClient accountAPIClient, CookieService cookieService)
 		{
 			_accountAPIClient = accountAPIClient;
 			_cookieService = cookieService;
-            _jwtService = jwtService;
         }
 
-		public async Task<CustomerDTO?> GetCustomerByEmailAsync(string email)
-		{
-			return await _accountAPIClient.GetByEmailAsync(email);
-		}
-
-		public async Task<int> CreateCustomerAsync(AccountCreationViewModel viewModel)
-		{
-			try
-			{
-				string address = $"{viewModel.Street} {viewModel.StreetNumber}";
-				if (!string.IsNullOrEmpty(viewModel.ApartmentNumber))
-				{
-					address += $" {viewModel.ApartmentNumber}";
-				}
-
-				address += $" {viewModel.PostalCode} {viewModel.City}";
-
-				CustomerDTO customer = new CustomerDTO
-				{
-					Id = 0,
-					Name = $"{viewModel.FirstName} {viewModel.LastName}",
-					Address = address,
-					Email = viewModel.Email,
-					Password = viewModel.Password,
-					Phone = viewModel.Phone,
-					Age = viewModel.Age
-				};
-				return await _accountAPIClient.CreateAsync(customer);
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error creating customer: {ex.Message}", ex);
-			}
-
-		}
-		public async Task<int> CreateCustomerAsync(CustomerDTO customer)
+        public async Task<string?> GetLoginToken(LoginViewModel loginViewModel)
         {
-            return await _accountAPIClient.CreateAsync(customer);
+			return await _accountAPIClient.GetLoginToken(loginViewModel);
+        }
+
+		public async Task<int?> CreateCustomerAsync(CustomerDTO customer)
+		{
+			return await _accountAPIClient.CreateAsync(customer);
+        }
+
+        public async Task<string?> CreateCustomerAsync(AccountCreationViewModel viewModel)
+		{
+			return await _accountAPIClient.CreateAsync(viewModel);
         }
 
         public async Task<CustomerDTO?> GetCustomerFromLoginCookie()
 		{
             string? token = GetTokenCookie();
-            string? email = _jwtService.GetEmailFromToken(token);
-
-            if (!string.IsNullOrEmpty(email))
-            {
-                CustomerDTO? customer = await GetCustomerByEmailAsync(email);
-                if (customer != null)
-                {
-                    return customer;
-                }
-            }
-            return null;
+			if(string.IsNullOrEmpty(token))
+			{
+				return null;
+			}
+			return await GetLoggedInCustomer(token);
         } 
 
 		public string? GetTokenCookie()
@@ -104,15 +71,15 @@ namespace BeerWebshop.Web.Services
             CustomerDTO? customer = await GetCustomerFromLoginCookie();
             return customer != null ? customer.Id : null;
         }
-		public async Task<string?> AuthenticateAndGetTokenAsync(LoginViewModel loginViewModel)
+		
+		public async Task<CustomerDTO?> GetLoggedInCustomer(string token)
 		{
-			var customerDTO = await _accountAPIClient.GetByEmailAsync(loginViewModel.Email);
-			if (customerDTO != null && BCrypt.Net.BCrypt.Verify(loginViewModel.Password, customerDTO.Password))
-			{
-				return _jwtService.GenerateJwtToken(customerDTO.Email);
-            }
-            return null;
-		}
+			return (CustomerDTO?) await _accountAPIClient.GetAsync(token);
+        }
 
+		public async Task<string?> AuthorizeLogin(LoginViewModel loginView)
+		{
+			return await _accountAPIClient.GetLoginToken(loginView);
+        }
 	}
 }

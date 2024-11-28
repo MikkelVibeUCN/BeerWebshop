@@ -4,21 +4,22 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
-using BeerWebshop.Web.Properties;
 using Microsoft.Extensions.Options;
+using BeerWebshop.RESTAPI.Properties;
+using System.Data;
 
-namespace BeerWebshop.Web.Services
+namespace BeerWebshop.RESTAPI.Services
 {
     public class JWTService
     {
-        private readonly JwtSettings _jwtSettings;
+        private readonly JWTSettings _jwtSettings;
 
-        public JWTService(IOptions<JwtSettings> jwtSettings)
+        public JWTService(IOptions<JWTSettings> jwtSettings)
         {
             _jwtSettings = jwtSettings.Value;
         }
 
-        public string GenerateJwtToken(string email)
+        public string GenerateJwtToken(string email, string role)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -26,10 +27,11 @@ namespace BeerWebshop.Web.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,
                 new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(),
-                    ClaimValueTypes.Integer64) // Correct format for 'iat'
+                    ClaimValueTypes.Integer64)
             };
 
             var token = new JwtSecurityToken(

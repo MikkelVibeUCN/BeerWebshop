@@ -13,7 +13,6 @@ namespace BeerWebshop.Web.Services
         {
             _cookieService = cookieService;
         }
-
         public ShoppingCart GetCart()
         {
             return GetCartFromCookies();

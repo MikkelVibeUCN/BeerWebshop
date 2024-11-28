@@ -27,10 +27,9 @@ public class ProductDAO : IProductDAO
 											Price = @Price, Description = @Description, Stock = @Stock, Abv = @Abv, ImageUrl = @ImageUrl, 
 											IsDeleted = @IsDeleted WHERE Id = @Id and RowVersion = @RowVersion;";
 
-    private const string GetFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
-    private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
-    private const string UpdateStockSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
-    private const string BaseProductSql = @"
+	private const string GetFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
+	private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
+	private const string BaseProductSql = @"
         SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.ABV, p.Stock, p.Rowversion,
                c.Id AS Id, c.Name AS Name, 
                b.Id AS Id, b.Name AS Name
@@ -166,68 +165,7 @@ public class ProductDAO : IProductDAO
 
     #region IProductDAO Methods
     //TODO Timeout ved deadlock.
-    public async Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null)
-    {
-        var isExternalTransaction = transaction != null;
-
-        if (connection == null && transaction == null)
-        {
-            connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-            transaction = await connection.BeginTransactionAsync();
-        }
-
-        try
-        {
-            var parameters = new DynamicParameters();
-            parameters.Add("@ProductId", productId);
-            parameters.Add("@Quantity", quantity);
-
-            var stock = await connection.QuerySingleAsync<int>(
-                "SELECT Stock FROM Products WHERE Id = @ProductId",
-                new { ProductId = productId },
-                transaction
-            );
-
-            if (stock < quantity)
-            {
-                if (!isExternalTransaction) transaction.Rollback();
-                throw new InvalidOperationException("Insufficient stock.");
-            }
-
-            var rowsAffected = await connection.ExecuteAsync(
-                UpdateStockSql,
-                parameters,
-                transaction
-            );
-
-            if (rowsAffected <= 0)
-            {
-                if (!isExternalTransaction) transaction.Rollback();
-                throw new InvalidOperationException("Error updating stock.");
-            }
-
-            if (!isExternalTransaction)
-            {
-                await transaction.CommitAsync();
-            }
-
-            return true;
-        }
-        catch
-        {
-            if (!isExternalTransaction) transaction?.Rollback();
-            throw;
-        }
-        finally
-        {
-            if (!isExternalTransaction)
-            {
-                connection?.Dispose();
-            }
-        }
-    }
-
+  
 
     public async Task<IEnumerable<string>> GetProductCategoriesAsync()
     {

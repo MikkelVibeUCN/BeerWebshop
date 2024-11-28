@@ -1,5 +1,5 @@
-using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
+using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.DesktopClient.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,18 +16,28 @@ namespace BeerWebshop.DesktopClient
         static void Main()
         {
 
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new MainForm());
+
+            using (var loginForm = new LoginForm())
+            {
+                if (loginForm.ShowDialog() == DialogResult.OK)
+                {
+                    Application.Run(new MainForm(loginForm.JwtToken));
+                }
+                else
+                {
+                    Application.Exit();
+                }
+            }
         }
 
+        
         private static void ConfigureServices(ServiceCollection services)
-		{
+        {
 
-			services.AddTransient<IOrderApiClient, OrderApiClient>();
-			services.AddTransient<OrderController>();
-			services.AddTransient<MainForm>();
-		}
-	}
+            services.AddTransient<IOrderApiClient, OrderApiClient>();
+            services.AddTransient<OrderController>();
+            services.AddTransient<MainForm>();
+        }
+    }
 }

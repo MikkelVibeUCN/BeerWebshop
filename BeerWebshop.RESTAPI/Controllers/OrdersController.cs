@@ -1,7 +1,10 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
 using BeerWebshop.RESTAPI.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BeerWebshop.RESTAPI.Controllers
 {
@@ -13,25 +16,44 @@ namespace BeerWebshop.RESTAPI.Controllers
 		private readonly ProductService _productService;
 		private readonly CategoryService _categoryService;
 		private readonly BreweryService _breweryService;
+		private readonly AccountService _accountService;
 
-		public OrdersController(OrderService orderService, ProductService productService, CategoryService categoryService, BreweryService breweryService)
+		public OrdersController(OrderService orderService, ProductService productService, CategoryService categoryService, BreweryService breweryService, AccountService accountService)
 		{
 			_orderService = orderService;
 			_productService = productService;
 			_categoryService = categoryService;
 			_breweryService = breweryService;
-		}
+            _accountService = accountService;
+        }
 
-		[HttpGet("{id}", Name = "GetOrderId")]
+		[HttpGet("{id}")]
+		[Authorize]
 		public async Task<ActionResult> GetOrderByIdAsync(int id)
 		{
-			try
+            var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return Unauthorized("Not logged in");
+            }
+            try
 			{
 				var order = await _orderService.GetOrderByIdAsync(id);
-				if (order == null)
-					return NotFound();
 
-				var orderDTO = MappingHelper.MapOrderEntityToDTO(order);
+                if (order == null)
+                {
+                    return NotFound();
+
+                }
+
+                if (!order.Customer.Email.Equals(email))
+                {
+                    return Unauthorized("Not authorized to view this order");
+                }
+
+                var orderDTO = MappingHelper.MapOrderEntityToDTO(order);
+
 				return Ok(orderDTO);
 			}
 			catch (Exception ex)
@@ -42,7 +64,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrdersAsync()
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrdersAsync()
 		{
 			try
 			{
@@ -56,13 +79,29 @@ namespace BeerWebshop.RESTAPI.Controllers
 			}
 		}
 
-		[HttpGet("{customerId}/orders")]
-		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrdersByCustomerIdAsync(int customerId)
+		[HttpGet("LoggedInOrders")]
+		[Authorize(Policy = "UserOnly")]
+		public async Task<ActionResult<IEnumerable<OrderDTO>>> GetLoggedInCustomersOrders()
 		{
-			try
+            var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
+
+            if (string.IsNullOrEmpty(email)) 
 			{
-				var ordersDtos = await _orderService.GetOrdersByCustomerIdAsync(customerId);
-				return Ok(ordersDtos);
+				return Unauthorized("Not logged in");
+			}
+
+            Customer? customer = (Customer) await _accountService.GetByEmail(email);
+
+            if (customer == null)
+            {
+                return BadRequest("Customr not found");
+            }
+
+            try
+            {
+                var orderDtos = await _orderService.GetOrdersByCustomerIdAsync((int)customer.Id);
+
+				return Ok(orderDtos);
 
 			}
 			catch (Exception ex)
@@ -72,7 +111,7 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
+        public async Task<ActionResult> CreateOrderAsync([FromBody] OrderDTO dto)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -91,7 +130,8 @@ namespace BeerWebshop.RESTAPI.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<ActionResult> DeleteOrderAsync(int id)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult> DeleteOrderAsync(int id)
 		{
 			try
 			{

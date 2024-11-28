@@ -57,52 +57,17 @@ namespace BeerWebshop.RESTAPI.Services
             return await CreateOrderAsync(order);
         }
 
-
-
         //new
-        public async Task<int> CreateOrderAsync(Order order)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-            using var transaction = await connection.BeginTransactionAsync();
-
-            try
-            {
-                foreach (var orderLine in order.OrderLines)
-                {
-                    if (orderLine.Product == null)
-                    {
-                        throw new InvalidOperationException("OrderLine product cannot be null.");
-                    }
-
-                    var success = await _productService.UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity, connection, transaction);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Insufficient stock.");
-                    }
-                }
-
-                var orderId = await _orderDao.CreateAsync(order, connection, transaction);
-                await transaction.CommitAsync();
-                return orderId;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in CreateOrderAsync: {ex.Message}");
-                await transaction.RollbackAsync();
-                throw;
-            }
-        }
-
+        public async Task<int> CreateOrderAsync(Order order) => await _orderDao.CreateAsync(order);
 
 
         public async Task<Order?> GetOrderByIdAsync(int orderId)
-        {
-            var order = await _orderDao.GetByIdAsync(orderId);
-            if (order == null)
-            {
-                throw new KeyNotFoundException($"Order with ID {orderId} was not found.");
-            }
+		{
+			var order = await _orderDao.GetByIdAsync(orderId);
+			if (order == null)
+			{
+				throw new KeyNotFoundException($"Order with ID {orderId} was not found.");
+			}
 
             return order;
         }

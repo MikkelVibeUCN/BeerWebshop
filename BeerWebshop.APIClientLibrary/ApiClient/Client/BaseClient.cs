@@ -2,24 +2,34 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BeerWebshop.APIClientLibrary.ApiClient.Client
 {
-    public abstract class BaseClient<T>
+    public abstract class BaseClient<T> where T : class
     {
         protected RestClient _restClient;
         protected string _defaultEndPoint;
-        public BaseClient(string uri, string defaultEndpoint) 
+
+        public BaseClient(string baseUri, string defaultEndpoint)
         {
-            _restClient = new RestClient(new Uri(uri));
+            _restClient = new RestClient(baseUri);
             _defaultEndPoint = defaultEndpoint;
         }
-        public async Task<int> CreateAsync(T entity, string? endpoint = null)
+
+        public async Task<int> CreateAsync(T entity, string? endpoint = null, string? jwtToken = null)
         {
             endpoint ??= _defaultEndPoint;
-            var response = await _restClient.RequestAsync<int>(Method.Post, endpoint, entity);
+
+            var request = new RestRequest(endpoint, Method.Post);
+            request.AddJsonBody(entity);
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            var response = await _restClient.ExecuteAsync<int>(request);
 
             if (!response.IsSuccessful)
             {
@@ -28,10 +38,18 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
-        public async Task<bool> DeleteAsync(int id, string? endpoint = null)
+        public async Task<bool> DeleteAsync(int id, string? endpoint = null, string? jwtToken = null)
         {
             endpoint ??= _defaultEndPoint;
-            var response = await _restClient.RequestAsync<bool>(Method.Delete, $"{endpoint}/{id}");
+
+            var request = new RestRequest($"{endpoint}/{id}", Method.Delete);
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            var response = await _restClient.ExecuteAsync<bool>(request);
 
             if (!response.IsSuccessful)
             {
@@ -40,23 +58,39 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(string? endpoint = null)
+        public async Task<IEnumerable<T>> GetAllAsync(string? endpoint = null, string? jwtToken = null)
         {
             endpoint ??= _defaultEndPoint;
-            var response = await _restClient.RequestAsync<IEnumerable<T>>(Method.Get, endpoint);
+
+            var request = new RestRequest(endpoint, Method.Get);
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            var response = await _restClient.ExecuteAsync<IEnumerable<T>>(request);
 
             if (!response.IsSuccessful || response.Data == null)
             {
                 throw new Exception($"Error retrieving all {typeof(T).Name}. Message was {response.Content}");
             }
 
-            return response.Data ?? Enumerable.Empty<T>();
+            return response.Data;
         }
 
-        public async Task<T?> GetAsync(int id, string? endpoint = null)
+        public async Task<T?> GetAsync(int id, string? endpoint = null, string? jwtToken = null)
         {
             endpoint ??= _defaultEndPoint;
-            var response = await _restClient.RequestAsync<T>(Method.Get, $"{endpoint}/{id}");
+
+            var request = new RestRequest($"{endpoint}/{id}", Method.Get);
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            var response = await _restClient.ExecuteAsync<T>(request);
 
             if (!response.IsSuccessful)
             {
@@ -65,12 +99,19 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
-
-
-        public async Task<T?> GetByStringAsync(string searchKey, string? endpoint = null)
+        public async Task<T?> GetByStringAsync(string searchKey, string? endpoint = null, string? jwtToken = null)
         {
             endpoint ??= _defaultEndPoint;
-            var response = await _restClient.RequestAsync<T>(Method.Get, endpoint, searchKey);
+
+            var request = new RestRequest(endpoint, Method.Get);
+            request.AddParameter("searchKey", searchKey);
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            var response = await _restClient.ExecuteAsync<T>(request);
 
             if (!response.IsSuccessful)
             {
@@ -79,21 +120,43 @@ namespace BeerWebshop.APIClientLibrary.ApiClient.Client
             return response.Data;
         }
 
-        public async Task<W> GetByStringAsync<W>(string searchKey, string? endpoint = null)
+        public async Task<W> GetByStringAsync<W>(string searchKey, string? endpoint = null, string? jwtToken = null)
         {
             endpoint ??= _defaultEndPoint;
-            var response = await _restClient.RequestAsync<W>(Method.Get, endpoint, searchKey);
+
+            var request = new RestRequest(endpoint, Method.Get);
+            request.AddParameter("searchKey", searchKey);
+
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            var response = await _restClient.ExecuteAsync<W>(request);
 
             if (!response.IsSuccessful)
             {
-                throw new Exception($"Error retrieving {typeof(T).Name}. Message was {response.Content}");
+                throw new Exception($"Error retrieving {typeof(W).Name}. Message was {response.Content}");
             }
             return response.Data;
         }
 
-        public async Task<IEnumerable<U>> GetAllAsync<U>(string endpoint) 
+        public async Task<IEnumerable<U>> GetAllAsync<U>(string endpoint, string? jwtToken = null)
         {
-            return await GetAllAsync<U>(endpoint);
+            var request = new RestRequest(endpoint, Method.Get);
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            var response = await _restClient.ExecuteAsync<IEnumerable<U>>(request);
+
+            if (!response.IsSuccessful || response.Data == null)
+            {
+                throw new Exception($"Error retrieving {typeof(U).Name}. Message was {response.Content}");
+            }
+
+            return response.Data;
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
+﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Transactions;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 {
@@ -14,6 +16,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, CustomerId_FK) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @CustomerId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
+        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
         private const string BaseOrderSql = @"
             SELECT 
 				o.Id, 
@@ -36,13 +39,13 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 				b.Id, 
 				b.Name, 
 				b.IsDeleted, 
-				cu.Id, 
+				cu.AccountId, 
 				CONCAT(cu.FirstName, ' ', cu.LastName) AS Name, 
 				cu.Phone, 
-				cu.PasswordHash, 
+				ac.PasswordHash, 
 				cu.IsDeleted, 
 				cu.Age, 
-				cu.Email,
+				ac.Email,
 				CONCAT(
 					a.Street, ' ', a.StreetNumber, 
 					CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 
@@ -53,8 +56,9 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 			LEFT JOIN Products p ON ol.ProductId = p.Id
 			LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
 			LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id
-			LEFT JOIN Customers cu ON o.CustomerId_FK = cu.Id
-			LEFT JOIN Address a ON a.CustomerId_FK = cu.Id
+			LEFT JOIN Customers cu ON o.CustomerId_FK = cu.AccountId
+            LEFT JOIN Accounts ac ON cu.AccountId = ac.Id
+			LEFT JOIN Address a ON a.CustomerId_FK = cu.AccountId
 			LEFT JOIN Postalcode po ON a.Postalcode_FK = po.Postalcode";
         #endregion
         #region Dependency injection
@@ -66,25 +70,47 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         }
         #endregion
         #region BaseDAO Methods
-        public async Task<int> CreateAsync(Order order, SqlConnection connection, DbTransaction transaction)
+
+        private async Task UpdateStockFromOrder(IEnumerable<OrderLine> orderLines, SqlConnection connection, DbTransaction transaction)
         {
+            foreach (var orderLine in orderLines)
+            {
+                var success = await UpdateStockAsync((int)orderLine.Product.Id, orderLine.Quantity, connection, transaction);
+                if (!success)
+                {
+                    throw new InvalidOperationException("Insufficient stock.");
+                }
+            }
+        }
+
+        public async Task<int> CreateAsync(Order order)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+            using var transaction = await connection.BeginTransactionAsync();
+
             try
             {
+                await UpdateStockFromOrder(order.OrderLines, connection, transaction);
+               
                 var orderId = await InsertOrderAsync(connection, transaction, order);
 
                 foreach (var orderLine in order.OrderLines)
                 {
                     await InsertOrderLineAsync(connection, transaction, orderLine, orderId);
+
                 }
 
+                await transaction.CommitAsync();
                 return orderId;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error inserting order: {ex.Message}", ex);
+                Console.WriteLine($"Error in CreateOrderAsync: {ex.Message}");
+                await transaction.RollbackAsync();
+                throw;
             }
         }
-
         public async Task<Order?> GetByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -116,7 +142,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         return order;
                     },
                     new { Id = id },
-                    splitOn: "Quantity,Id,Id,Id,Id"
+                    splitOn: "Quantity,Id,Id,Id,AccountId"
                 );
 
                 return orderResult;
@@ -144,6 +170,37 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 throw new Exception($"Error deleting order with ID: {orderId}: {ex.Message}", ex);
             }
+        }
+
+        public async Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null)
+        {
+            if (connection == null && transaction == null)
+            {
+                connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                transaction = await connection.BeginTransactionAsync();
+            }
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@ProductId", productId);
+            parameters.Add("@Quantity", quantity);
+
+            var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout: 5);
+            if (stock < quantity)
+            {
+                transaction.Rollback();
+                throw new InvalidOperationException("Insufficient stock.");
+            }
+
+            var rowsAffected = await connection.ExecuteAsync(UpdateStockFromOrderSql, parameters, transaction, commandTimeout: 5);
+            if (rowsAffected < 0)
+            {
+                transaction.Rollback();
+                throw new InvalidOperationException("Error updating stock.");
+            }
+
+            return true;
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
@@ -182,7 +239,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
                         return existingOrder;
                     },
-                    splitOn: "Quantity,Id,Id,Id,Id"
+                    splitOn: "Quantity,Id,Id,Id, AccountId"
                 );
 
                 return orders;
@@ -194,7 +251,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         }
         #endregion
         #region IOrderDAO Methods
-
+        
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -233,7 +290,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         return existingOrder;
                     },
                     new { CustomerId = customerId },
-                    splitOn: "Quantity,Id,Id,Id,Id"
+                    splitOn: "Quantity,Id,Id,Id,AccountId" 
                 );
 
                 return orders;
@@ -271,13 +328,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             await connection.ExecuteAsync(InsertOrderLineSql, parameters, transaction);
         }
 
-        public async Task<int> CreateAsync(Order entity)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
-            var transaction = await connection.BeginTransactionAsync();
-            return await CreateAsync(entity, connection, transaction);
-        }
+        
     }
 }
 #endregion

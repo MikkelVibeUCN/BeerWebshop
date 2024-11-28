@@ -1,14 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace BeerWebshop.DesktopClient.Controllers
 {
@@ -21,10 +12,10 @@ namespace BeerWebshop.DesktopClient.Controllers
         private List<BreweryDTO> _breweries = new List<BreweryDTO>();
         private readonly string BaseUri = "https://localhost:7244/api/v1/";
 
-        public AddProductForm()
+        public AddProductForm(ProductController productController)
         {
             InitializeComponent();
-            _productController = new ProductController(new ProductAPIClient(BaseUri));
+            _productController = productController;
             _categoryController = new CategoryController(new CategoryAPIClient(BaseUri));
             _breweryController = new BreweryController(new BreweryAPIClient(BaseUri));
             LoadCategories().ConfigureAwait(false);

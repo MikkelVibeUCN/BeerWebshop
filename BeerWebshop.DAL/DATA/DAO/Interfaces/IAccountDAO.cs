@@ -11,7 +11,6 @@ namespace BeerWebshop.DAL.DATA.DAO.Interfaces
     {
         //methods relating to handling security
         Task<int> LoginAsync(string email, string password);
-        Task<Customer?> GetByEmail(string email);
-
+        Task<Account?> GetAccountByEmail(string email);
     }
 }

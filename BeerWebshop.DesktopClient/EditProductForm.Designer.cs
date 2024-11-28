@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             grpBoxEdit = new GroupBox();
+            pictureBox = new PictureBox();
             txtIdEdit = new TextBox();
             lblShowId = new Label();
-            lstProduct = new ListBox();
             btnCancel = new Button();
             btnEditProduct = new Button();
             lblRowVersionEdit = new Label();
@@ -52,13 +52,14 @@
             txtBreweryEdit = new TextBox();
             txtNameEdit = new TextBox();
             grpBoxEdit.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             SuspendLayout();
             // 
             // grpBoxEdit
             // 
+            grpBoxEdit.Controls.Add(pictureBox);
             grpBoxEdit.Controls.Add(txtIdEdit);
             grpBoxEdit.Controls.Add(lblShowId);
-            grpBoxEdit.Controls.Add(lstProduct);
             grpBoxEdit.Controls.Add(btnCancel);
             grpBoxEdit.Controls.Add(btnEditProduct);
             grpBoxEdit.Controls.Add(lblRowVersionEdit);
@@ -80,48 +81,48 @@
             grpBoxEdit.Controls.Add(txtNameEdit);
             grpBoxEdit.Dock = DockStyle.Fill;
             grpBoxEdit.Location = new Point(0, 0);
-            grpBoxEdit.Margin = new Padding(3, 4, 3, 4);
+            grpBoxEdit.Margin = new Padding(4, 5, 4, 5);
             grpBoxEdit.Name = "grpBoxEdit";
-            grpBoxEdit.Padding = new Padding(3, 4, 3, 4);
-            grpBoxEdit.Size = new Size(830, 599);
+            grpBoxEdit.Padding = new Padding(4, 5, 4, 5);
+            grpBoxEdit.Size = new Size(1038, 749);
             grpBoxEdit.TabIndex = 0;
             grpBoxEdit.TabStop = false;
             grpBoxEdit.Text = "Rediger produkt";
             // 
+            // pictureBox
+            // 
+            pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pictureBox.Location = new Point(578, 95);
+            pictureBox.Name = "pictureBox";
+            pictureBox.Size = new Size(334, 454);
+            pictureBox.TabIndex = 23;
+            pictureBox.TabStop = false;
+            // 
             // txtIdEdit
             // 
-            txtIdEdit.Location = new Point(406, 71);
-            txtIdEdit.Margin = new Padding(3, 4, 3, 4);
+            txtIdEdit.Location = new Point(239, 95);
+            txtIdEdit.Margin = new Padding(4, 5, 4, 5);
             txtIdEdit.Name = "txtIdEdit";
-            txtIdEdit.Size = new Size(169, 27);
+            txtIdEdit.Size = new Size(210, 31);
             txtIdEdit.TabIndex = 22;
             // 
             // lblShowId
             // 
             lblShowId.AutoSize = true;
-            lblShowId.Location = new Point(263, 75);
+            lblShowId.Location = new Point(67, 95);
+            lblShowId.Margin = new Padding(4, 0, 4, 0);
             lblShowId.Name = "lblShowId";
-            lblShowId.Size = new Size(25, 20);
+            lblShowId.Size = new Size(32, 25);
             lblShowId.TabIndex = 21;
             lblShowId.Text = "Id:";
-            // 
-            // lstProduct
-            // 
-            lstProduct.Anchor = AnchorStyles.Left;
-            lstProduct.FormattingEnabled = true;
-            lstProduct.Location = new Point(7, 115);
-            lstProduct.Margin = new Padding(3, 4, 3, 4);
-            lstProduct.Name = "lstProduct";
-            lstProduct.Size = new Size(219, 384);
-            lstProduct.TabIndex = 20;
-            lstProduct.SelectedIndexChanged += lstProduct_SelectedIndexChanged;
             // 
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Right;
-            btnCancel.Location = new Point(601, 440);
+            btnCancel.Location = new Point(644, 666);
+            btnCancel.Margin = new Padding(4);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(104, 31);
+            btnCancel.Size = new Size(130, 39);
             btnCancel.TabIndex = 19;
             btnCancel.Text = "&Annullér";
             btnCancel.UseVisualStyleBackColor = true;
@@ -130,9 +131,10 @@
             // btnEditProduct
             // 
             btnEditProduct.Anchor = AnchorStyles.Right;
-            btnEditProduct.Location = new Point(712, 440);
+            btnEditProduct.Location = new Point(782, 666);
+            btnEditProduct.Margin = new Padding(4);
             btnEditProduct.Name = "btnEditProduct";
-            btnEditProduct.Size = new Size(104, 31);
+            btnEditProduct.Size = new Size(130, 39);
             btnEditProduct.TabIndex = 18;
             btnEditProduct.Text = "&Bekræft";
             btnEditProduct.UseVisualStyleBackColor = true;
@@ -142,9 +144,10 @@
             // 
             lblRowVersionEdit.Anchor = AnchorStyles.Right;
             lblRowVersionEdit.AutoSize = true;
-            lblRowVersionEdit.Location = new Point(406, 503);
+            lblRowVersionEdit.Location = new Point(508, 629);
+            lblRowVersionEdit.Margin = new Padding(4, 0, 4, 0);
             lblRowVersionEdit.Name = "lblRowVersionEdit";
-            lblRowVersionEdit.Size = new Size(58, 20);
+            lblRowVersionEdit.Size = new Size(67, 25);
             lblRowVersionEdit.TabIndex = 11;
             lblRowVersionEdit.Text = "Billede:";
             lblRowVersionEdit.Visible = false;
@@ -153,9 +156,10 @@
             // 
             lblImageUrl.Anchor = AnchorStyles.Right;
             lblImageUrl.AutoSize = true;
-            lblImageUrl.Location = new Point(263, 408);
+            lblImageUrl.Location = new Point(67, 375);
+            lblImageUrl.Margin = new Padding(4, 0, 4, 0);
             lblImageUrl.Name = "lblImageUrl";
-            lblImageUrl.Size = new Size(58, 20);
+            lblImageUrl.Size = new Size(67, 25);
             lblImageUrl.TabIndex = 11;
             lblImageUrl.Text = "Billede:";
             // 
@@ -163,9 +167,10 @@
             // 
             lblCategory.Anchor = AnchorStyles.Right;
             lblCategory.AutoSize = true;
-            lblCategory.Location = new Point(263, 353);
+            lblCategory.Location = new Point(67, 336);
+            lblCategory.Margin = new Padding(4, 0, 4, 0);
             lblCategory.Name = "lblCategory";
-            lblCategory.Size = new Size(69, 20);
+            lblCategory.Size = new Size(82, 25);
             lblCategory.TabIndex = 11;
             lblCategory.Text = "Kategori:";
             // 
@@ -173,9 +178,10 @@
             // 
             lblABV.Anchor = AnchorStyles.Right;
             lblABV.AutoSize = true;
-            lblABV.Location = new Point(263, 312);
+            lblABV.Location = new Point(67, 297);
+            lblABV.Margin = new Padding(4, 0, 4, 0);
             lblABV.Name = "lblABV";
-            lblABV.Size = new Size(114, 20);
+            lblABV.Size = new Size(138, 25);
             lblABV.TabIndex = 12;
             lblABV.Text = "Alkoholprocent:";
             // 
@@ -183,9 +189,10 @@
             // 
             lblStock.Anchor = AnchorStyles.Right;
             lblStock.AutoSize = true;
-            lblStock.Location = new Point(263, 264);
+            lblStock.Location = new Point(67, 260);
+            lblStock.Margin = new Padding(4, 0, 4, 0);
             lblStock.Name = "lblStock";
-            lblStock.Size = new Size(125, 20);
+            lblStock.Size = new Size(150, 25);
             lblStock.TabIndex = 13;
             lblStock.Text = "Lagerbeholdning:";
             // 
@@ -193,9 +200,10 @@
             // 
             lblDescription.Anchor = AnchorStyles.Right;
             lblDescription.AutoSize = true;
-            lblDescription.Location = new Point(601, 208);
+            lblDescription.Location = new Point(67, 461);
+            lblDescription.Margin = new Padding(4, 0, 4, 0);
             lblDescription.Name = "lblDescription";
-            lblDescription.Size = new Size(84, 20);
+            lblDescription.Size = new Size(101, 25);
             lblDescription.TabIndex = 14;
             lblDescription.Text = "Beskrivelse:";
             // 
@@ -203,9 +211,10 @@
             // 
             lblPrice.Anchor = AnchorStyles.Right;
             lblPrice.AutoSize = true;
-            lblPrice.Location = new Point(263, 211);
+            lblPrice.Location = new Point(67, 219);
+            lblPrice.Margin = new Padding(4, 0, 4, 0);
             lblPrice.Name = "lblPrice";
-            lblPrice.Size = new Size(35, 20);
+            lblPrice.Size = new Size(44, 25);
             lblPrice.TabIndex = 15;
             lblPrice.Text = "Pris:";
             // 
@@ -213,9 +222,10 @@
             // 
             lblBrewery.Anchor = AnchorStyles.Right;
             lblBrewery.AutoSize = true;
-            lblBrewery.Location = new Point(263, 163);
+            lblBrewery.Location = new Point(67, 180);
+            lblBrewery.Margin = new Padding(4, 0, 4, 0);
             lblBrewery.Name = "lblBrewery";
-            lblBrewery.Size = new Size(68, 20);
+            lblBrewery.Size = new Size(82, 25);
             lblBrewery.TabIndex = 16;
             lblBrewery.Text = "Bryggeri:";
             // 
@@ -223,88 +233,99 @@
             // 
             lblName.Anchor = AnchorStyles.Right;
             lblName.AutoSize = true;
-            lblName.Location = new Point(263, 115);
+            lblName.Location = new Point(67, 138);
+            lblName.Margin = new Padding(4, 0, 4, 0);
             lblName.Name = "lblName";
-            lblName.Size = new Size(46, 20);
+            lblName.Size = new Size(57, 25);
             lblName.TabIndex = 17;
             lblName.Text = "Navn:";
+            lblName.Click += lblName_Click;
             // 
             // txtImageUrlEdit
             // 
             txtImageUrlEdit.Anchor = AnchorStyles.Right;
-            txtImageUrlEdit.Location = new Point(406, 408);
+            txtImageUrlEdit.Location = new Point(239, 369);
+            txtImageUrlEdit.Margin = new Padding(4);
             txtImageUrlEdit.Name = "txtImageUrlEdit";
-            txtImageUrlEdit.Size = new Size(169, 27);
+            txtImageUrlEdit.Size = new Size(210, 31);
             txtImageUrlEdit.TabIndex = 4;
             // 
             // txtCategoryEdit
             // 
             txtCategoryEdit.Anchor = AnchorStyles.Right;
-            txtCategoryEdit.Location = new Point(406, 344);
+            txtCategoryEdit.Location = new Point(239, 330);
+            txtCategoryEdit.Margin = new Padding(4);
             txtCategoryEdit.Name = "txtCategoryEdit";
-            txtCategoryEdit.Size = new Size(169, 27);
+            txtCategoryEdit.Size = new Size(210, 31);
             txtCategoryEdit.TabIndex = 4;
             // 
             // txtABVEdit
             // 
             txtABVEdit.Anchor = AnchorStyles.Right;
-            txtABVEdit.Location = new Point(406, 300);
+            txtABVEdit.Location = new Point(239, 291);
+            txtABVEdit.Margin = new Padding(4);
             txtABVEdit.Name = "txtABVEdit";
-            txtABVEdit.Size = new Size(169, 27);
+            txtABVEdit.Size = new Size(210, 31);
             txtABVEdit.TabIndex = 5;
             // 
             // txtStockEdit
             // 
             txtStockEdit.Anchor = AnchorStyles.Right;
-            txtStockEdit.Location = new Point(406, 256);
+            txtStockEdit.Location = new Point(239, 252);
+            txtStockEdit.Margin = new Padding(4);
             txtStockEdit.Name = "txtStockEdit";
-            txtStockEdit.Size = new Size(169, 27);
+            txtStockEdit.Size = new Size(210, 31);
             txtStockEdit.TabIndex = 6;
             // 
             // txtDescriptionEdit
             // 
             txtDescriptionEdit.Anchor = AnchorStyles.Right;
-            txtDescriptionEdit.Location = new Point(601, 231);
+            txtDescriptionEdit.Location = new Point(234, 461);
+            txtDescriptionEdit.Margin = new Padding(4);
             txtDescriptionEdit.Multiline = true;
             txtDescriptionEdit.Name = "txtDescriptionEdit";
-            txtDescriptionEdit.Size = new Size(214, 196);
+            txtDescriptionEdit.Size = new Size(266, 244);
             txtDescriptionEdit.TabIndex = 7;
             // 
             // txtPriceEdit
             // 
             txtPriceEdit.Anchor = AnchorStyles.Right;
-            txtPriceEdit.Location = new Point(406, 205);
+            txtPriceEdit.Location = new Point(239, 213);
+            txtPriceEdit.Margin = new Padding(4);
             txtPriceEdit.Name = "txtPriceEdit";
-            txtPriceEdit.Size = new Size(169, 27);
+            txtPriceEdit.Size = new Size(210, 31);
             txtPriceEdit.TabIndex = 8;
             // 
             // txtBreweryEdit
             // 
             txtBreweryEdit.Anchor = AnchorStyles.Right;
-            txtBreweryEdit.Location = new Point(406, 156);
+            txtBreweryEdit.Location = new Point(239, 174);
+            txtBreweryEdit.Margin = new Padding(4);
             txtBreweryEdit.Name = "txtBreweryEdit";
-            txtBreweryEdit.Size = new Size(169, 27);
+            txtBreweryEdit.Size = new Size(210, 31);
             txtBreweryEdit.TabIndex = 9;
             // 
             // txtNameEdit
             // 
             txtNameEdit.Anchor = AnchorStyles.Right;
-            txtNameEdit.Location = new Point(406, 113);
+            txtNameEdit.Location = new Point(239, 135);
+            txtNameEdit.Margin = new Padding(4);
             txtNameEdit.Name = "txtNameEdit";
-            txtNameEdit.Size = new Size(169, 27);
+            txtNameEdit.Size = new Size(210, 31);
             txtNameEdit.TabIndex = 10;
             // 
             // EditProductForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(830, 599);
+            ClientSize = new Size(1038, 749);
             Controls.Add(grpBoxEdit);
-            Margin = new Padding(3, 4, 3, 4);
+            Margin = new Padding(4, 5, 4, 5);
             Name = "EditProductForm";
             Text = "Redigering af produkter";
             grpBoxEdit.ResumeLayout(false);
             grpBoxEdit.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             ResumeLayout(false);
         }
 
@@ -327,11 +348,11 @@
         private TextBox txtPriceEdit;
         private TextBox txtBreweryEdit;
         private TextBox txtNameEdit;
-        private ListBox lstProduct;
         private Label lblShowId;
         private TextBox txtIdEdit;
         private Label lblImageUrl;
         private TextBox txtImageUrlEdit;
         private Label lblRowVersionEdit;
+        private PictureBox pictureBox;
     }
 }
