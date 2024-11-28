@@ -2,6 +2,7 @@
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services.Interfaces;
+using BeerWebshop.RESTAPI.Tools;
 
 namespace BeerWebshop.RESTAPI.Stubs
 {
@@ -38,15 +39,30 @@ namespace BeerWebshop.RESTAPI.Stubs
             };
 
             return Task.FromResult(product);
-    
-    
+
+
         }
 
 
 
         public Task<Product?> GetProductEntityByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var productDTO = new ProductDTO()
+            {
+                Id = 1,
+                Name = "test",
+                BreweryName = "test",
+                Price = 100,
+                Description = "test",
+                Stock = 10,
+                ABV = 10,
+                CategoryName = "test",
+                ImageUrl = "pornhub.com",
+                RowVersion = string.Empty,
+            };
+
+            var product = MappingHelper.MapProductDTOToEntity(productDTO, new Category(), new Brewery());
+            return Task.FromResult(product);
         }
 
         public Task<List<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)

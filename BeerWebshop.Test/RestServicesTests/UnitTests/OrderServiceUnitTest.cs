@@ -1,18 +1,9 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.DAO.Stubs;
-using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
-using BeerWebshop.RESTAPI.Stubs;
 using BeerWebshop.RESTAPI.Services.Interfaces;
-using Castle.Core.Resource;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing.Text;
+using BeerWebshop.RESTAPI.Stubs;
 
 namespace BeerWebshop.Test.RestServicesTests.UnitTests
 {
@@ -62,12 +53,12 @@ namespace BeerWebshop.Test.RestServicesTests.UnitTests
         }
     }
             };
-          
+
 
             // Act
             var orderId = await _orderService.CreateOrderFromDTOAsync(order);
             var createdOrder = await _orderDAO.GetByIdAsync(orderId);
-            
+
 
             // Assert
             Assert.That(createdOrder, Is.Not.Null);

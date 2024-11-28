@@ -29,14 +29,15 @@ public class ProductServiceUnitTestt
         // Arrange
         var productDTO = new ProductDTO
         {
-            Name = "New Beer",
+            Name = "Thomas",
             Description = "A refreshing beer",
             Price = 4.99f,
             Stock = 100,
-            Abv = 5.5f,
+            ABV = 5.5f,
             ImageUrl = "https://example.com/beer.jpg",
-            CategoryName = "Ale",
-            BreweryName = "Brewery A"
+            CategoryName = "IPA",
+            BreweryName = "Overtone A",
+            RowVersion = ""
         };
 
         // Act
@@ -49,91 +50,98 @@ public class ProductServiceUnitTestt
     }
 
     [Test]
-    public async Task DeleteProductByIdAsync_WhenProductExists_ShouldDeleteProduct()
+    public async Task GetProductByIdAsync_ShouldReturnProductDTO()
     {
-        var breweryId = await _breweryService.CreateBreweryAsync(new Brewery
+        //Arrange
+        var product = new Product
         {
-            Name = "TestBrewery",
-            IsDeleted = false
-        });
-
-        var categoryId = await _categoryService.CreateCategoryAsync(new Category
-        {
-            Name = "TestCategory",
-            IsDeleted = false
-        });
-
-        var testProductDTO = new ProductDTO
-        {
-            Name = "TestProductToDelete",
-            BreweryName = "TestBrewery",
-            Price = 15.0f,
-            Description = "A product to delete",
-            Stock = 20,
-            ABV = 5.5f,
-            CategoryName = "TestCategory",
-            ImageUrl = "https://example.com/delete-image.jpg",
-            RowVersion = ""
+            Id = 1,
+            Name = "Thomas",
+            Description = "A refreshing beer",
+            Price = 4.99f,
+            Stock = 100,
+            Abv = 5.5f,
+            ImageUrl = "https://example.com/beer.jpg",
+            Category = new Category { Name = "IPA" },
+            Brewery = new Brewery { Name = "Overtone" },
         };
 
-        var productId = await _productService.CreateProductAsync(testProductDTO);
-        var deleteResult = await _productService.DeleteProductByIdAsync(productId);
+        await _productDAO.CreateAsync(product);
 
-        Assert.That(deleteResult, Is.True, "The product deletion should return true.");
-        var deletedProduct = await _productService.GetProductEntityByIdAsync(productId);
-        Assert.That(deletedProduct, Is.Null, "The product should no longer exist in the database.");
+        //Act
+        var productDTO = await _productService.GetProductByIdAsync(1);
 
-        await _breweryService.DeleteBreweryAsync(breweryId);
-        await _categoryService.DeleteCategoryAsync(categoryId);
+        //Assert
+        Assert.IsNotNull(productDTO);
+        Assert.AreEqual(product.Name, productDTO.Name);
     }
 
     [Test]
-    public async Task UpdateStockAsync_WhenStockIsUpdated_ShouldReflectNewStock()
+    public async Task UpdateProductAsync_ShouldUpdateProduct()
     {
-        var breweryId = await _breweryService.CreateBreweryAsync(new Brewery
+        //Arrange
+        var product = new Product
         {
-            Name = "TestBrewery",
-            IsDeleted = false
-        });
+            Id = 1,
+            Name = "Thomas",
+            Description = "A refreshing beer",
+            Price = 4.99f,
+            Stock = 100,
+            Abv = 5.5f,
+            ImageUrl = "https://example.com/beer.jpg",
+            Category = new Category { Name = "IPA" },
+            Brewery = new Brewery { Name = "Overtone" },
+        };
+        await _productDAO.CreateAsync(product);
 
-        var categoryId = await _categoryService.CreateCategoryAsync(new Category
+        var updatedDTO = new ProductDTO
         {
-            Name = "TestCategory",
-            IsDeleted = false
-        });
-
-        var testProductDTO = new ProductDTO
-        {
-            Name = "TestProductToUpdate",
-            BreweryName = "TestBrewery",
-            Price = 12.0f,
-            Description = "A product to update stock",
-            Stock = 30,
-            ABV = 6.0f,
-            CategoryName = "TestCategory",
-            ImageUrl = "https://example.com/update-image.jpg",
+            Id = 1,
+            Name = "Updated Thomas",
+            Description = "A refreshing beer",
+            Price = 4.99f,
+            Stock = 100,
+            ABV = 5.5f,
+            ImageUrl = "https://example.com/beer.jpg",
+            CategoryName = "IPA",
+            BreweryName = "Overtone",
             RowVersion = ""
         };
 
-        _createdProductId = await _productService.CreateProductAsync(testProductDTO);
+        //Act
+        var result = await _productService.UpdateProductAsync(updatedDTO);
 
-        var updateResult = await _productService.UpdateStockAsync(_createdProductId, 25);
-        Assert.That(updateResult, Is.True, "Stock update should return true.");
-
-        var updatedProduct = await _productService.GetProductByIdAsync(_createdProductId);
-        Assert.That(updatedProduct.Stock, Is.EqualTo(5), "The product stock should be initial minus the updated value");
-
-        await _breweryService.DeleteBreweryAsync(breweryId);
-        await _categoryService.DeleteCategoryAsync(categoryId);
+        //Assert
+        Assert.IsTrue(result);
+        var updatedProduct = await _productDAO.GetByIdAsync(1);
+        Assert.AreEqual(updatedDTO.Name, updatedProduct.Name);
     }
 
-    [TearDown]
-    public async Task TearDown()
+    [Test]
+    public async Task DeleteProductByIdAsync_ShouldRemoveProduct()
     {
-        if (_createdProductId > 0)
+        //Arrange
+        var product = new Product
         {
-            await _productService.DeleteProductByIdAsync(_createdProductId);
-            _createdProductId = 0;
-        }
+            Id = 1,
+            Name = "Thomas",
+            Description = "A refreshing beer",
+            Price = 4.99f,
+            Stock = 100,
+            Abv = 5.5f,
+            ImageUrl = "https://example.com/beer.jpg",
+            Category = new Category { Name = "IPA" },
+            Brewery = new Brewery { Name = "Overtone" },
+        };
+
+        await _productDAO.CreateAsync(product);
+
+        //Act
+        var result = await _productService.DeleteProductByIdAsync(1);
+
+        //Assert
+        Assert.IsTrue(result);
+        var deletedProduct = await _productDAO.GetByIdAsync(1);
+        Assert.IsNull(deletedProduct);
     }
 }

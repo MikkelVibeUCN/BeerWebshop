@@ -1,11 +1,9 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
+﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using Dapper;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Transactions;
 
 namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 {
@@ -92,7 +90,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 await UpdateStockFromOrder(order.OrderLines, connection, transaction);
-               
+
                 var orderId = await InsertOrderAsync(connection, transaction, order);
 
                 foreach (var orderLine in order.OrderLines)
@@ -251,7 +249,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         }
         #endregion
         #region IOrderDAO Methods
-        
+
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -271,7 +269,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         {
                             existingOrder = order;
                             existingOrder.OrderLines = new List<OrderLine>();
-                            existingOrder.Customer = customer; 
+                            existingOrder.Customer = customer;
                             orders.Add(existingOrder);
                         }
 
@@ -290,7 +288,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                         return existingOrder;
                     },
                     new { CustomerId = customerId },
-                    splitOn: "Quantity,Id,Id,Id,AccountId" 
+                    splitOn: "Quantity,Id,Id,Id,AccountId"
                 );
 
                 return orders;
@@ -328,7 +326,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             await connection.ExecuteAsync(InsertOrderLineSql, parameters, transaction);
         }
 
-        
+        public Task<int> CreateAsync(Order order, SqlConnection? connection = null, DbTransaction? transaction = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 #endregion
