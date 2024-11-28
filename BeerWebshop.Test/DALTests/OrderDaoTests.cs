@@ -41,7 +41,7 @@ public class OrderDaoTests
 		{
 			Name = $"Test{_testSuffix} Test{_testSuffix}",
 			Phone = "12345678",
-			Password = "password",
+			PasswordHash = "password",
 			Age = 20,
 			Email = $"test{_testSuffix}@example.com",
 			Address = "Street number 9000 Aalborg"

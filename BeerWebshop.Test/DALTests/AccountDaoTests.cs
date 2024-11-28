@@ -33,7 +33,7 @@ public class AccountDaoTests
             Name = "Navn efternavn",
             Address = "sejvej 11 9000 aalborg",
             Email = "hej@dig.dk",
-            Password = "æggemad",
+            PasswordHash = "æggemad",
             Phone = "60170091",
             Age = 18
         };
@@ -49,7 +49,7 @@ public class AccountDaoTests
         Assert.That(customer.Name == customerFound.Name);
         Assert.That(customer.Address.Equals(customerFound.Address));
         Assert.That(customer.Email == customerFound.Email);
-        Assert.That(!customer.Password.Equals(customerFound.Password));
+        Assert.That(!customer.PasswordHash.Equals(customerFound.PasswordHash));
         Assert.That(customer.Phone.Equals(customerFound.Phone));
     }
 
@@ -62,7 +62,7 @@ public class AccountDaoTests
             Name = "Navn efternavn",
             Address = "sejvej 11 9000 aalborg",
             Email = "hej@dig.dk",
-            Password = "æggemad",
+            PasswordHash = "æggemad",
             Phone = "60170091",
             Age = 18
         };
@@ -78,7 +78,7 @@ public class AccountDaoTests
             Name = "Navn efternavn",
             Address = "sejvej 11 9000 aalborg",
             Email = null,
-            Password = "æggemad",
+            PasswordHash = "æggemad",
             Phone = "60170091",
             Age = 18
         };
@@ -99,7 +99,7 @@ public class AccountDaoTests
             Name = "Navn efternavn",
             Address = "sejvej 11 9000 aalborg",
             Email = "123@123.com",
-            Password = "æggemad",
+            PasswordHash = "æggemad",
             Phone = "60170091",
             Age = 18
         };
@@ -113,7 +113,7 @@ public class AccountDaoTests
             Name = "Efternavn navn",
             Address = "vej 15 9000 aalborg",
             Email = "123@123.com",
-            Password = "æggemad",
+            PasswordHash = "æggemad",
             Phone = "12345678",
             Age = 18
         };
@@ -133,7 +133,7 @@ public class AccountDaoTests
             Name = "Test User",
             Address = "Testvej 10 1000 København",
             Email = "test@test.dk",
-            Password = "testpassword",
+            PasswordHash = "testpassword",
             Phone = "12345678",
             Age = 30
         };
@@ -153,7 +153,7 @@ public class AccountDaoTests
             Name = "Delete User",
             Address = "Deletevej 5 5000 Odense",
             Email = "delete@test.dk",
-            Password = "deletepassword",
+            PasswordHash = "deletepassword",
             Phone = "12345678",
             Age = 30
         };
@@ -176,7 +176,7 @@ public class AccountDaoTests
             Name = "Zip User",
             Address = "NoZipvej 12",
             Email = "zip@test.dk",
-            Password = "password",
+            PasswordHash = "password",
             Phone = "12345678",
             Age = 30
         };
