@@ -18,20 +18,23 @@ namespace BeerWebshop.RESTAPI
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services.AddScoped<IOrderDAO>(_ => new OrderDAO(connectionString));
-            builder.Services.AddScoped<IProductDAO>(_ => new ProductDAO(connectionString));
-            builder.Services.AddScoped<IBreweryDAO>(_ => new BreweryDAO(connectionString));
-            builder.Services.AddScoped<ICategoryDAO>(_ => new CategoryDAO(connectionString));
-            builder.Services.AddScoped<IAccountDAO>(_ => new AccountDAO(connectionString));
+            builder.Services.AddScoped<IOrderDAO>(provider => new OrderDAO(connectionString));
+            builder.Services.AddScoped<IProductDAO>(provider => new ProductDAO(connectionString));
+            builder.Services.AddScoped<IBreweryDAO>(provider => new BreweryDAO(connectionString));
+            builder.Services.AddScoped<ICategoryDAO>(provider => new CategoryDAO(connectionString));
+            builder.Services.AddScoped<IAccountDAO>(provider => new AccountDAO(connectionString));
 
-            builder.Services.AddScoped<ICategoryService>(provider => new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
-            builder.Services.AddScoped<IBreweryService>(provider => new BreweryService(provider.GetRequiredService<IBreweryDAO>()));
+            builder.Services.AddScoped<ICategoryService>(provider =>
+                new CategoryService(provider.GetRequiredService<ICategoryDAO>()));
+            builder.Services.AddScoped<IBreweryService>(provider =>
+                new BreweryService(provider.GetRequiredService<IBreweryDAO>()));
             builder.Services.AddScoped<IProductService>(provider =>
                 new ProductService(
                     provider.GetRequiredService<IProductDAO>(),
-                    provider.GetRequiredService<CategoryService>(),
-                    provider.GetRequiredService<BreweryService>()
+                    provider.GetRequiredService<ICategoryService>(),
+                    provider.GetRequiredService<IBreweryService>()
                 ));
+
 
             var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
 

@@ -12,6 +12,8 @@ namespace BeerWebshop.RESTAPI.Services.Interfaces
         Task<bool> DeleteOrderByIdAsync(int orderId);
         Task<bool> UpdateStockAsync(int productId, int quantity);
 
+        Task<Order?> GetOrderByIdAsync(int orderId);
+
 
 
     }
