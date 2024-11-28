@@ -8,17 +8,15 @@ namespace BeerWebshop.RESTAPI.Stubs
 {
     public class OrderServiceStub
     {
-        private OrderDAOStub _orderDaoStub;
-        private ProductServiceStub _productServiceStub;
 
-        public OrderServiceStub(OrderDAOStub orderDaoStub)
-        {
-            _orderDaoStub = orderDaoStub;
-        }
+        private ProductServiceStub _productServiceStub;
 
         public OrderServiceStub()
         {
+            
         }
+
+        
 
         public async Task<int> CreateOrderFromDtoStub(OrderDTO dto)
         {

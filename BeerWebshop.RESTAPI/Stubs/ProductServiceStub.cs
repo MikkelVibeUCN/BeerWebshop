@@ -1,24 +1,67 @@
-﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+﻿using BeerWebshop.APIClientLibrary;
+using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.Services.Interfaces;
 
 namespace BeerWebshop.RESTAPI.Stubs
 {
-    public class ProductServiceStub
+    public class ProductServiceStub : IProductService
     {
-        public async Task<Product?> GetProductByIdAsyncStub(int id)
+        private List<Product> _products = new List<Product>();
+
+
+        public ProductServiceStub() { }
+        public Task<int> CreateProductAsync(ProductDTO productDTO)
         {
-            return await Task.FromResult<Product?>(new Product(
-       id: 1,
-       name: "Test Beer",
-       category: new Category { Id = 1, Name = "IPA" }, // Simulated Category
-       brewery: new Brewery { Id = 1, Name = "Test Brewery" }, // Simulated Brewery
-       price: 12.99f,
-       description: "A refreshing IPA with citrus and hop notes.",
-       stock: 50,
-       abv: 5.5f,
-       imageUrl: "http://example.com/images/test-beer.jpg",
-       isDeleted: false
-   ));
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteProductByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ProductDTO> GetProductByIdAsync(int id)
+        {
+            var product = new ProductDTO()
+            {
+                Id = 1,
+                Name = "test",
+                BreweryName = "test",
+                Price = 100,
+                Description = "test",
+                Stock = 10,
+                ABV = 10,
+                CategoryName = "test",
+                ImageUrl = "pornhub.com",
+                RowVersion = string.Empty,
+            };
+
+            return Task.FromResult(product);
+    
+    
+        }
+
+
+
+        public Task<Product?> GetProductEntityByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetProductsCount(ProductQueryParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateProductAsync(ProductDTO productDTO)
+        {
+            throw new NotImplementedException();
         }
     }
 }

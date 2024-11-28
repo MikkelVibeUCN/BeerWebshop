@@ -1,19 +1,20 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.Services.Interfaces;
 using BeerWebshop.RESTAPI.Tools;
 using System.Data.SqlClient;
 
 namespace BeerWebshop.RESTAPI.Services
 {
-	public class OrderService
+	public class OrderService : IOrderService
 	{
 		private readonly IOrderDAO _orderDao;
-		private readonly ProductService _productService;
+		private readonly IProductService _productService;
 		private readonly string _connectionString;
 
 
-		public OrderService(IOrderDAO orderDao, ProductService productService, string connectionString)
+		public OrderService(IOrderDAO orderDao, IProductService productService, string connectionString)
 		{
 			_orderDao = orderDao;
 			_connectionString = connectionString;

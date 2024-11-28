@@ -2,11 +2,12 @@
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
 using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
+using BeerWebshop.RESTAPI.Services.Interfaces;
 using BeerWebshop.RESTAPI.Tools;
 
 namespace BeerWebshop.RESTAPI.Services
 {
-    public class AccountService
+    public class AccountService : IAccountService
     {
 
         private readonly JWTService _jwtService;

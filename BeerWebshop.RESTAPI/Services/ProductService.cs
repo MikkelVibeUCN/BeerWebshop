@@ -7,7 +7,7 @@ using BeerWebshop.RESTAPI.Tools;
 
 namespace BeerWebshop.RESTAPI.Services;
 
-public class ProductService
+public class ProductService : IProductService
 {
     private readonly IProductDAO _productDAO;
     private readonly ICategoryService _categoryService;
