@@ -17,7 +17,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
         private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
-
         private const string BaseOrderSql = @"
             SELECT 
 				o.Id, 
