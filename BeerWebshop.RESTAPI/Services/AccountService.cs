@@ -17,6 +17,10 @@ namespace BeerWebshop.RESTAPI.Services
             _jwtService = jwtService;
         }
 
+        public AccountService(AccountDAO accountDao)
+        {
+        }
+
         public async Task<int> SaveCustomerAsync(Customer customer)
         {
             return await _accountDAO.CreateAsync(customer);

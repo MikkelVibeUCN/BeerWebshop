@@ -15,6 +15,7 @@ public class OrderServiceTests
 	private CategoryService _categoryService;
 	private BreweryService _breweryService;
 	private AccountService _accountService;
+	
 
 	private int _createdOrderId;
 
@@ -26,6 +27,7 @@ public class OrderServiceTests
 		var categoryDao = new CategoryDAO(_connectionString);
 		var breweryDao = new BreweryDAO(_connectionString);
 		var accountDao = new AccountDAO(_connectionString);
+		
 
 		_accountService = new AccountService(accountDao);
         _categoryService = new CategoryService(categoryDao);
@@ -71,7 +73,7 @@ public class OrderServiceTests
         {
             Name = $"Test Test",
             Phone = "12345678",
-            Password = "password",
+            PasswordHash = "password",
             Age = 20,
             Email = $"dsajkdkjjhad@dsasdaad",
             Address = "Street number 9000 aalborg"
@@ -146,7 +148,7 @@ public class OrderServiceTests
         {
             Name = $"Test Test",
             Phone = "12345678",
-            Password = "password",
+            PasswordHash = "password",
             Age = 20,
             Email = $"dsajkdkjjhad@dsasdaad",
             Address = "Street number 9000 aalborg"
@@ -170,7 +172,7 @@ public class OrderServiceTests
 			}
 		};
 
-		await _productService.UpdateStockAsync(productId, 3);
+		await _orderService.UpdateStockAsync(productId, 3);
 
 		var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
 			await _orderService.CreateOrderAsync(testOrder));

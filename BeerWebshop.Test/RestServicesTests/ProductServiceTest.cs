@@ -1,5 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.DAO.DAOClasses;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
 
@@ -11,6 +12,7 @@ public class ProductServiceTests
     private ProductService _productService;
     private CategoryService _categoryService;
     private BreweryService _breweryService;
+    private OrderService _orderService;
     private string _connectionString = DBConnection.ConnectionString();
 
     private int _createdProductId;
@@ -21,7 +23,9 @@ public class ProductServiceTests
         var productDao = new ProductDAO(_connectionString);
         var categoryDao = new CategoryDAO(_connectionString);
         var breweryDao = new BreweryDAO(_connectionString);
+        var orderDao = new OrderDAO(_connectionString);
 
+        _orderService = new OrderService(orderDao, _productService, _connectionString);
         _categoryService = new CategoryService(categoryDao);
         _breweryService = new BreweryService(breweryDao);
         _productService = new ProductService(productDao, _categoryService, _breweryService);
@@ -136,7 +140,7 @@ public class ProductServiceTests
 
         _createdProductId = await _productService.CreateProductAsync(testProductDTO);
 
-        var updateResult = await _productService.UpdateStockAsync(_createdProductId, 25);
+        var updateResult = await _orderService.UpdateStockAsync(_createdProductId, 25);
         Assert.That(updateResult, Is.True, "Stock update should return true.");
 
         var updatedProduct = await _productService.GetProductByIdAsync(_createdProductId);

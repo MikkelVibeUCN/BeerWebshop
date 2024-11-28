@@ -68,10 +68,12 @@ public class ProductService
 
 		var product = MappingHelper.MapProductDTOToEntity(productDTO, category, brewery);
 
+		
 		return await _productDAO.UpdateAsync(product);
 
 
 	}
+	
 
 
 	public async Task<bool> DeleteProductByIdAsync(int id)
