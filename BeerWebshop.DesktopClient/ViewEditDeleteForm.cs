@@ -91,7 +91,8 @@ namespace BeerWebshop.DesktopClient
         }
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            new EditProductForm(_productController).ShowDialog();
+            if(lstProduct.SelectedItem is ProductDTO selectedProduct)
+            new EditProductForm(_productController, selectedProduct).ShowDialog();
 
         }
 
