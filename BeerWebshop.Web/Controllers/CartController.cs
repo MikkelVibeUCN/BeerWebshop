@@ -3,6 +3,8 @@ using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices.Marshalling;
+using BeerWebshop.Web.Cookies;
+using BeerWebshop.Web.Models;
 
 namespace BeerWebshop.Web.Controllers
 {
@@ -107,10 +109,9 @@ namespace BeerWebshop.Web.Controllers
         {
             try
             {
-                if (!await HasEnoughStock(productId, newQuantity))
-                {
-                    return BadRequest("Not enough products in stock");
-                }
+                ProductDTO product = await GetProduct(productId);
+
+                if (!HasEnoughStock(product.Stock, newQuantity)) return BadRequest("Not enough products in stock");
 
                 _cartService.UpdateQuantity(productId, newQuantity);
 
@@ -128,12 +129,7 @@ namespace BeerWebshop.Web.Controllers
         {
             try
             {
-                ProductDTO? product = await _productService.GetProductFromId(productId);
-
-                if(product == null)
-                {
-                    throw new Exception("Product not found");
-                }
+                ProductDTO product = await GetProduct(productId);
 
                 _cartService.AddToCart(product, quantity);
 
@@ -146,14 +142,20 @@ namespace BeerWebshop.Web.Controllers
             }
         }
 
-        private async Task<bool> HasEnoughStock(int productId, int newQuantity)
+        private async Task<ProductDTO> GetProduct(int productId)
         {
             ProductDTO? product = await _productService.GetProductFromId(productId);
-            if(product == null)
+
+            if (product == null)
             {
-                throw new Exception("product not found");
+                throw new Exception("Product not found");
             }
-            return _cartService.HasEnoughStock(product, newQuantity);
+            return product;
+        }
+
+        private bool HasEnoughStock(int productStock, int newQuantity)
+        {
+            return productStock >= newQuantity;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.Web.Cookies;
 
-namespace BeerWebshop.Web.Cookies
+namespace BeerWebshop.Web.Models
 {
     public class ShoppingCart
     {
@@ -30,5 +31,14 @@ namespace BeerWebshop.Web.Cookies
         {
             OrderLines.Add(OrderLineDTO);
         }
+
+        public CartCookie ConvertToCookie() => new CartCookie
+        {
+            OrderLines = OrderLines.Select(ol => new OrderLineCutDown
+            {
+                ProductId = ol.Product.Id,
+                Quantity = ol.Quantity
+            }).ToList()
+        };
     }
 }

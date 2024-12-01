@@ -1,5 +1,23 @@
 ﻿@model IEnumerable<BeerWebshop.APIClientLibrary.ApiClient.DTO.OrderLineDTO>
 
+
+<style>
+    .product-image {
+        width: 50px; /* Desired fixed width */
+        height: 50px; /* Desired fixed height */
+        object-fit: contain; /* Ensures the image fills the box without distortion */
+    }
+
+    .fixed-row-height {
+        height: 80px; /* Ensure consistent row height */
+    }
+
+    .align-middle {
+        vertical-align: middle; /* Vertically center the content within the cell */
+    }
+</style>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -17,12 +35,13 @@
     <tbody>
         @foreach (var orderLineDTO in Model)
         {
-            <tr data-product-id="@orderLineDTO.Product.Id">
+            <tr data-product-id="@orderLineDTO.Product.Id" class="fixed-row-height">
                 <td class="align-middle">
-                    <img src="@((string.IsNullOrEmpty(orderLineDTO.Product.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLineDTO.Product.ImageUrl))" alt="@orderLineDTO.Product.Name" style="width: 50px; height: auto;" />
+                    <img src="@((string.IsNullOrEmpty(orderLineDTO.Product.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLineDTO.Product.ImageUrl))"
+                         alt="@orderLineDTO.Product.Name"
+                         class="product-image" />
                 </td>
                 <td class="align-middle">
-                    <!-- Product Name with Link to Product Details -->
                     <a href="@Url.Action("Details", "Beer", new { id = orderLineDTO.Product.Id })">
                         @orderLineDTO.Product.Name
                     </a>
@@ -31,8 +50,6 @@
                 <td class="align-middle">@orderLineDTO.Product.CategoryName</td>
                 <td class="align-middle">@orderLineDTO.Product.ABV %</td>
                 <td class="align-middle">@orderLineDTO.Product.Price.ToString("F2") kr.</td>
-
-                <!-- Editable Quantity Field with Auto Update -->
                 <td class="align-middle">
                     <input type="number"
                            class="quantity-input form-control"
@@ -42,11 +59,7 @@
                            data-product-id="@orderLineDTO.Product.Id"
                            style="width: 100%;" />
                 </td>
-
-                <!-- Subtotal -->
                 <td class="align-middle subtotal">@orderLineDTO.SubTotal.ToString("F2") kr.</td>
-
-                <!-- Remove Button -->
                 <td class="align-middle">
                     <button type="button"
                             class="remove-button btn btn-danger"
@@ -56,6 +69,8 @@
                 </td>
             </tr>
         }
+
+
     </tbody>
 </table>
 

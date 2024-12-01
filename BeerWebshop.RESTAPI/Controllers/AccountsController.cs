@@ -5,6 +5,7 @@ using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection.Metadata.Ecma335;
 
 namespace BeerWebshop.RESTAPI.Controllers;
 
@@ -77,13 +78,16 @@ public class AccountsController : ControllerBase
         }
         try
         {
-            var accountDTO = await _accountService.GetByEmail(email);
-            switch(accountDTO.Role)
+            Account? account = await _accountService.GetByEmail(email);
+
+            if (account == null) return BadRequest("User not found");
+
+            switch (account.Role)
             {
                 case "User":
-                    return Ok(MappingHelper.MapToDTO(accountDTO as Customer));
+                    return Ok(MappingHelper.MapToDTO((Customer) account));
                 case "Admin":
-                    return Ok(MappingHelper.MapToDTO(accountDTO as Admin));
+                    return Ok(MappingHelper.MapToDTO((Admin) account));
                 default:
                     return BadRequest("Invalid role");
             }

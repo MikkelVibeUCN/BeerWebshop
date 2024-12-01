@@ -31,7 +31,7 @@ namespace BeerWebshop.Web
             builder.Services.AddScoped<IOrderApiClient>(provider => new OrderApiClient(uri));
             builder.Services.AddScoped<IAccountAPIClient>(provider => new AccountAPIClient(uri));
 			// Register HttpContextAccessor for CookieService and other services
-			builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			builder.Services.AddHttpContextAccessor();
 
             // Register application services
             builder.Services.AddScoped<ProductService>();

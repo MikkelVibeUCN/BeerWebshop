@@ -1,21 +1,21 @@
-﻿@model BeerWebshop.Web.Cookies.ShoppingCart
+﻿@model ShoppingCart
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
     .btn-light-green {
-        background-color: #32AA32; /* Light green background */
-        border-color: #32AA32; /* Same border color */
+        background-color: #32AA32; 
+        border-color: #32AA32; 
         color: #FFFFFF;
     }
 
-        .btn-light-green:hover {
-            background-color: #398439;
-            border-color: #398439;
-        }
+    .btn-light-green:hover {
+        background-color: #398439;
+        border-color: #398439;
+     }
 
     .notification {
-        display: none; /* Hide by default */
+        display: none;
         position: fixed;
         top: 20px;
         right: 20px;
@@ -24,17 +24,17 @@
         z-index: 1000;
     }
 
-        .notification.success {
-            background-color: #d4edda; /* Light green */
-            color: #155724; /* Dark green */
-            border: 1px solid #c3e6cb; /* Green border */
-        }
+    .notification.success {
+        background-color: #d4edda; 
+        color: #155724; 
+        border: 1px solid #c3e6cb; 
+    }
 
-        .notification.error {
-            background-color: #f8d7da; /* Light red */
-            color: #721c24; /* Dark red */
-            border: 1px solid #f5c6cb; /* Red border */
-        }
+    .notification.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
 </style>
 
 <h1>
@@ -47,7 +47,7 @@
     @Html.Partial("_CartPartial", Model.OrderLines)
 
     <h4>
-        <i class="bi bi-currency-dollar"></i> Total beløb <span id="total-price">@Model.TotalPrice.ToString("F2") kr.</span>
+        Total: <span id="total-price">@Model.TotalPrice.ToString("F2") kr.</span>
     </h4>
     <button type="button" class="btn btn-light-green rounded-pill py-2 px-4" id="pay-button">
         <i class="bi bi-credit-card"></i> Gå til kassen
@@ -59,17 +59,13 @@
 @section Scripts {
     <script>
         $('#pay-button').on('click', function () {
-            // Count items in the cart
             var itemCount = $('.quantity-input').toArray().reduce((count, input) => {
                 return count + (parseInt($(input).val()) || 0);
             }, 0);
 
-            // Check if there are items in the cart
             if (itemCount > 0) {
-                // Perform payment action
-                window.location.href = '/Checkout'; // Change to your payment URL
+                window.location.href = '/Checkout'; 
             } else {
-                // Optionally show a notification if cart is empty
                 window.showNotification('Kurven er tom. Tilføj venligst varer, før du går til kassen.', 'error');
             }
         });

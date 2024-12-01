@@ -1,5 +1,6 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.Web.Cookies;
+using BeerWebshop.Web.Models;
 using System.Linq;
 
 namespace BeerWebshop.Web.Services
@@ -7,21 +8,23 @@ namespace BeerWebshop.Web.Services
     public class CartService : ICartService
     {
         private readonly CookieService _cookieService;
+        private readonly ProductService _productService;
         private const string CartCookieKey = "Cart";
 
-        public CartService(CookieService cookieService)
+        public CartService(CookieService cookieService, ProductService productService)
         {
             _cookieService = cookieService;
+            productService = _productService;
         }
-        public ShoppingCart GetCart()
+        public async Task<ShoppingCart> GetCartViewModel()
         {
-            return GetCartFromCookies();
+            CartCookie cartCookie = GetCartFromCookies();
+            return await ConvertCookieToCart(cartCookie);
         }
 
-        private bool HasProductInCart(int productId)
+        private OrderLineCutDown? GetOrderLineInCart(int productId)
         {
-            var orderLineDTO = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
-            return orderLineDTO != null;
+            return GetCartFromCookies().OrderLines.FirstOrDefault(ol => ol.ProductId == productId);
         }
 
         public void AddToCart(ProductDTO product, int quantity)
@@ -31,97 +34,113 @@ namespace BeerWebshop.Web.Services
                 quantity = 1;
             }
 
-            if (!HasEnoughStock(product, quantity))
+            if (!HasEnoughStock(product.Stock, quantity))
             {
                 throw new Exception("Not enough stock");
             }
 
-            var cart = GetCart();
+            var cart = GetCartFromCookies();
 
-            if (HasProductInCart(product.Id))
+            OrderLineCutDown? orderLine = GetOrderLineInCart(product.Id);
+            if(orderLine == null)
             {
-                OrderLineDTO orderLineDTO = cart.OrderLines.First(ol => ol.Product.Id == product.Id);
-                UpdateQuantity(product.Id, orderLineDTO.Quantity + quantity, cart);
+                orderLine = new OrderLineCutDown
+                {
+                    ProductId = product.Id,
+                    Quantity = quantity
+                };
+                cart.OrderLines.Add(orderLine);
             }
             else
             {
-                var orderLineDTO = new OrderLineDTO(quantity, product);
-                cart.AddOrderLine(orderLineDTO);
+                orderLine.Quantity += quantity;
             }
-
+            
             SaveCartToCookies(cart);
         }
 
         public void RemoveFromCart(int productId)
         {
-            var cart = GetCart();
+            var cart = GetCartFromCookies();
 
-            if (!HasProductInCart(productId))
+            OrderLineCutDown? orderLineToRemove = GetOrderLineInCart(productId);
+            if (orderLineToRemove == null)
             {
-                throw new Exception("ProductDTO not found in cart");
+                throw new Exception("Product not found in cart");
             }
-
-            var orderLineToRemove = cart.OrderLines.First(ol => ol.Product.Id == productId);
             cart.OrderLines.Remove(orderLineToRemove);
 
             SaveCartToCookies(cart);
         }
 
-        public void UpdateQuantity(int productId, int newQuantity, ShoppingCart? cart = null)
+        public void UpdateQuantity(int productId, int quantity)
         {
-            if(cart == null)
-            {
-                cart = GetCart();
-            }
-
-            if (!HasProductInCart(productId))
-            {
-                throw new Exception("ProductDTO not found in cart");
-            }
-
-            var orderLineToUpdate = cart.OrderLines.First(ol => ol.Product.Id == productId);
-
-            if (!HasEnoughStock(orderLineToUpdate.Product, newQuantity))
-            {
-                throw new Exception("Not enough stock");
-            }
-            orderLineToUpdate.Quantity = newQuantity;
-
-            SaveCartToCookies(cart);
+            throw new NotImplementedException();
         }
 
-        public bool HasEnoughStock(ProductDTO ProductDTO, int quantity)
-        {
-            return ProductDTO.Stock >= quantity;
-        }
+        private bool HasEnoughStock(int productStock, int quantity) => productStock >= quantity;
 
-        public ProductDTO GetProductFromOrderlines(int productId)
+        private CartCookie GetCartFromCookies()
         {
-            var orderLineDTO = GetCart().OrderLines.FirstOrDefault(ol => ol.Product.Id == productId);
-            if (orderLineDTO == null)
-            {
-                throw new InvalidOperationException($"ProductDTO with ID {productId} not found in OrderDTO lines.");
-            }
-            return orderLineDTO.Product;
-        }
-        public ShoppingCart GetCartFromCookies()
-        {
-            ShoppingCart? cart = _cookieService.GetObjectFromCookie<ShoppingCart>(CartCookieKey);
+            CartCookie? cart = _cookieService.GetObjectFromCookie<CartCookie?>(CartCookieKey);
 
             if (cart == null)
             {
-                cart = new ShoppingCart();
+                cart = new CartCookie();
             }
             return cart;
         }
         public void SaveCartToCookies(ShoppingCart cart)
         {
-            _cookieService.SaveCookie<ShoppingCart>(cart, CartCookieKey);
+            SaveCartToCookies(cart.ConvertToCookie());
+        }
+
+        public void SaveCartToCookies(CartCookie cart)
+        {
+            _cookieService.SaveCookie<CartCookie>(cart, CartCookieKey);
         }
 
         public void ClearCartCookies()
         {
-            _cookieService.RemoveCookies<ShoppingCart>(CartCookieKey);
+            _cookieService.RemoveCookies<CartCookie>(CartCookieKey);
         }
+
+        private async Task<ShoppingCart> ConvertCookieToCart(CartCookie cartCookie)
+        {
+            var shoppingCart = new ShoppingCart();
+
+            foreach (var orderLineCutDown in cartCookie.OrderLines)
+            {
+                var product = await _productService.GetProductFromId(orderLineCutDown.ProductId);
+
+                if (product == null)
+                {
+                    throw new Exception("Product not found");
+                }
+
+                var orderLine = new OrderLineDTO
+                {
+                    Quantity = orderLineCutDown.Quantity,
+                    Product = new ProductDTO
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        BreweryName = product.BreweryName,
+                        Price = product.Price,
+                        Description = product.Description,
+                        Stock = product.Stock,
+                        ABV = product.ABV,
+                        CategoryName = product.BreweryName,
+                        ImageUrl = product.ImageUrl,
+                    }
+                };
+
+                shoppingCart.OrderLines.Add(orderLine);
+            }
+
+            return shoppingCart;
+        }
+
+        
     }
 }
