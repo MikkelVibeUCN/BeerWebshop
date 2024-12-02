@@ -48,7 +48,7 @@ namespace BeerWebshop.RESTAPI
             {
                 return new OrderService(
                     provider.GetRequiredService<IOrderDAO>(),
-                    provider.GetRequiredService<ProductService>(),
+                    provider.GetRequiredService<IProductService>(),
                     connectionString);
             });
 

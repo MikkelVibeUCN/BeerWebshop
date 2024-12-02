@@ -11,53 +11,54 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     {
 
         #region Sql Query
-        private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, CustomerId_FK) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @CustomerId);";
+        private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @AddressId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
         private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
         private const string BaseOrderSql = @"
             SELECT 
-				o.Id, 
-				o.CreatedAt, 
-				o.IsDelivered, 
-				o.IsDeleted, 
-				ol.Quantity, 
-				ol.Total, 
-				p.Id, 
-				p.Name, 
-				p.Price, 
-				p.Description, 
-				p.Stock, 
-				p.Abv, 
-				p.ImageUrl, 
-				p.RowVersion, 
-				c.Id, 
-				c.Name, 
-				c.IsDeleted, 
-				b.Id, 
-				b.Name, 
-				b.IsDeleted, 
-				cu.AccountId, 
-				CONCAT(cu.FirstName, ' ', cu.LastName) AS Name, 
-				cu.Phone, 
-				ac.PasswordHash, 
-				cu.IsDeleted, 
-				cu.Age, 
-				ac.Email,
-				CONCAT(
-					a.Street, ' ', a.StreetNumber, 
-					CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 
-					' ', po.Postalcode, ' ', po.City
-				) AS CustomerAddress
-			FROM Orders o
-			LEFT JOIN OrderLines ol ON o.Id = ol.OrderId
-			LEFT JOIN Products p ON ol.ProductId = p.Id
-			LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
-			LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id
-			LEFT JOIN Customers cu ON o.CustomerId_FK = cu.AccountId
+	            o.Id, 
+	            o.CreatedAt, 
+	            o.IsDelivered, 
+	            o.IsDeleted, 
+	            ol.Quantity , 
+	            ol.Total, 
+	            p.Id, 
+	            p.Name, 
+	            p.Price, 
+	            p.Description, 
+	            p.Stock, 
+	            p.Abv, 
+	            p.ImageUrl, 
+	            p.RowVersion, 
+	            c.Id, 
+	            c.Name, 
+	            c.IsDeleted, 
+	            b.Id, 
+	            b.Name, 
+	            b.IsDeleted, 
+	            cu.AccountId, 
+	            CONCAT(cu.FirstName, ' ', cu.LastName) AS Name, 
+	            cu.Phone, 
+	            ac.PasswordHash, 
+	            cu.IsDeleted, 
+	            cu.Age, 
+	            ac.Email,
+	            CONCAT(
+		            a.Street, ' ', a.StreetNumber, 
+		            CASE WHEN a.ApartmentNumber IS NOT NULL THEN CONCAT(' ', a.ApartmentNumber) ELSE '' END, 
+		            ' ', po.Postalcode, ' ', po.City
+	            ) AS CustomerAddress
+            FROM Orders o
+            LEFT JOIN OrderLines ol ON o.Id = ol.OrderId
+            LEFT JOIN Products p ON ol.ProductId = p.Id
+            LEFT JOIN Categories c ON p.CategoryId_FK = c.Id
+            LEFT JOIN Breweries b ON p.BreweryId_FK = b.Id
+            LEFT JOIN Address a ON o.AddressId = a.Id
+            LEFT JOIN Customers cu ON a.AccountId = cu.AccountId
             LEFT JOIN Accounts ac ON cu.AccountId = ac.Id
-			LEFT JOIN Address a ON a.CustomerId_FK = cu.AccountId
-			LEFT JOIN Postalcode po ON a.Postalcode_FK = po.Postalcode";
+            LEFT JOIN Postalcode po ON a.Postalcode_FK = po.Postalcode
+            ";
         #endregion
         #region Dependency injection
 
@@ -258,7 +259,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 var orders = new List<Order>();
-                var sqlQuery = $"{BaseOrderSql} WHERE o.CustomerId_FK = @CustomerId";
+                var sqlQuery = $"{BaseOrderSql} WHERE a.AccountId = @AccountId";
 
                 var result = await connection.QueryAsync<Order, OrderLine, Product, Category, Brewery, Customer, Order>(
                     sqlQuery,
@@ -287,7 +288,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
                         return existingOrder;
                     },
-                    new { CustomerId = customerId },
+                    new { AccountId = customerId },
                     splitOn: "Quantity,Id,Id,Id,AccountId"
                 );
 
@@ -307,10 +308,20 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 CreatedAt = order.CreatedAt,
                 IsDelivered = order.IsDelivered,
                 IsDeleted = order.IsDeleted,
-                CustomerId = order.Customer.Id
+                AddressId = await GetAddressIdFromAccountId(order.Customer.Id)
             };
 
             return await connection.QuerySingleAsync<int>(InsertOrderSql, parameters, transaction);
+        }
+
+        private async Task<int> GetAddressIdFromAccountId(int accountId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var addressId = await connection.QuerySingleAsync<int>("SELECT Id FROM Address WHERE AccountId = @AccountId", new { AccountId = accountId });
+            return addressId;
+
         }
 
         private async Task InsertOrderLineAsync(SqlConnection connection, IDbTransaction transaction, OrderLine orderLine, int orderId)

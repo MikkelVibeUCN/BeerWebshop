@@ -27,13 +27,12 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         FROM 
             Customers c
         JOIN 
-            Address ad ON ad.CustomerId_FK = c.AccountId
+            Address ad ON ad.AccountId = c.AccountId
         JOIN 
             Postalcode p ON ad.Postalcode_FK = p.Postalcode
         JOIN 
             Accounts a ON a.Id = c.AccountId
-        WHERE
-            ";
+        WHERE ";
 
 
         private const string _createAccount = @"INSERT INTO Accounts (Role, Email, PasswordHash)
@@ -45,8 +44,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             VALUES (@AccountId, @FirstName, @LastName, @Phone, @Age, 0);";
 
         private const string _createAddress = @"
-            INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK, CustomerId_FK)
-            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode, @CustomerId)
+            INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK, AccountId)
+            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode, @AccountId)
             SELECT CAST(SCOPE_IDENTITY() AS int);";
 
         private const string _accountWithEmailExists = @"SELECT Id FROM Accounts WHERE Email = @Email;";
@@ -185,12 +184,21 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         private async Task<Customer?> GetCustomerByEmail(string email)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
 
-            var query = _getCustomerByX + "a.Email = @Email;";
+                var query = _getCustomerByX + "a.Email = @Email;";
 
-            return await connection.QuerySingleOrDefaultAsync<Customer?>(query, new { Email = email });
+                return await connection.QuerySingleOrDefaultAsync<Customer?>(query, new { Email = email });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         private async Task<Admin?> GetAdminByEmail(string email)
@@ -279,7 +287,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 var addressParameters = new
                 {
-                    CustomerId = customer.Id,
+                    AccountId = customer.Id,
                     Street = street,
                     StreetNumber = streetNumber,
                     ApartmentNumber = apartmentNumber,
