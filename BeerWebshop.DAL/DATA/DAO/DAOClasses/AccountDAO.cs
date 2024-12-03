@@ -55,6 +55,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string _deleteCustomerById = @"DELETE FROM Customers WHERE AccountId = @Id;";
 
         private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
+        private const string _deleteAddress = @"DELETE FROM ADDRESS WHERE AccountId = @Id";
+        private const string _deleteAccount = @"DELETE FROM ACCOUNTS WHERE Id = @Id";
         #endregion
 
         #region Dependency injection
@@ -121,7 +123,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             try
             {
-                var updatedQuery = _getCustomerByX + "c.Id = @Id;";
+                var updatedQuery = _getCustomerByX + "c.AccountId = @Id;";
 
                 var parameters = new { Id = id };
                 var customer = await connection.QuerySingleOrDefaultAsync<Customer>(updatedQuery, parameters);
@@ -357,10 +359,49 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception("Failed to create account");
             }
         }
+
+        public async Task<bool> DeleteAddressAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+           
+
+            try
+            {
+                var parameters = new { Id = id };
+                await connection.ExecuteAsync(_deleteAddress, parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting the customer: {ex.Message}");
+            }
+
+        }
+        public async Task<bool> DeleteAccountAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            
+
+            try
+            {
+                var parameters = new { Id = id };
+                await connection.ExecuteAsync(_deleteAccount, parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting the customer: {ex.Message}");
+            }
+
+
+        }
+
+
+    }
     }
 
 
-}
+
 #endregion
 
 
