@@ -23,28 +23,46 @@ public class ProductDaoTests
 	[SetUp]
 	public async Task SetUpAsync()
 	{
-		_productDao = new ProductDAO(DBConnection.ConnectionString());
-		_categoryDao = new CategoryDAO(DBConnection.ConnectionString());
-		_breweryDao = new BreweryDAO(DBConnection.ConnectionString());
+		try
+		{
+			_productDao = new ProductDAO(DBConnection.ConnectionString());
+			_categoryDao = new CategoryDAO(DBConnection.ConnectionString());
+			_breweryDao = new BreweryDAO(DBConnection.ConnectionString());
 
-		 var category = new Category { Name = $"Category{_testSuffix}", IsDeleted = false };
-        _createdCategoryId = await _categoryDao.CreateAsync(category);
-        _categoryIdsCreated.Add(_createdCategoryId);  
+			var category = new Category { Name = $"Category{_testSuffix}", IsDeleted = false };
+			_createdCategoryId = await _categoryDao.CreateAsync(category);
 
-        
-        var brewery = new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false };
-        _createdBreweryId = await _breweryDao.CreateAsync(brewery);
-        _breweryIdsCreated.Add(_createdBreweryId);  
-       
-    }
+			var brewery = new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false };
+			_createdBreweryId = await _breweryDao.CreateAsync(brewery);
+
+		}
+		catch (Exception ex)
+		{
+			throw;
+		}
+
+
+	}
 
 
 	[TearDown]
 	public async Task TearDownAsync()
 	{
+		try
+		{
 		await DeleteAllProductsCreated();
-		await DeleteAllCategoriesCreated();
-		await DeleteAllBreweriesCreated();
+		await _categoryDao.DeleteAsync(_createdCategoryId);
+		await _breweryDao.DeleteAsync(_createdBreweryId);
+		_productIdsCreated.Clear();
+		}
+		catch (Exception ex)
+		{
+			throw;
+		}
+
+
+		//await DeleteAllCategoriesCreated();
+		//await DeleteAllBreweriesCreated();
 	}
 
     private async Task DeleteAllBreweriesCreated()
