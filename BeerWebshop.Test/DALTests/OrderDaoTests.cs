@@ -14,7 +14,7 @@ public class OrderDaoTests
     private CategoryDAO _categoryDao;
     private AccountDAO _accountDao;
 
-    private readonly string _testSuffix = "_Test";
+    private readonly string _testSuffix = "_OrderTest";
 
     private int _testBreweryId;
     private int _testCategoryId;
@@ -101,16 +101,12 @@ public class OrderDaoTests
     [TearDown]
     public async Task TearDown()
     {
-        // Ensure dependent data is cleaned up first
-        using var connection = new SqlConnection(DBConnection.ConnectionString());
-        await connection.ExecuteAsync("DELETE FROM OrderLines WHERE OrderId = @OrderId", new { OrderId = _testOrderId });
-
-        // Delete entities in reverse order of dependency
         await _orderDao.DeleteAsync(_testOrderId);
         await _productDao.DeleteAsync(_testProductId);
         await _breweryDao.DeleteAsync(_testBreweryId);
         await _categoryDao.DeleteAsync(_testCategoryId);
-        await _accountDao.DeleteAsync(_testCustomerId);
+        await _accountDao.DeleteAddressAsync(_testCustomerId);
+        await _accountDao.DeleteAccountAsync(_testCustomerId);
     }
 }
 
