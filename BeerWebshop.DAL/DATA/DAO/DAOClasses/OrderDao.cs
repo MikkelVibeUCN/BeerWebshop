@@ -14,7 +14,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @AddressId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
-        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
+        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS WITH (ROWLOCK) SET Stock = Stock - @Quantity WHERE Id = @ProductId";
         private const string BaseOrderSql = @"
             SELECT 
 	            o.Id, 
@@ -185,7 +185,8 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             parameters.Add("@ProductId", productId);
             parameters.Add("@Quantity", quantity);
 
-            var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout: 5);
+            var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WITH (UPDLOCK, ROWLOCK) WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout: 5);
+            //TODO: Shared lock on stock
             if (stock < quantity)
             {
                 transaction.Rollback();
