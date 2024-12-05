@@ -209,9 +209,9 @@ public class AccountDaoTests
     [TearDown]
     public async Task TearDownAsync()
     {
+        await DeleteAllCustomersMade();
         await DeleteAllAdressesMade();
         await DeleteAllAccountsMade();
-        await DeleteAllCustomersMade();
     }
 
     private async Task DeleteAllCustomersMade()

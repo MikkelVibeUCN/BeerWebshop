@@ -108,9 +108,11 @@ public class OrderDaoTests
         // Delete entities in reverse order of dependency
         await _orderDao.DeleteAsync(_testOrderId);
         await _productDao.DeleteAsync(_testProductId);
+        await _accountDao.DeleteAsync(_testCustomerId);
+        await _accountDao.DeleteAddressAsync(_testCustomerId);
+        await _accountDao.DeleteAccountAsync(_testCustomerId);
         await _breweryDao.DeleteAsync(_testBreweryId);
         await _categoryDao.DeleteAsync(_testCategoryId);
-        await _accountDao.DeleteAsync(_testCustomerId);
     }
 }
 
