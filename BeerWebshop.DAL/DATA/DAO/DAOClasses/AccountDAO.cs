@@ -52,7 +52,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         private const string _createZipCode = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
 
-        private const string _deleteCustomerById = @"DELETE FROM Customers WHERE AccountId = @Id;";
+        private const string _deleteCustomerById = @"DELETE FROM Accounts WHERE Id = @Id;";
 
         private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
         private const string _deleteAddress = @"DELETE FROM ADDRESS WHERE AccountId = @Id";
