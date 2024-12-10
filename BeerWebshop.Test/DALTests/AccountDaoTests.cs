@@ -19,11 +19,13 @@ public class AccountDaoTests
     private AccountDAO _accountDAO;
     private int _testId = 1;
     private List<int> _customersCreated = new List<int>();
+    private List<int> _addressesCreated = new List<int>();
+    private List<int> _accountsCreated = new List<int>();
     [SetUp]
     public async Task SetUpAsync()
     {
         _accountDAO = new AccountDAO(DBConnection.ConnectionString());
-     }
+    }
 
     [Test]
     public async Task GetCustomerById_WhenCustomerExists_ShouldReturnCustomerWithGivenId()
@@ -31,7 +33,7 @@ public class AccountDaoTests
         var customer = new Customer()
         {
             Name = "Navn efternavn",
-            Address = "sejvej 11 9000 aalborg",
+            Address = "sejvej 11 '' 9000 aalborg",
             Email = "hej@dig.dk",
             PasswordHash = "æggemad",
             Phone = "60170091",
@@ -41,6 +43,8 @@ public class AccountDaoTests
         int customerId = await _accountDAO.CreateAsync(customer);
 
         _customersCreated.Add(customerId);
+        _addressesCreated.Add(customerId);
+        _accountsCreated.Add(customerId);
 
         var customerFound = await _accountDAO.GetByIdAsync(customerId);
 
@@ -60,14 +64,17 @@ public class AccountDaoTests
         var customer = new Customer()
         {
             Name = "Navn efternavn",
-            Address = "sejvej 11 9000 aalborg",
-            Email = "hej@dig.dk",
+            Address = "coolvej 69 '' 9000 aalborg",
+            Email = "testemail@test",
             PasswordHash = "æggemad",
             Phone = "60170091",
             Age = 18
         };
         int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
+        _addressesCreated.Add(customerId);
+        _accountsCreated.Add(customerId);
+        Assert.That(customerId, Is.GreaterThan(0));
     }
 
     [Test]
@@ -107,6 +114,8 @@ public class AccountDaoTests
 
         int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
+        _addressesCreated.Add(customerId);
+        _accountsCreated.Add(customerId);
 
         var customer2 = new Customer()
         {
@@ -122,6 +131,8 @@ public class AccountDaoTests
         {
             int customerId = await _accountDAO.CreateAsync(customer2);
             _customersCreated.Add(customerId);
+            _addressesCreated.Add(customerId);
+            _accountsCreated.Add(customerId);
         });
     }
 
@@ -140,6 +151,8 @@ public class AccountDaoTests
 
         int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
+        _addressesCreated.Add(customerId);
+        _accountsCreated.Add(customerId);
 
         var customerFromDb = await _accountDAO.GetByIdAsync(customerId);
 
@@ -160,6 +173,8 @@ public class AccountDaoTests
 
         int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
+        _addressesCreated.Add(customerId);
+        _accountsCreated.Add(customerId);
 
         bool isDeleted = await _accountDAO.DeleteAsync(customerId);
 
@@ -195,6 +210,8 @@ public class AccountDaoTests
     public async Task TearDownAsync()
     {
         await DeleteAllCustomersMade();
+        await DeleteAllAdressesMade();
+        await DeleteAllAccountsMade();
     }
 
     private async Task DeleteAllCustomersMade()
@@ -202,6 +219,20 @@ public class AccountDaoTests
         foreach (var id in _customersCreated)
         {
             await _accountDAO.DeleteAsync(id);
+        }
+    }
+    private async Task DeleteAllAccountsMade()
+    {
+        foreach (var id in _accountsCreated)
+        {
+            await _accountDAO.DeleteAccountAsync(id);
+        }
+    }
+    private async Task DeleteAllAdressesMade()
+    {
+        foreach (var id in _addressesCreated)
+        {
+            await _accountDAO.DeleteAddressAsync(id);
         }
     }
 }

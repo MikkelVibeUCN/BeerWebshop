@@ -13,7 +13,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 public class ProductDAO : IProductDAO
 {
     #region Sql query
-    private const string InsertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
+    private const string InsertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, ABV, ImageUrl, IsDeleted)
         VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
         SELECT CAST(SCOPE_IDENTITY() AS int);";
 	private const string GetByIdSql = @"

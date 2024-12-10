@@ -16,32 +16,80 @@ public class ProductDaoTests
 	private int _createdCategoryId;
 	private int _createdBreweryId;
 
-	private readonly List<int> _productIdsCreated = new();
+	private List<int> _productIdsCreated = new();
+	private List<int> _breweryIdsCreated = new();
+	private List<int> _categoryIdsCreated = new();
 
 	[SetUp]
 	public async Task SetUpAsync()
 	{
-		_productDao = new ProductDAO(DBConnection.ConnectionString());
-		_categoryDao = new CategoryDAO(DBConnection.ConnectionString());
-		_breweryDao = new BreweryDAO(DBConnection.ConnectionString());
+		try
+		{
+			_productDao = new ProductDAO(DBConnection.ConnectionString());
+			_categoryDao = new CategoryDAO(DBConnection.ConnectionString());
+			_breweryDao = new BreweryDAO(DBConnection.ConnectionString());
 
-		_createdCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
-		_createdBreweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
+			var category = new Category { Name = $"Category{_testSuffix}", IsDeleted = false };
+			_createdCategoryId = await _categoryDao.CreateAsync(category);
+
+			var brewery = new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false };
+			_createdBreweryId = await _breweryDao.CreateAsync(brewery);
+
+		}
+		catch (Exception ex)
+		{
+			throw;
+		}
+
+
 	}
+
 
 	[TearDown]
 	public async Task TearDownAsync()
 	{
-		foreach (var productId in _productIdsCreated)
+		try
 		{
-			await _productDao.DeleteAsync(productId);
-		}
-
+		await DeleteAllProductsCreated();
 		await _categoryDao.DeleteAsync(_createdCategoryId);
 		await _breweryDao.DeleteAsync(_createdBreweryId);
+		_productIdsCreated.Clear();
+		}
+		catch (Exception ex)
+		{
+			throw;
+		}
+
+
+		//await DeleteAllCategoriesCreated();
+		//await DeleteAllBreweriesCreated();
 	}
 
-	[Test]
+    private async Task DeleteAllBreweriesCreated()
+    {
+        foreach(var id in _breweryIdsCreated)
+		{
+			await _breweryDao.DeleteAsync(id);
+		}
+    }
+
+    private async Task DeleteAllCategoriesCreated()
+    {
+        foreach(var id in _categoryIdsCreated)
+		{
+			await _categoryDao.DeleteAsync(id);
+		}
+    }
+
+    private async Task DeleteAllProductsCreated()
+    {
+        foreach (var productId in _productIdsCreated)
+        {
+            await _productDao.DeleteAsync(productId);
+        }
+    }
+
+    [Test]
 	public async Task GetByIdAsync_WhenProductExists_ShouldReturnProduct()
 	{
 		var productId = await _productDao.CreateAsync(new Product
@@ -58,6 +106,8 @@ public class ProductDaoTests
 		});
 
 		_productIdsCreated.Add(productId);
+		
+		
 
 		var product = await _productDao.GetByIdAsync(productId);
 
@@ -84,8 +134,9 @@ public class ProductDaoTests
 
 		var productId = await _productDao.CreateAsync(product);
 		_productIdsCreated.Add(productId);
+        
 
-		var createdProduct = await _productDao.GetByIdAsync(productId);
+        var createdProduct = await _productDao.GetByIdAsync(productId);
 
 		Assert.IsNotNull(createdProduct);
 		Assert.That(createdProduct.Name, Is.EqualTo(product.Name));
@@ -108,8 +159,9 @@ public class ProductDaoTests
 		});
 
 		_productIdsCreated.Add(productId);
+       
 
-		var product = await _productDao.GetByIdAsync(productId);
+        var product = await _productDao.GetByIdAsync(productId);
 		product.Name = $"UpdatedProduct{_testSuffix}";
 		product.Price = 60f;
 
@@ -140,8 +192,9 @@ public class ProductDaoTests
 		});
 
 		_productIdsCreated.Add(productId);
+        
 
-		var product = await _productDao.GetByIdAsync(productId);
+        var product = await _productDao.GetByIdAsync(productId);
 		var originalRowVersion = product.RowVersion;
 
 		product.Name = $"UpdatedProduct{_testSuffix}";
@@ -225,8 +278,9 @@ public class ProductDaoTests
 
 		var productId = await _productDao.CreateAsync(product);
 		_productIdsCreated.Add(productId);
+        
 
-		var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await _productDao.CreateAsync(product));
+        var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await _productDao.CreateAsync(product));
 
 		Assert.That(ex.Message, Does.Contain($"A product with the name '{productName}' already exists."));
 	}

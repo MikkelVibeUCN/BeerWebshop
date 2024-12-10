@@ -26,13 +26,16 @@ public class OrderServiceTests
         var categoryDao = new CategoryDAO(_connectionString);
         var breweryDao = new BreweryDAO(_connectionString);
         var accountDao = new AccountDAO(_connectionString);
+        
 
 
-        //_accountService = new AccountService(accountDao);
+        
         _categoryService = new CategoryService(categoryDao);
         _breweryService = new BreweryService(breweryDao);
         _productService = new ProductService(productDao, _categoryService, _breweryService);
         _orderService = new OrderService(orderDao, _productService, _connectionString);
+        _accountService = new AccountService(accountDao);
+
     }
 
     [Test]
@@ -150,10 +153,12 @@ public class OrderServiceTests
             PasswordHash = "password",
             Age = 20,
             Email = $"dsajkdkjjhad@dsasdaad",
-            Address = "Street number 9000 aalborg"
+            Address = "Street number 9000 aalborg",
+            Role = "user"
+           
         };
 
-        int customerId = await _accountService.SaveCustomerAsync(customer);
+        var customerId = await _accountService.SaveCustomerAsync(customer);
 
         var testOrder = new Order
         {
