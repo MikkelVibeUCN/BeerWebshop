@@ -10,11 +10,10 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     public class OrderDAO : IOrderDAO
     {
 
-        #region Sql Query
         private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @AddressId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
-        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS WITH (ROWLOCK) SET Stock = Stock - @Quantity WHERE Id = @ProductId";
+        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS WITH SET Stock = Stock - @Quantity WHERE Id = @ProductId";
         private const string BaseOrderSql = @"
             SELECT 
 	            o.Id, 
@@ -59,16 +58,12 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             LEFT JOIN Accounts ac ON cu.AccountId = ac.Id
             LEFT JOIN Postalcode po ON a.Postalcode_FK = po.Postalcode
             ";
-        #endregion
-        #region Dependency injection
 
         private readonly string _connectionString;
         public OrderDAO(string connectionString)
         {
             _connectionString = connectionString;
         }
-        #endregion
-        #region BaseDAO Methods
 
         private async Task UpdateStockFromOrder(IEnumerable<OrderLine> orderLines, SqlConnection connection, DbTransaction transaction)
         {
@@ -86,7 +81,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
-            using var transaction = await connection.BeginTransactionAsync();
+            using var transaction = await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead);
 
             try
             {
@@ -185,7 +180,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             parameters.Add("@ProductId", productId);
             parameters.Add("@Quantity", quantity);
 
-            var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WITH (UPDLOCK, ROWLOCK) WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout: 5);
+            var stock = await connection.QuerySingleAsync<int>("SELECT Stock FROM Products WHERE Id = @ProductId", new { ProductId = productId }, transaction, commandTimeout: 5);
             //TODO: Shared lock on stock
             if (stock < quantity)
             {
