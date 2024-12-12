@@ -40,9 +40,6 @@ public class OrderServiceTests
             ExpirationMinutes = 60
         };
 
-
-
-
         _categoryService = new CategoryService(categoryDao);
         _breweryService = new BreweryService(breweryDao);
         _productService = new ProductService(productDao, _categoryService, _breweryService);
@@ -218,8 +215,5 @@ public class OrderServiceTests
         await _breweryService.DeleteBreweryAsync(_createdBreweryId);
         await _categoryService.DeleteCategoryAsync(_createdCategoryId);
         await _accountService.DeleteCustomer(_createdCustomerId);
-        
-
-
     }
 }
