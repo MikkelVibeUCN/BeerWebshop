@@ -82,9 +82,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
             using var transaction = await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead);
+            Thread.Sleep(5000);
 
             try
             {
+                //TODO: Rename method for clarification
                 await UpdateStockFromOrder(order.OrderLines, connection, transaction);
 
                 var orderId = await InsertOrderAsync(connection, transaction, order);
@@ -185,6 +187,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             if (stock < quantity)
             {
                 transaction.Rollback();
+                //TODO: Lars siger lad vær - return false instead
                 throw new InvalidOperationException("Insufficient stock.");
             }
 
