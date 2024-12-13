@@ -27,7 +27,7 @@ namespace BeerWebshop.RESTAPI.Stubs
             foreach (var dtoOrderLine in dto.OrderLines)
             {
                 var product = await _productServiceStub.GetProductEntityByIdAsync((int)dtoOrderLine.Product.Id);
-                if (product == null || product.IsDeleted || product.Stock < dtoOrderLine.Quantity)
+                if (product == null || product.Stock < dtoOrderLine.Quantity)
                 {
                     throw new InvalidOperationException("Invalid product details or insufficient stock.");
                 }

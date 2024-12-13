@@ -54,14 +54,12 @@ public class OrderServiceTests
         _createdBreweryId = await _breweryService.CreateBreweryAsync(new Brewery
         {
             Name = "TestBrewery",
-            IsDeleted = false
         });
         var testBrewery = await _breweryService.GetBreweryById(_createdBreweryId);
 
         _createdCategoryId = await _categoryService.CreateCategoryAsync(new Category
         {
             Name = "TestCategory",
-            IsDeleted = false
         });
         var testCategory = await _categoryService.GetCategoryById(_createdCategoryId);
 
@@ -131,14 +129,12 @@ public class OrderServiceTests
         _createdBreweryId = await _breweryService.CreateBreweryAsync(new Brewery
         {
             Name = "TestBrewery",
-            IsDeleted = false
         });
         var testBrewery = await _breweryService.GetBreweryById(_createdBreweryId);
 
         _createdCategoryId = await _categoryService.CreateCategoryAsync(new Category
         {
             Name = "TestCategory",
-            IsDeleted = false
         });
         var testCategory = await _categoryService.GetCategoryById(_createdCategoryId);
 
