@@ -78,9 +78,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
             using var transaction = await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead);
+            Thread.Sleep(5000);
 
             try
             {
+                //TODO: Rename method for clarification
                 await UpdateStockFromOrder(order.OrderLines, connection, transaction);
 
                 var orderId = await InsertOrderAsync(connection, transaction, order);
@@ -164,11 +166,15 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         public async Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null)
         {
-            if (connection == null && transaction == null)
+            bool needsToCpommit = false;
+            if (connection == null)
             {
                 connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
-
+            }
+            if(transaction == null)
+            {
+                needsToCpommit = true;
                 transaction = await connection.BeginTransactionAsync();
             }
 
@@ -180,17 +186,19 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             //TODO: Shared lock on stock
             if (stock < quantity)
             {
-                transaction.Rollback();
-                throw new InvalidOperationException("Insufficient stock.");
+                return false;
             }
 
             var rowsAffected = await connection.ExecuteAsync(UpdateStockFromOrderSql, parameters, transaction, commandTimeout: 5);
             if (rowsAffected < 0)
             {
-                transaction.Rollback();
-                throw new InvalidOperationException("Error updating stock.");
+                return false;
             }
 
+            if (needsToCpommit)
+            {
+                await transaction.CommitAsync();
+            }
             return true;
         }
 
