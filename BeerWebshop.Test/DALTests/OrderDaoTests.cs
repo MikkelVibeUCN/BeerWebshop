@@ -34,8 +34,8 @@ public class OrderDaoTests
         _breweryDao = new BreweryDAO(connectionString);
         _categoryDao = new CategoryDAO(connectionString);
 
-        _testCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}", IsDeleted = false });
-        _testBreweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}", IsDeleted = false });
+        _testCategoryId = await _categoryDao.CreateAsync(new Category { Name = $"Category{_testSuffix}" });
+        _testBreweryId = await _breweryDao.CreateAsync(new Brewery { Name = $"Brewery{_testSuffix}" });
 
         _testCustomer = new Customer
         {
@@ -60,7 +60,6 @@ public class OrderDaoTests
             Stock = 5,
             Abv = 5.0f,
             ImageUrl = "http://example.com/test.jpg",
-            IsDeleted = false
         });
     }
 
@@ -78,7 +77,6 @@ public class OrderDaoTests
             DeliveryAddress = "Smith Residence",
             IsDelivered = false,
             Customer = _testCustomer,
-            IsDeleted = false,
             OrderLines = new List<OrderLine>
             {
                 new OrderLine { Quantity = quantity, Product = product }

@@ -10,16 +10,15 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     public class OrderDAO : IOrderDAO
     {
 
-        private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @AddressId);";
+        private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @AddressId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
-        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS WITH SET Stock = Stock - @Quantity WHERE Id = @ProductId";
+        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
         private const string BaseOrderSql = @"
             SELECT 
 	            o.Id, 
 	            o.CreatedAt, 
-	            o.IsDelivered, 
-	            o.IsDeleted, 
+	            o.IsDelivered,  
 	            ol.Quantity , 
 	            ol.Total, 
 	            p.Id, 
@@ -31,16 +30,13 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 	            p.ImageUrl, 
 	            p.RowVersion, 
 	            c.Id, 
-	            c.Name, 
-	            c.IsDeleted, 
+	            c.Name,  
 	            b.Id, 
-	            b.Name, 
-	            b.IsDeleted, 
+	            b.Name,  
 	            cu.AccountId, 
 	            CONCAT(cu.FirstName, ' ', cu.LastName) AS Name, 
 	            cu.Phone, 
-	            ac.PasswordHash, 
-	            cu.IsDeleted, 
+	            ac.PasswordHash,  
 	            cu.Age, 
 	            ac.Email,
 	            CONCAT(
@@ -244,7 +240,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception($"Error getting orders from database: {ex.Message}", ex);
             }
         }
-        #endregion
         #region IOrderDAO Methods
 
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
@@ -303,7 +298,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 CreatedAt = order.CreatedAt,
                 IsDelivered = order.IsDelivered,
-                IsDeleted = order.IsDeleted,
                 AddressId = await GetAddressIdFromAccountId(order.Customer.Id)
             };
 

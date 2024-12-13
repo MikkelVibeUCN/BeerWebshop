@@ -30,7 +30,7 @@ public class CategoryDaoTests
     {
         var categoryName = $"Category{_testSuffix}";
 
-        var category = new Category { Name = categoryName, IsDeleted = false };
+        var category = new Category { Name = categoryName };
 
         var categoryId = await _categoryDao.CreateAsync(category);
         _categoryIdsCreated.Add(categoryId);
@@ -43,7 +43,7 @@ public class CategoryDaoTests
     [Test]
     public void CreateAsync_WhenCategoryNameIsNull_ShouldThrowArgumentException()
     {
-        var category = new Category { Name = null, IsDeleted = false };
+        var category = new Category { Name = null };
 
         var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _categoryDao.CreateAsync(category));
 
