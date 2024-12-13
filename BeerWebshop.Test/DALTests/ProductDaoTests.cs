@@ -284,4 +284,31 @@ public class ProductDaoTests
 
 		Assert.That(ex.Message, Does.Contain($"A product with the name '{productName}' already exists."));
 	}
+	[Test]
+	public async Task DeleteAsync_WhenProductExists_ShouldRemoveProduct()
+	{
+		//Arrange
+        var productName = $"DuplicateProduct{_testSuffix}";
+        var product = new Product
+        {
+            Name = productName,
+            Category = new Category { Id = _createdCategoryId },
+            Brewery = new Brewery { Id = _createdBreweryId },
+            Price = 80f,
+            Description = "Citrusy flavor.",
+            Stock = 5,
+            Abv = 6.5f,
+            ImageUrl = "http://example.com/image.jpg",
+            IsDeleted = false
+        };
+		//Act
+        var productId = await _productDao.CreateAsync(product);
+        _productIdsCreated.Add(productId);
+        var deleteResult = await _productDao.DeleteAsync(productId);
+       
+        //Assert
+        Assert.IsTrue(deleteResult, "DeleteAsync should return true when a product is successfully deleted.");
+        var deletedProduct = await _productDao.GetByIdAsync(productId);
+        Assert.IsNull(deletedProduct, "GetByIdAsync should return null for a deleted product.");
+    }
 }

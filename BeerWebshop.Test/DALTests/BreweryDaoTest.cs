@@ -52,4 +52,47 @@ public class BreweryDaoTest
 		var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await _breweryDAO.CreateAsync(brewery));
 		Assert.That(exception.Message, Does.Contain($"Brewery with name '{breweryName}' already exists."));
 	}
+	[Test]
+	public async Task DeleteBrewery_WhenBreweryExists_ShouldDeleteBrewery()
+	{
+		//Arrange
+        var breweryName = $"Brewery{_testSuffix}";
+        var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+		//Act
+        var breweryId = await _breweryDAO.CreateAsync(brewery);
+        _breweryIdsCreated.Add(breweryId);
+		var deleteResult = await _breweryDAO.DeleteAsync(breweryId);
+        //Assert
+        Assert.IsTrue(deleteResult, "DeleteAsync should return true when a product is successfully deleted.");
+        var deletedBrewery = await _breweryDAO.GetByIdAsync(breweryId);
+        Assert.IsNull(deletedBrewery, "GetByIdAsync should return null for a deleted product.");
+    }
+	[Test]
+	public async Task GetByIdAsync_WhenBreweryExists_ShouldReturnBrewery()
+	{
+        //Arrange
+        var breweryName = $"Brewery{_testSuffix}";
+        var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+		//Act
+		var breweryId = await _breweryDAO.CreateAsync(brewery);
+        _breweryIdsCreated.Add(breweryId);
+        var breweryReturned = await _breweryDAO.GetByIdAsync(breweryId);
+		//Assert
+		Assert.That(breweryReturned, Is.Not.Null);
+		Assert.That(brewery.Name, Is.EqualTo(breweryName));
+    }
+	[Test]
+	public async Task GetBreweryIdByName_WhenBreweryExists_ShouldReturnNameFromId()
+	{
+        //Arrange
+        var breweryName = $"Brewery{_testSuffix}";
+        var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+        //Act
+        var breweryId = await _breweryDAO.CreateAsync(brewery);
+        _breweryIdsCreated.Add(breweryId);
+		var breweryIdFromName = await _breweryDAO.GetBreweryIdByName(breweryName);
+		//Assert
+		Assert.That(breweryIdFromName, Is.EqualTo(breweryId));
+
+    }
 }
