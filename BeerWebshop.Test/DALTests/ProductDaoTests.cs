@@ -294,7 +294,6 @@ public class ProductDaoTests
             Stock = 5,
             Abv = 6.5f,
             ImageUrl = "http://example.com/image.jpg",
-            IsDeleted = false
         };
 		//Act
         var productId = await _productDao.CreateAsync(product);

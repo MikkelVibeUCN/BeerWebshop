@@ -57,7 +57,7 @@ public class BreweryDaoTest
 	{
 		//Arrange
         var breweryName = $"Brewery{_testSuffix}";
-        var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+        var brewery = new Brewery { Name = breweryName};
 		//Act
         var breweryId = await _breweryDAO.CreateAsync(brewery);
         _breweryIdsCreated.Add(breweryId);
@@ -72,7 +72,7 @@ public class BreweryDaoTest
 	{
         //Arrange
         var breweryName = $"Brewery{_testSuffix}";
-        var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+        var brewery = new Brewery { Name = breweryName};
 		//Act
 		var breweryId = await _breweryDAO.CreateAsync(brewery);
         _breweryIdsCreated.Add(breweryId);
@@ -86,7 +86,7 @@ public class BreweryDaoTest
 	{
         //Arrange
         var breweryName = $"Brewery{_testSuffix}";
-        var brewery = new Brewery { Name = breweryName, IsDeleted = false };
+        var brewery = new Brewery { Name = breweryName};
         //Act
         var breweryId = await _breweryDAO.CreateAsync(brewery);
         _breweryIdsCreated.Add(breweryId);

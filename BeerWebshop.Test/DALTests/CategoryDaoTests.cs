@@ -55,7 +55,7 @@ public class CategoryDaoTests
     {
         //Arrange
         var categoryName = $"Category{_testSuffix}";
-        var category = new Category { Name = categoryName, IsDeleted = false };
+        var category = new Category { Name = categoryName};
         //Act
         var categoryId = await _categoryDao.CreateAsync(category);
         _categoryIdsCreated.Add(categoryId);
@@ -71,7 +71,7 @@ public class CategoryDaoTests
     {
         //Arrange
         var categoryName = $"Category{_testSuffix}";
-        var category = new Category { Name = categoryName, IsDeleted = false };
+        var category = new Category { Name = categoryName};
         //Act
         var categoryId = await _categoryDao.CreateAsync(category);
         _categoryIdsCreated.Add(categoryId);
@@ -84,7 +84,7 @@ public class CategoryDaoTests
     {
         //Arrange
         var categoryName = $"Category{_testSuffix}";
-        var category = new Category { Name = categoryName, IsDeleted = false };
+        var category = new Category { Name = categoryName};
         //Act
         var categoryId = await _categoryDao.CreateAsync(category);
         _categoryIdsCreated.Add(categoryId);
