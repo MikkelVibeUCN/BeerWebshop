@@ -1,6 +1,8 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
+using BeerWebshop.DAL.DATA.DAO.Interfaces;
 using BeerWebshop.DAL.DATA.Entities;
 using BeerWebshop.RESTAPI.Services;
+using BeerWebshop.RESTAPI.Services.Interfaces;
 using BeerWebshop.Test.Stubs;
 
 namespace BeerWebshop.Test.RestServicesTests;
@@ -9,9 +11,9 @@ namespace BeerWebshop.Test.RestServicesTests;
 public class ProductServiceUnitTestt
 {
     private ProductService _productService;
-    private StubProductDAO _productDAO;
-    private StubCategoryService _categoryService;
-    private StubBreweryService _breweryService;
+    private IProductDAO _productDAO;
+    private ICategoryService _categoryService;
+    private IBreweryService _breweryService;
 
 
     [SetUp]

@@ -30,6 +30,7 @@ public class AccountDaoTests
     [Test]
     public async Task GetCustomerById_WhenCustomerExists_ShouldReturnCustomerWithGivenId()
     {
+        //Arrange
         var customer = new Customer()
         {
             Name = "Navn efternavn",
@@ -39,15 +40,13 @@ public class AccountDaoTests
             Phone = "60170091",
             Age = 18
         };
-
+        //Act
         int customerId = await _accountDAO.CreateAsync(customer);
-
         _customersCreated.Add(customerId);
         _addressesCreated.Add(customerId);
         _accountsCreated.Add(customerId);
-
         var customerFound = await _accountDAO.GetByIdAsync(customerId);
-
+        //Assert
         Assert.That(customer != null);
         Assert.That(customer.Id == customerFound.Id);
         Assert.That(customer.Name == customerFound.Name);
@@ -60,7 +59,7 @@ public class AccountDaoTests
     [Test]
     public async Task SaveCustomerAsync_WhenCalled_ShouldSaveCustomerAndReturnId()
     {
-
+        //Arrange
         var customer = new Customer()
         {
             Name = "Navn efternavn",
@@ -70,16 +69,19 @@ public class AccountDaoTests
             Phone = "60170091",
             Age = 18
         };
+        //Act
         int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
         _addressesCreated.Add(customerId);
         _accountsCreated.Add(customerId);
+        //Assert
         Assert.That(customerId, Is.GreaterThan(0));
     }
 
     [Test]
     public async Task SaveCustomerAsync_WhenCalledWithNullEmail_ShouldThrowException()
     {
+        //Arrange
         var customer = new Customer()
         {
             Name = "Navn efternavn",
@@ -89,7 +91,7 @@ public class AccountDaoTests
             Phone = "60170091",
             Age = 18
         };
-
+        //Act/Assert
         Assert.ThrowsAsync<Exception>(async () =>
         {
             int customerId = await _accountDAO.CreateAsync(customer);
@@ -101,6 +103,7 @@ public class AccountDaoTests
 
     public async Task SaveCustomerAsync_WhenCalledWithExistingEmail_ShouldThrowException()
     {
+        //Arrange
         var customer = new Customer()
         {
             Name = "Navn efternavn",
@@ -112,11 +115,6 @@ public class AccountDaoTests
         };
 
 
-        int customerId = await _accountDAO.CreateAsync(customer);
-        _customersCreated.Add(customerId);
-        _addressesCreated.Add(customerId);
-        _accountsCreated.Add(customerId);
-
         var customer2 = new Customer()
         {
             Name = "Efternavn navn",
@@ -126,7 +124,12 @@ public class AccountDaoTests
             Phone = "12345678",
             Age = 18
         };
-
+        //Act
+        int customerId = await _accountDAO.CreateAsync(customer);
+        _customersCreated.Add(customerId);
+        _addressesCreated.Add(customerId);
+        _accountsCreated.Add(customerId);
+        //Assert
         Assert.ThrowsAsync<Exception>(async () =>
         {
             int customerId = await _accountDAO.CreateAsync(customer2);
@@ -139,6 +142,7 @@ public class AccountDaoTests
     [Test]
     public async Task CreateAddress_WhenCalled_ShouldSaveAddressToDatabase()
     {
+        //Arrange
         var customer = new Customer()
         {
             Name = "Test User",
@@ -148,19 +152,20 @@ public class AccountDaoTests
             Phone = "12345678",
             Age = 30
         };
-
+        //Act
         int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
         _addressesCreated.Add(customerId);
         _accountsCreated.Add(customerId);
 
         var customerFromDb = await _accountDAO.GetByIdAsync(customerId);
-
+        //Assert
         Assert.That(customerFromDb.Address, Is.EqualTo("Testvej 10 1000 København"));
     }
     [Test]
     public async Task DeleteCustomerAsync_WhenCalled_ShouldRemoveCustomerFromDatabase()
     {
+        //Arrange
         var customer = new Customer()
         {
             Name = "Delete User",
@@ -170,14 +175,14 @@ public class AccountDaoTests
             Phone = "12345678",
             Age = 30
         };
-
+        //Act
         int customerId = await _accountDAO.CreateAsync(customer);
         _customersCreated.Add(customerId);
         _addressesCreated.Add(customerId);
         _accountsCreated.Add(customerId);
 
         bool isDeleted = await _accountDAO.DeleteAsync(customerId);
-
+        //Assert
         Assert.That(isDeleted, Is.True);
 
         var customerFromDb = await _accountDAO.GetByIdAsync(customerId);
@@ -186,6 +191,7 @@ public class AccountDaoTests
     [Test]
     public async Task CreateAddress_WhenZipCodeIsMissing_ShouldThrowException()
     {
+        //Arrange
         var customer = new Customer()
         {
             Name = "Zip User",
@@ -195,7 +201,7 @@ public class AccountDaoTests
             Phone = "12345678",
             Age = 30
         };
-
+        //Act/Assert
         var exception = Assert.ThrowsAsync<Exception>(async () =>
         {
             int customerId = await _accountDAO.CreateAsync(customer);
