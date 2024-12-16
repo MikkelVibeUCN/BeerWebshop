@@ -101,7 +101,7 @@ public class ProductDaoTests
             Description = "Citrusy flavor.",
             Stock = 5,
             Abv = 6.5f,
-            ImageUrl = "http://example.com/image.jpg"
+            ImageUrl = "http://example.com/image.jpg",
         });
 
         _productIdsCreated.Add(productId);
@@ -277,12 +277,12 @@ public class ProductDaoTests
 
         var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await _productDao.CreateAsync(product));
 
-        Assert.That(ex.Message, Does.Contain($"A product with the name '{productName}' already exists."));
-    }
-    [Test]
-    public async Task DeleteAsync_WhenProductExists_ShouldRemoveProduct()
-    {
-        //Arrange
+		Assert.That(ex.Message, Does.Contain($"A product with the name '{productName}' already exists."));
+	}
+	[Test]
+	public async Task DeleteAsync_WhenProductExists_ShouldRemoveProduct()
+	{
+		//Arrange
         var productName = $"DuplicateProduct{_testSuffix}";
         var product = new Product
         {
@@ -295,11 +295,11 @@ public class ProductDaoTests
             Abv = 6.5f,
             ImageUrl = "http://example.com/image.jpg",
         };
-        //Act
+		//Act
         var productId = await _productDao.CreateAsync(product);
         _productIdsCreated.Add(productId);
         var deleteResult = await _productDao.DeleteAsync(productId);
-
+       
         //Assert
         Assert.IsTrue(deleteResult, "DeleteAsync should return true when a product is successfully deleted.");
         var deletedProduct = await _productDao.GetByIdAsync(productId);
