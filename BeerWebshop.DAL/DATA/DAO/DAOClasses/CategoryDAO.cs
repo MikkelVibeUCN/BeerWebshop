@@ -11,6 +11,8 @@ public class CategoryDAO : ICategoryDAO
     private const string InsertCategorySql = @"INSERT INTO Categories (Name) VALUES (@Name) SELECT CAST(SCOPE_IDENTITY() AS int);";
     private const string DeleteCategorySql = @"DELETE FROM Categories WHERE Id = @Id";
     private const string GetByIdSql = @"SELECT * FROM Categories WHERE id = @Id";
+    private const string GetCategoryIdByNameSql = @"SELECT Id FROM Categories WHERE Name = @Name";
+    private const string GetAllCategoriesSql = @"SELECT * FROM Categories";
     #endregion
 
     #region Dependency injection
@@ -89,18 +91,33 @@ public class CategoryDAO : ICategoryDAO
     }
     public async Task<IEnumerable<Category>> GetAllAsync()
     {
-        using var connection = new SqlConnection(_connectionString);
-        var categories = await connection.QueryAsync<Category>("SELECT * FROM Categories");
-        return categories;
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var categories = await connection.QueryAsync<Category>(GetAllCategoriesSql);
+            return categories;
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception($"Error fetching categories: {ex.Message}", ex);
+        }
     }
     #endregion
 
     #region ICategoryDAO Methods
     public async Task<int?> GetCategoryIdByName(string categoryName)
     {
-        const string sql = "SELECT Id FROM Categories WHERE Name = @Name";
-        using var connection = new SqlConnection(_connectionString);
-        return await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Name = categoryName });
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            return await connection.QuerySingleOrDefaultAsync<int?>(GetCategoryIdByNameSql, new { Name = categoryName });
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception($"Error fetching category: {ex.Message}", ex);
+        }
     }
 }
 #endregion
