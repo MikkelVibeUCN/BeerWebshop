@@ -57,7 +57,6 @@ namespace BeerWebshop.DesktopClient.Controllers
         {
             try
             {
-                // Gather data from input fields
                 string name = txtName.Text;
                 var selectedBrewery = cmbBreweries.SelectedItem as BreweryDTO;
                 string breweryName = selectedBrewery.Name;
@@ -70,7 +69,6 @@ namespace BeerWebshop.DesktopClient.Controllers
                 float abv = float.TryParse(txtABV.Text, out float parsedABV) ? parsedABV : 0;
 
 
-                // Create a ProductDTO object
                 ProductDTO newProduct = new ProductDTO()
                 {
                     Id = 0,
@@ -85,10 +83,8 @@ namespace BeerWebshop.DesktopClient.Controllers
                 };
 
 
-                // Call the controller to add the product
                 int result = await _productController.AddProductAsync(newProduct);
 
-                // Check if product was added successfully
                 if (result > 0)
                 {
                     MessageBox.Show("Produkt tilføjet!", "Success");
