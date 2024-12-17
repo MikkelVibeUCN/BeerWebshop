@@ -14,6 +14,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
         private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
+        private const string GetAddreesIdFromAccountIdSql = @"SELECT Id FROM Address WHERE AccountId = @AccountId";
         private const string BaseOrderSql = @"
             SELECT 
 	            o.Id, 
@@ -61,7 +62,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             _connectionString = connectionString;
         }
 
-        private async Task UpdateStockFromOrder(IEnumerable<OrderLine> orderLines, SqlConnection connection, DbTransaction transaction)
+        private async Task UpdateStockFromOrderIfSufficient(IEnumerable<OrderLine> orderLines, SqlConnection connection, DbTransaction transaction)
         {
             foreach (var orderLine in orderLines)
             {
@@ -83,7 +84,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 //TODO: Rename method for clarification
-                await UpdateStockFromOrder(order.OrderLines, connection, transaction);
+                await UpdateStockFromOrderIfSufficient(order.OrderLines, connection, transaction);
 
                 var orderId = await InsertOrderAsync(connection, transaction, order);
 
@@ -317,7 +318,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            var addressId = await connection.QuerySingleAsync<int>("SELECT Id FROM Address WHERE AccountId = @AccountId", new { AccountId = accountId });
+            var addressId = await connection.QuerySingleAsync<int>(GetAddreesIdFromAccountIdSql, new { AccountId = accountId });
             return addressId;
 
         }
