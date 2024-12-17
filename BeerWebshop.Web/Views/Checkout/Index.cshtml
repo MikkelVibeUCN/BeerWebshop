@@ -9,7 +9,6 @@
         {
             if (Model.Customer == null)
             {
-                <!-- Billing Information Fields for New Customers -->
                 <div class="form-group">
                     <label asp-for="Checkout.Firstname"></label>
                     <input asp-for="Checkout.Firstname" class="form-control" required />
@@ -87,7 +86,6 @@
                 </div>
             </div>
 
-            <!-- Button for displaying customer's saved address -->
             @if (Model.Customer != null)
             {
                 <div class="form-group">
@@ -112,31 +110,25 @@
     }
     <script>
         $(document).ready(function () {
-            // Initialize the form visibility based on the initial value of WantsCustomAddress
             if ($("#WantsCustomAddressToggle").is(":checked")) {
                 $("#CustomAddressForm").show();
             } else {
                 $("#CustomAddressForm").hide();
             }
 
-            // Handle checkbox toggle for WantsCustomAddress
             $("#WantsCustomAddressToggle").on("change", function () {
-                // Check if customer is null and if so, ignore the checkbox change
                 if (@(Model.Customer == null ? "true" : "false")) {
-                    // If the customer is null, do not change the checkbox state
                     return;
                 }
 
                 var isChecked = $(this).is(":checked");
 
-                // Show or hide the custom address form based on checkbox state
                 if (isChecked) {
                     $("#CustomAddressForm").show();
                 } else {
                     $("#CustomAddressForm").hide();
                 }
 
-                // Prepare the updated checkout data for Ajax request
                 var checkoutData = {
                     WantsCustomAddress: isChecked,
                     Firstname: $("input[name='Checkout.Firstname']").val(),
@@ -151,7 +143,6 @@
                     Cvc: $("input[name='Checkout.Cvc']").val()
                 };
 
-                // Send updated data to the server via Ajax
                 $.ajax({
                     url: '/Checkout/SaveCheckout',
                     method: 'POST',

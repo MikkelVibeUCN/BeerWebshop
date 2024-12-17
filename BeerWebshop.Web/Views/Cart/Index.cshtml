@@ -4,8 +4,8 @@
 
 <style>
     .btn-light-green {
-        background-color: #32AA32; /* Light green background */
-        border-color: #32AA32; /* Same border color */
+        background-color: #32AA32; 
+        border-color: #32AA32; 
         color: #FFFFFF;
     }
 
@@ -15,7 +15,7 @@
         }
 
     .notification {
-        display: none; /* Hide by default */
+        display: none; 
         position: fixed;
         top: 20px;
         right: 20px;
@@ -25,15 +25,15 @@
     }
 
         .notification.success {
-            background-color: #d4edda; /* Light green */
-            color: #155724; /* Dark green */
-            border: 1px solid #c3e6cb; /* Green border */
+            background-color: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
         }
 
         .notification.error {
-            background-color: #f8d7da; /* Light red */
-            color: #721c24; /* Dark red */
-            border: 1px solid #f5c6cb; /* Red border */
+            background-color: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
         }
 </style>
 
@@ -52,24 +52,19 @@
     <button type="button" class="btn btn-light-green rounded-pill py-2 px-4" id="pay-button">
         <i class="bi bi-credit-card"></i> Gå til kassen
     </button>
-    <!-- Notification Popup -->
     <div id="notification" class="notification"></div>
 </div>
 
 @section Scripts {
     <script>
         $('#pay-button').on('click', function () {
-            // Count items in the cart
             var itemCount = $('.quantity-input').toArray().reduce((count, input) => {
                 return count + (parseInt($(input).val()) || 0);
             }, 0);
 
-            // Check if there are items in the cart
             if (itemCount > 0) {
-                // Perform payment action
-                window.location.href = '/Checkout'; // Change to your payment URL
+                window.location.href = '/Checkout';
             } else {
-                // Optionally show a notification if cart is empty
                 window.showNotification('Kurven er tom. Tilføj venligst varer, før du går til kassen.', 'error');
             }
         });

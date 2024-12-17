@@ -22,7 +22,6 @@
                     <img src="@((string.IsNullOrEmpty(orderLineDTO.Product.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : orderLineDTO.Product.ImageUrl))" alt="@orderLineDTO.Product.Name" style="width: 50px; height: auto;" />
                 </td>
                 <td class="align-middle">
-                    <!-- Product Name with Link to Product Details -->
                     <a href="@Url.Action("Details", "Beer", new { id = orderLineDTO.Product.Id })">
                         @orderLineDTO.Product.Name
                     </a>
@@ -32,7 +31,6 @@
                 <td class="align-middle">@orderLineDTO.Product.ABV %</td>
                 <td class="align-middle">@orderLineDTO.Product.Price.ToString("F2") kr.</td>
 
-                <!-- Editable Quantity Field with Auto Update -->
                 <td class="align-middle">
                     <input type="number"
                            class="quantity-input form-control"
@@ -42,11 +40,8 @@
                            data-product-id="@orderLineDTO.Product.Id"
                            style="width: 100%;" />
                 </td>
-
-                <!-- Subtotal -->
                 <td class="align-middle subtotal">@orderLineDTO.SubTotal.ToString("F2") kr.</td>
 
-                <!-- Remove Button -->
                 <td class="align-middle">
                     <button type="button"
                             class="remove-button btn btn-danger"
@@ -62,7 +57,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        // Track the original value before editing
         $(document).on('focus', '.quantity-input', function () {
             $(this).data('original-value', $(this).val());
         });
@@ -87,13 +81,11 @@
                     location.reload();
                 },
                 error: function (xhr) {
-                    // Get the original value back if the AJAX call fails
                     var errorMessage = xhr.responseText || 'Error updating cart. Please try again.';
                     window.showNotification(errorMessage, 'error');
 
-                    // Revert to the original value
                     $(this).val($(this).data('original-value'));
-                }.bind(this) // Bind 'this' to maintain context
+                }.bind(this)
             });
         });
 
@@ -108,7 +100,6 @@
                     location.reload();
                 },
                 error: function (xhr) {
-                    // Use the existing window.showNotification function
                     var errorMessage = xhr.responseText || 'Error removing item from cart. Please try again.';
                     window.showNotification(errorMessage, 'error');
                 }

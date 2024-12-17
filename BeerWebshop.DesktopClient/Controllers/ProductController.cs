@@ -49,7 +49,7 @@ namespace BeerWebshop.DesktopClient.Controllers
 
         public async Task<bool> DeleteProduct(ProductDTO product)
         {
-            return await _productAPIClient.DeleteAsync(product.Id, JwtToken);
+            return await _productAPIClient.DeleteAsync(product.Id, null, JwtToken);
         }
         public async Task EditProduct(ProductDTO product)
         {

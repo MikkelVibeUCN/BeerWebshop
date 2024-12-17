@@ -22,7 +22,6 @@
     </p>
 </div>
 
-<!-- Modal HTML -->
 <div class="modal fade" id="ageVerificationModal" tabindex="-1" role="dialog" aria-labelledby="ageVerificationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -42,25 +41,20 @@
     </div>
 </div>
 
-<!-- Add JavaScript to control modal visibility -->
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Check if the modal should be shown based on the ViewData flag
             var showModal = '@ViewData["ShowAgeVerificationModal"]';
 
             if (showModal === 'True') {
                 $('#ageVerificationModal').modal('show');
             }
 
-            // When the user confirms age (Yes button)
             $('#confirmAgeBtn').on('click', function () {
-                // Send AJAX request to the ConfirmedAge action
                 $.ajax({
-                    url: '@Url.Action("ConfirmAge", "Home")', // Action URL
-                    type: 'POST', // POST request
+                    url: '@Url.Action("ConfirmAge", "Home")', 
+                    type: 'POST', 
                     success: function (response) {
-                        // On success, hide the modal
                         $('#ageVerificationModal').modal('hide');
                     },
                     error: function () {
@@ -70,11 +64,8 @@
             });
 
             $('#rejectAgeBtn').on('click', function () {
-                // Redirect the user to google.com
                 window.location.href = "https://www.google.com";
             });
-
-
         });
     </script>
 }

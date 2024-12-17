@@ -11,6 +11,4 @@ public interface IProductAPIClient
     Task<IEnumerable<ProductDTO>> GetProductsAsync(ProductQueryParameters parameters, string? jwtToken = null);
 	Task<int> GetProductCountAsync(ProductQueryParameters parameters);
 	Task EditProductAsync(ProductDTO product, string? jwtToken = null);
-	
-
 }
