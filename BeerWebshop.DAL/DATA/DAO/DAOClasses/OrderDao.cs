@@ -172,7 +172,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
             }
-            if(transaction == null)
+            if (transaction == null)
             {
                 needsToCpommit = true;
                 transaction = await connection.BeginTransactionAsync();
@@ -194,15 +194,12 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 return false;
             }
-            if (hasToComit)
-            {
-                await transaction.CommitAsync();
-
             if (needsToCpommit)
             {
                 await transaction.CommitAsync();
             }
             return true;
+            
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
