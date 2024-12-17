@@ -14,14 +14,12 @@
     </h4>
     <hr />
 
-    <!-- Image with block display -->
     <div>
         <img style="max-width: 450px; max-height: 300px; display: block;"
              src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://storage.googleapis.com/pod_public/1300/163656.jpg" : Model.ImageUrl)"
              alt="@Model.Name" />
     </div>
 
-    <!-- Description as a paragraph below the image -->
     <p>@Html.DisplayFor(model => model.Description)</p>
 </div>
 
@@ -29,7 +27,6 @@
     <h4>@Html.DisplayFor(model => model.Price) kr.</h4>
 </div>
 
-<!-- Notification Popup -->
 <div id="notification" class="notification"></div>
 
 <div>
@@ -46,13 +43,12 @@
                 $.ajax({
                     url: '/Cart/AddToCart',
                     method: 'POST',
-                    data: { productId: productId, quantity: 1 }, // Ensure to send a quantity, defaulting to 1
+                    data: { productId: productId, quantity: 1 }, 
                     success: function (response) {
                         $('#cart-item-count').text(response.cartItemCount);
                         window.showNotification('Produkt tilføjet til kurv!', 'success');
                     },
                     error: function (xhr) {
-                        // Get the error message from the response
                         var errorMessage = xhr.responseText || 'Fejl ved tilføjelse til kurv. Prøv igen.';
                         window.showNotification(errorMessage, 'error');
                     }
