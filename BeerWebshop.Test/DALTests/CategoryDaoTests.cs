@@ -43,10 +43,11 @@ public class CategoryDaoTests
     [Test]
     public void CreateAsync_WhenCategoryNameIsNull_ShouldThrowArgumentException()
     {
+        //Arrange
         var category = new Category { Name = null };
-
+        //Act
         var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _categoryDao.CreateAsync(category));
-
+        //Assert
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Does.Contain("Category name cant be null or empty."));
     }

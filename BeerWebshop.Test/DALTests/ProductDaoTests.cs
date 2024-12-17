@@ -60,9 +60,6 @@ public class ProductDaoTests
             throw;
         }
 
-
-        //await DeleteAllCategoriesCreated();
-        //await DeleteAllBreweriesCreated();
     }
 
     private async Task DeleteAllBreweriesCreated()
@@ -92,6 +89,7 @@ public class ProductDaoTests
     [Test]
     public async Task GetByIdAsync_WhenProductExists_ShouldReturnProduct()
     {
+        //Arrange
         var productId = await _productDao.CreateAsync(new Product
         {
             Name = $"Product{_testSuffix}",
@@ -107,9 +105,9 @@ public class ProductDaoTests
         _productIdsCreated.Add(productId);
 
 
-
+        //Act
         var product = await _productDao.GetByIdAsync(productId);
-
+        //Assert
         Assert.IsNotNull(product);
         Assert.That(product.Id, Is.EqualTo(productId));
         Assert.That(product.Name, Is.EqualTo($"Product{_testSuffix}"));
@@ -118,6 +116,7 @@ public class ProductDaoTests
     [Test]
     public async Task CreateAsync_WhenCalled_ShouldCreateProduct()
     {
+        //Arrange
         var product = new Product
         {
             Name = $"Product{_testSuffix}",
@@ -133,9 +132,9 @@ public class ProductDaoTests
         var productId = await _productDao.CreateAsync(product);
         _productIdsCreated.Add(productId);
 
-
+        //Act
         var createdProduct = await _productDao.GetByIdAsync(productId);
-
+        //Assert
         Assert.IsNotNull(createdProduct);
         Assert.That(createdProduct.Name, Is.EqualTo(product.Name));
     }
@@ -143,6 +142,7 @@ public class ProductDaoTests
     [Test]
     public async Task UpdateAsync_WhenProductUpdated_ShouldReflectChanges()
     {
+        //Arrange
         var productId = await _productDao.CreateAsync(new Product
         {
             Name = $"OriginalProduct{_testSuffix}",
@@ -161,13 +161,11 @@ public class ProductDaoTests
         var product = await _productDao.GetByIdAsync(productId);
         product.Name = $"UpdatedProduct{_testSuffix}";
         product.Price = 60f;
-
+        //Act
         var updateResult = await _productDao.UpdateAsync(product);
-
+        //Assert
         Assert.IsTrue(updateResult);
-
         var updatedProduct = await _productDao.GetByIdAsync(productId);
-
         Assert.That(updatedProduct.Name, Is.EqualTo(product.Name));
         Assert.That(updatedProduct.Price, Is.EqualTo(product.Price));
     }
@@ -175,6 +173,7 @@ public class ProductDaoTests
     [Test]
     public async Task UpdateAsync_WhenRowVersionModified_ShouldThrowConcurrencyException()
     {
+        //Arrange
         var productId = await _productDao.CreateAsync(new Product
         {
             Name = $"OriginalProduct{_testSuffix}",
@@ -189,7 +188,7 @@ public class ProductDaoTests
 
         _productIdsCreated.Add(productId);
 
-
+        //Act
         var product = await _productDao.GetByIdAsync(productId);
         var originalRowVersion = product.RowVersion;
 
@@ -197,7 +196,7 @@ public class ProductDaoTests
         await _productDao.UpdateAsync(product);
 
         product.RowVersion = originalRowVersion;
-
+        //Assert
         var ex = Assert.ThrowsAsync<Exception>(async () => await _productDao.UpdateAsync(product));
         Assert.That(ex.Message, Is.EqualTo("Error updating product: Concurrency conflict detected."));
     }
@@ -205,9 +204,11 @@ public class ProductDaoTests
     [Test]
     public async Task GetProductsAsync_WithAscendingNameOrder()
     {
+        //Arrange
         var queryParameters = new ProductQueryParameters { SortBy = "nameAsc" };
+        //Act
         var products = await _productDao.GetProducts(queryParameters);
-
+        //Assert
         Assert.That(products, Is.Not.Null);
         Assert.That(products.Count(), Is.LessThanOrEqualTo(21));
 
@@ -218,9 +219,11 @@ public class ProductDaoTests
     [Test]
     public async Task GetProductsAsync_WithDescendingNameOrder()
     {
+        //Arrange
         var queryParameters = new ProductQueryParameters { SortBy = "nameDesc" };
+        //Act
         var products = await _productDao.GetProducts(queryParameters);
-
+        //Assert
         Assert.That(products, Is.Not.Null);
         Assert.That(products.Count(), Is.LessThanOrEqualTo(21));
 
@@ -231,9 +234,11 @@ public class ProductDaoTests
     [Test]
     public async Task GetProductsAsync_WithAscendingPriceOrder()
     {
+        //Arrange
         var queryParameters = new ProductQueryParameters { SortBy = "priceAsc" };
+        //Act
         var products = await _productDao.GetProducts(queryParameters);
-
+        //Assert
         Assert.That(products, Is.Not.Null);
         Assert.That(products.Count(), Is.LessThanOrEqualTo(21));
 
@@ -244,9 +249,11 @@ public class ProductDaoTests
     [Test]
     public async Task GetProductsAsync_WithDescendingPriceOrder()
     {
+        //Arrange
         var queryParameters = new ProductQueryParameters { SortBy = "priceDesc" };
+        //Act
         var products = await _productDao.GetProducts(queryParameters);
-
+        //Assert
         Assert.That(products, Is.Not.Null);
         Assert.That(products.Count(), Is.LessThanOrEqualTo(21));
 
@@ -257,6 +264,7 @@ public class ProductDaoTests
     [Test]
     public async Task CreateAsync_WhenDuplicateName_ShouldThrowException()
     {
+        //Arrange
         var productName = $"DuplicateProduct{_testSuffix}";
 
         var product = new Product
@@ -270,10 +278,10 @@ public class ProductDaoTests
             Abv = 6.5f,
             ImageUrl = "http://example.com/image.jpg",
         };
-
+        //Act
         var productId = await _productDao.CreateAsync(product);
         _productIdsCreated.Add(productId);
-
+        //Assert
 
         var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await _productDao.CreateAsync(product));
 
