@@ -10,7 +10,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
     public class OrderDAO : IOrderDAO
     {
 
-        private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @AddressId);";
+        private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @AddressId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
         private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
@@ -18,8 +18,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             SELECT 
 	            o.Id, 
 	            o.CreatedAt, 
-	            o.IsDelivered, 
-	            o.IsDeleted, 
+	            o.IsDelivered,  
 	            ol.Quantity , 
 	            ol.Total, 
 	            p.Id, 
@@ -31,16 +30,13 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 	            p.ImageUrl, 
 	            p.RowVersion, 
 	            c.Id, 
-	            c.Name, 
-	            c.IsDeleted, 
+	            c.Name,  
 	            b.Id, 
-	            b.Name, 
-	            b.IsDeleted, 
+	            b.Name,  
 	            cu.AccountId, 
 	            CONCAT(cu.FirstName, ' ', cu.LastName) AS Name, 
 	            cu.Phone, 
-	            ac.PasswordHash, 
-	            cu.IsDeleted, 
+	            ac.PasswordHash,  
 	            cu.Age, 
 	            ac.Email,
 	            CONCAT(
@@ -82,9 +78,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
             using var transaction = await connection.BeginTransactionAsync(IsolationLevel.RepeatableRead);
+            Thread.Sleep(5000);
 
             try
             {
+                //TODO: Rename method for clarification
                 await UpdateStockFromOrder(order.OrderLines, connection, transaction);
 
                 var orderId = await InsertOrderAsync(connection, transaction, order);
@@ -168,14 +166,15 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         public async Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null)
         {
-            bool hasToComit = false;
-
-            if (connection == null && transaction == null)
+            bool needsToCpommit = false;
+            if (connection == null)
             {
-                hasToComit = true;
                 connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
-
+            }
+            if(transaction == null)
+            {
+                needsToCpommit = true;
                 transaction = await connection.BeginTransactionAsync();
             }
 
@@ -187,22 +186,22 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             //TODO: Shared lock on stock
             if (stock < quantity)
             {
-                transaction.Rollback();
-                throw new InvalidOperationException("Insufficient stock.");
+                return false;
             }
 
             var rowsAffected = await connection.ExecuteAsync(UpdateStockFromOrderSql, parameters, transaction, commandTimeout: 5);
             if (rowsAffected < 0)
             {
-                transaction.Rollback();
-                throw new InvalidOperationException("Error updating stock.");
+                return false;
             }
             if (hasToComit)
             {
                 await transaction.CommitAsync();
 
+            if (needsToCpommit)
+            {
+                await transaction.CommitAsync();
             }
-
             return true;
         }
 
@@ -310,7 +309,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 CreatedAt = order.CreatedAt,
                 IsDelivered = order.IsDelivered,
-                IsDeleted = order.IsDeleted,
                 AddressId = await GetAddressIdFromAccountId(order.Customer.Id)
             };
 

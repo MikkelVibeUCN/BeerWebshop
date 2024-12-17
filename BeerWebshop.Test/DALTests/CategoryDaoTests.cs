@@ -30,7 +30,7 @@ public class CategoryDaoTests
     {
         var categoryName = $"Category{_testSuffix}";
 
-        var category = new Category { Name = categoryName, IsDeleted = false };
+        var category = new Category { Name = categoryName };
 
         var categoryId = await _categoryDao.CreateAsync(category);
         _categoryIdsCreated.Add(categoryId);
@@ -43,11 +43,55 @@ public class CategoryDaoTests
     [Test]
     public void CreateAsync_WhenCategoryNameIsNull_ShouldThrowArgumentException()
     {
-        var category = new Category { Name = null, IsDeleted = false };
-
+        //Arrange
+        var category = new Category { Name = null };
+        //Act
         var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _categoryDao.CreateAsync(category));
-
+        //Assert
         Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Does.Contain("Category name cant be null or empty."));
+    }
+    [Test]
+    public async Task CreateAsync_WhenCategoryIsCreated_ShouldReturnId()
+    {
+        //Arrange
+        var categoryName = $"Category{_testSuffix}";
+        var category = new Category { Name = categoryName};
+        //Act
+        var categoryId = await _categoryDao.CreateAsync(category);
+        _categoryIdsCreated.Add(categoryId);
+        //Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(categoryId, Is.InstanceOf<int>());
+            Assert.That(categoryId, Is.GreaterThan(0));
+        });
+    }
+    [Test]
+    public async Task DeleteAsync_WhenCategoryExists_ShouldDeleteCategory()
+    {
+        //Arrange
+        var categoryName = $"Category{_testSuffix}";
+        var category = new Category { Name = categoryName};
+        //Act
+        var categoryId = await _categoryDao.CreateAsync(category);
+        _categoryIdsCreated.Add(categoryId);
+        var categoryDeleted = await _categoryDao.DeleteAsync(categoryId);
+        //Assert
+        Assert.IsTrue(categoryDeleted);
+    }
+    [Test]
+    public async Task GetCategoryIdByName_WhenCategoryExists_ShouldReturnNameFromId()
+    {
+        //Arrange
+        var categoryName = $"Category{_testSuffix}";
+        var category = new Category { Name = categoryName};
+        //Act
+        var categoryId = await _categoryDao.CreateAsync(category);
+        _categoryIdsCreated.Add(categoryId);
+        var categoryIdFromName = await _categoryDao.GetCategoryIdByName(categoryName);
+        //Assert
+        Assert.That(categoryIdFromName, Is.EqualTo(categoryId));
+
     }
 }

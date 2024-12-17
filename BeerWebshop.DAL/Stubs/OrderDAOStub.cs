@@ -1,12 +1,7 @@
-﻿using BeerWebshop.DAL.DATA.Entities;
-using BeerWebshop.DAL.DATA.DAO.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using BeerWebshop.DAL.DATA.DAO.Interfaces;
+using BeerWebshop.DAL.DATA.Entities;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 
 namespace BeerWebshop.DAL.DATA.DAO.Stubs
 {
@@ -17,20 +12,20 @@ namespace BeerWebshop.DAL.DATA.DAO.Stubs
 
         public OrderDAOStub()
         {
-         
-            
+
+
         }
-        
+
 
         // Create a new order
-        public  Task<int> CreateAsync(Order order)
+        public Task<int> CreateAsync(Order order)
         {
             order.Id = _nextId++;
             _orders.Add(order);
-            return  Task.FromResult(order.Id.Value);
+            return Task.FromResult(order.Id.Value);
         }
 
-        
+
 
         // Get order by ID
         public Task<Order?> GetByIdAsync(int id)
@@ -49,14 +44,14 @@ namespace BeerWebshop.DAL.DATA.DAO.Stubs
         public Task<bool> DeleteAsync(int id)
         {
             var order = _orders.FirstOrDefault(o => o.Id == id);
-            if(order == null)
+            if (order == null)
             {
                 return Task.FromResult(false);
             }
 
             _orders.Remove(order);
             return Task.FromResult(true);
-               
+
         }
 
         // Retrieve all orders (excluding deleted ones)
@@ -69,8 +64,8 @@ namespace BeerWebshop.DAL.DATA.DAO.Stubs
         public Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)
         {
 
-            return  Task.FromResult(_orders
-                .Where(o => o.Customer.Id == customerId && !o.IsDeleted)
+            return Task.FromResult(_orders
+                .Where(o => o.Customer.Id == customerId)
                 .AsEnumerable());
         }
 

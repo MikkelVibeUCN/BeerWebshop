@@ -25,7 +25,7 @@ namespace BeerWebshop.Test.APIClientLibraryTests
             var categories = await _categoryAPIClient.GetAllAsync();
             Assert.That(categories != null);
             Assert.That(categories.Any(c => c.Name == "IPA"));
-            Assert.That(!categories.Any(c => c.Name == "ThomasNumseJuice"));
+            Assert.That(!categories.Any(c => c.Name == "Slatten-øl"));
         }
     }
 }

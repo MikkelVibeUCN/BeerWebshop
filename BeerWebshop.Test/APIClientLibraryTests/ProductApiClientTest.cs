@@ -108,11 +108,13 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 		[Test]
 		public async Task GetProductByIdAsync_ShouldReturnCorrectProduct()
 		{
+			//Arrange
 			var productDTO = CreateTestProductDto();
 			var productId = await _productApiClient.CreateAsync(productDTO,null,_token);
+			//Act
 			_createdProductIds.Add(productId);
 			var product = await _productApiClient.GetAsync(productId);
-
+			//Assert
 			Assert.IsNotNull(product);
 			Assert.AreEqual(productDTO.Name, product.Name);
 			Assert.AreEqual(productDTO.CategoryName, product.CategoryName);
@@ -126,13 +128,14 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 		[Test]
 		public async Task DeleteProductAsync_ShouldRemoveProduct()
 		{
+			//Arrange
 			var productDTO = CreateTestProductDto();
+			//Act
 			var productId = await _productApiClient.CreateAsync(productDTO, null, _token);
 			_createdProductIds.Add(productId);
 			productDTO.Id = productId;
-
 			await _productApiClient.DeleteAsync(productId,null,_token);
-
+			//Assert
 			Assert.ThrowsAsync<Exception>(async () => await _productApiClient.DeleteAsync(productId,null,_token));
 		}
 

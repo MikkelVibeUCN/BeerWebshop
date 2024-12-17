@@ -40,9 +40,6 @@ public class OrderServiceTests
             ExpirationMinutes = 60
         };
 
-
-
-
         _categoryService = new CategoryService(categoryDao);
         _breweryService = new BreweryService(breweryDao);
         _productService = new ProductService(productDao, _categoryService, _breweryService);
@@ -54,17 +51,16 @@ public class OrderServiceTests
     [Test]
     public async Task CreateOrderAsync_WhenOrderIsValid_ShouldReturnOrderId()
     {
+        //Arrange
         _createdBreweryId = await _breweryService.CreateBreweryAsync(new Brewery
         {
             Name = "TestBrewery",
-            IsDeleted = false
         });
         var testBrewery = await _breweryService.GetBreweryById(_createdBreweryId);
 
         _createdCategoryId = await _categoryService.CreateCategoryAsync(new Category
         {
             Name = "TestCategory",
-            IsDeleted = false
         });
         var testCategory = await _categoryService.GetCategoryById(_createdCategoryId);
 
@@ -113,35 +109,28 @@ public class OrderServiceTests
                 }
             }
         };
-
+        //Act
         _createdOrderId = await _orderService.CreateOrderAsync(testOrder);
-
+        //Assert
         Assert.That(_createdOrderId, Is.GreaterThan(0), "The returned order ID should be greater than 0.");
 
         var updatedProduct = await _productService.GetProductByIdAsync(testProduct.Id ?? 0);
         Assert.That(updatedProduct.Stock, Is.EqualTo(testProduct.Stock - 2), "The product stock should be reduced by the order quantity.");
-
-        //await _orderService.DeleteOrderByIdAsync(_createdOrderId);
-        //await _productService.DeleteProductByIdAsync(_createdProductId);
-        //await _breweryService.DeleteBreweryAsync(_createdBreweryId);
-        //await _categoryService.DeleteCategoryAsync(_createdCategoryId);
-        //await _accountService.DeleteCustomer(customerId);
     }
 
     [Test]
     public async Task CreateOrderAsync_WhenProductStockIsInsufficient_ShouldThrowInvalidOperationException()
     {
+        //Arrange
         _createdBreweryId = await _breweryService.CreateBreweryAsync(new Brewery
         {
             Name = "TestBrewery",
-            IsDeleted = false
         });
         var testBrewery = await _breweryService.GetBreweryById(_createdBreweryId);
 
         _createdCategoryId = await _categoryService.CreateCategoryAsync(new Category
         {
             Name = "TestCategory",
-            IsDeleted = false
         });
         var testCategory = await _categoryService.GetCategoryById(_createdCategoryId);
 
@@ -190,18 +179,13 @@ public class OrderServiceTests
                 }
             }
         };
-
+        //Act
         await _orderService.UpdateStockAsync(_createdProductId, 3);
-
+        //Assert
         var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await _orderService.CreateOrderAsync(testOrder));
 
         Assert.That(ex.Message, Does.Contain("Insufficient stock"));
-
-        //await _productService.DeleteProductByIdAsync(productId);
-        //await _breweryService.DeleteBreweryAsync(breweryId);
-        //await _categoryService.DeleteCategoryAsync(categoryId);
-        //await _accountService.DeleteCustomer(customerId);
     }
 
 
@@ -218,8 +202,5 @@ public class OrderServiceTests
         await _breweryService.DeleteBreweryAsync(_createdBreweryId);
         await _categoryService.DeleteCategoryAsync(_createdCategoryId);
         await _accountService.DeleteCustomer(_createdCustomerId);
-        
-
-
     }
 }
