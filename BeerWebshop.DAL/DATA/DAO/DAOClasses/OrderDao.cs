@@ -13,7 +13,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         private const string InsertOrderSql = @"INSERT INTO Orders (CreatedAt, IsDelivered, IsDeleted, AddressId) OUTPUT INSERTED.Id VALUES (@CreatedAt, @IsDelivered, @IsDeleted, @AddressId);";
         private const string InsertOrderLineSql = @"INSERT INTO OrderLines (OrderId, ProductId, Quantity, Total) VALUES (@OrderId, @ProductId, @Quantity, @Total);";
         private const string DeleteOrderByIdSql = @"DELETE FROM Orders WHERE Id = @Id";
-        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS WITH SET Stock = Stock - @Quantity WHERE Id = @ProductId";
+        private const string UpdateStockFromOrderSql = @"UPDATE PRODUCTS SET Stock = Stock - @Quantity WHERE Id = @ProductId";
         private const string BaseOrderSql = @"
             SELECT 
 	            o.Id, 
@@ -168,8 +168,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         public async Task<bool> UpdateStockAsync(int productId, int quantity, SqlConnection? connection = null, DbTransaction? transaction = null)
         {
+            bool hasToComit = false;
+
             if (connection == null && transaction == null)
             {
+                hasToComit = true;
                 connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
@@ -193,6 +196,11 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 transaction.Rollback();
                 throw new InvalidOperationException("Error updating stock.");
+            }
+            if (hasToComit)
+            {
+                await transaction.CommitAsync();
+
             }
 
             return true;
@@ -244,7 +252,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 throw new Exception($"Error getting orders from database: {ex.Message}", ex);
             }
         }
-        #endregion
         #region IOrderDAO Methods
 
         public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId)

@@ -93,7 +93,7 @@ namespace BeerWebshop.RESTAPI.Controllers
 
             if (customer == null)
             {
-                return BadRequest("Customr not found");
+                return BadRequest("Customer not found");
             }
 
             try
