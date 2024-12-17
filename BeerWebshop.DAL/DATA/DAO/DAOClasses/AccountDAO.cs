@@ -15,7 +15,6 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             CONCAT(c.FirstName, ' ', c.LastName) AS Name, 
             c.Phone AS Phone, 
             a.PasswordHash AS PasswordHash, 
-            c.IsDeleted AS IsDeleted, 
             c.Age AS Age, 
             a.Email AS Email, 
             a.Role AS Role, 
