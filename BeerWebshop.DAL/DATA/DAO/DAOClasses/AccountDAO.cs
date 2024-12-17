@@ -27,35 +27,37 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
         FROM 
             Customers c
         JOIN 
-            Address ad ON ad.CustomerId_FK = c.AccountId
+            Address ad ON ad.AccountId = c.AccountId
         JOIN 
             Postalcode p ON ad.Postalcode_FK = p.Postalcode
         JOIN 
             Accounts a ON a.Id = c.AccountId
-        WHERE
-            ";
+        WHERE ";
 
 
-        private const string _createAccount = @"INSERT INTO Accounts (Role, Email, PasswordHash)
+        private const string CreateAccountSql = @"INSERT INTO Accounts (Role, Email, PasswordHash)
             VALUES (@Role, @Email, @PasswordHash) 
             SELECT CAST(SCOPE_IDENTITY() AS int);";
 
-        private const string _saveCustomer = @"
-            INSERT INTO Customers (AccountId, FirstName, LastName, Phone, Age, IsDeleted)
-            VALUES (@AccountId, @FirstName, @LastName, @Phone, @Age, 0);";
+        private const string SaveCustomerSql = @"
+            INSERT INTO Customers (AccountId, FirstName, LastName, Phone, Age)
+            VALUES (@AccountId, @FirstName, @LastName, @Phone, @Age);";
 
-        private const string _createAddress = @"
-            INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK, CustomerId_FK)
-            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode, @CustomerId)
+        private const string CreateAddressSql = @"
+            INSERT INTO Address (Street, StreetNumber, ApartmentNumber, Postalcode_FK, AccountId)
+            VALUES (@Street, @StreetNumber, @ApartmentNumber, @Postalcode, @AccountId)
             SELECT CAST(SCOPE_IDENTITY() AS int);";
 
-        private const string _accountWithEmailExists = @"SELECT Id FROM Accounts WHERE Email = @Email;";
+        private const string AccountWithEmailExistsSql = @"SELECT Id FROM Accounts WHERE Email = @Email;";
 
-        private const string _createZipCode = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
+        private const string CreateZipCodeSql = @"INSERT INTO Postalcode (PostalCode, City) VALUES (@ZipCode, @City);";
 
-        private const string _deleteCustomerById = @"DELETE FROM Customers WHERE AccountId = @Id;";
+        private const string DeleteCustomerByIdSql = @"DELETE FROM Accounts WHERE Id = @Id;";
 
-        private const string _doesZipExist = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
+        private const string DoesZipExistSql = @"SELECT PostalCode FROM Postalcode WHERE Postalcode = @ZipCode;";
+        private const string DeleteAddressSql = @"DELETE FROM ADDRESS WHERE AccountId = @Id";
+        private const string DeleteAccountSql = @"DELETE FROM ACCOUNTS WHERE Id = @Id";
+        private const string GetAccountTypeByEmailSql = @"SELECT Role FROM Accounts WHERE Email = @Email;";
         #endregion
 
         #region Dependency injection
@@ -100,7 +102,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 };
 
 
-                await connection.QueryAsync(_saveCustomer, parameters, transaction);
+                await connection.QueryAsync(SaveCustomerSql, parameters, transaction);
 
                 await CreateAddress(customer, connection, transaction);
 
@@ -122,7 +124,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
             try
             {
-                var updatedQuery = _getCustomerByX + "c.Id = @Id;";
+                var updatedQuery = _getCustomerByX + "c.AccountId = @Id;";
 
                 var parameters = new { Id = id };
                 var customer = await connection.QuerySingleOrDefaultAsync<Customer>(updatedQuery, parameters);
@@ -146,7 +148,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 var parameters = new { Id = id };
-                await connection.ExecuteAsync(_deleteCustomerById, parameters);
+                await connection.ExecuteAsync(DeleteCustomerByIdSql, parameters);
                 return true;
             }
             catch (Exception ex)
@@ -176,21 +178,37 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
         private async Task<string?> GetAccountTypeByEmail(string email)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
 
-            var query = @"SELECT Role FROM Accounts WHERE Email = @Email;";
-            return await connection.QuerySingleOrDefaultAsync<string>(query, new { Email = email });
+                return await connection.QuerySingleOrDefaultAsync<string>(GetAccountTypeByEmailSql, new { Email = email });
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error fetching account with email: {email}, message was: {ex.Message}", ex);
+            }
         }
 
         private async Task<Customer?> GetCustomerByEmail(string email)
         {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.OpenAsync();
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
 
-            var query = _getCustomerByX + "a.Email = @Email;";
+                var query = _getCustomerByX + "a.Email = @Email;";
 
-            return await connection.QuerySingleOrDefaultAsync<Customer?>(query, new { Email = email });
+                return await connection.QuerySingleOrDefaultAsync<Customer?>(query, new { Email = email });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
         private async Task<Admin?> GetAdminByEmail(string email)
@@ -226,7 +244,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var idFound = await connection.QuerySingleOrDefaultAsync<int?>(_accountWithEmailExists, new { Email = email });
+                var idFound = await connection.QuerySingleOrDefaultAsync<int?>(AccountWithEmailExistsSql, new { Email = email });
                 return idFound != null;
             }
             catch (Exception)
@@ -279,14 +297,14 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             {
                 var addressParameters = new
                 {
-                    CustomerId = customer.Id,
+                    AccountId = customer.Id,
                     Street = street,
                     StreetNumber = streetNumber,
                     ApartmentNumber = apartmentNumber,
                     Postalcode = zipCode
                 };
 
-                await connection.ExecuteAsync(_createAddress, addressParameters, transaction);
+                await connection.ExecuteAsync(CreateAddressSql, addressParameters, transaction);
 
                 return customer.Id;
             }
@@ -302,7 +320,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
             try
             {
                 var parameters = new { ZipCode = zipCode, City = city };
-                int rowsAffected = await connection.ExecuteAsync(_createZipCode, parameters, transaction);
+                int rowsAffected = await connection.ExecuteAsync(CreateZipCodeSql, parameters, transaction);
 
                 return rowsAffected > 0;
             }
@@ -321,7 +339,7 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
 
                 var parameters = new { ZipCode = zipCode };
                 // Assuming _doesZipExist is a query that checks for existence of the zip code
-                var result = await connection.QuerySingleOrDefaultAsync<int?>(_doesZipExist, parameters);
+                var result = await connection.QuerySingleOrDefaultAsync<int?>(DoesZipExistSql, parameters);
 
                 // Return true if the result is not null (meaning the row exists)
                 return result.HasValue;
@@ -342,17 +360,56 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses
                     PasswordHash = passwordHash,
                     Email = email
                 };
-                return await connection.QuerySingleOrDefaultAsync<int>(_createAccount, parameters, transaction);
+                return await connection.QuerySingleOrDefaultAsync<int>(CreateAccountSql, parameters, transaction);
             }
             catch
             {
                 throw new Exception("Failed to create account");
             }
         }
+
+        public async Task<bool> DeleteAddressAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+
+
+            try
+            {
+                var parameters = new { Id = id };
+                await connection.ExecuteAsync(DeleteAddressSql, parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting the customer: {ex.Message}");
+            }
+
+        }
+        public async Task<bool> DeleteAccountAsync(int id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+
+
+            try
+            {
+                var parameters = new { Id = id };
+                await connection.ExecuteAsync(DeleteAccountSql, parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting the customer: {ex.Message}");
+            }
+
+
+        }
+
+
     }
-
-
 }
+
+
+
 #endregion
 
 

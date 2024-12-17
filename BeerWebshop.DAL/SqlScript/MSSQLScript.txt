@@ -1,12 +1,6 @@
 ﻿USE [BeerWebshop]
 GO
-/****** Object:  Schema [BeerWebShopDatabaseSchema]    Script Date: 26-11-2024 08:38:21 ******/
-CREATE SCHEMA [BeerWebShopDatabaseSchema]
-GO
-/****** Object:  Schema [Beerwebshopschema]    Script Date: 26-11-2024 08:38:21 ******/
-CREATE SCHEMA [Beerwebshopschema]
-GO
-/****** Object:  Table [dbo].[Accounts]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Accounts]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -22,21 +16,20 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Address]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Address]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Address](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[AccountId] [int] NOT NULL,
 	[Street] [nvarchar](255) NOT NULL,
 	[StreetNumber] [nvarchar](50) NOT NULL,
-	[ApartmentNumber] [nvarchar](50) NULL,
+	[ApartmentNumber] [nvarchar](50) NOT NULL,
 	[Postalcode_FK] [int] NOT NULL,
-	[CustomerId_FK] [int] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
-	[Id] ASC
+	[AccountId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
 UNIQUE NONCLUSTERED 
 (
@@ -47,7 +40,7 @@ UNIQUE NONCLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Admin]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Admin]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -61,7 +54,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Breweries]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Breweries]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -80,7 +73,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Categories]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Categories]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -103,7 +96,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Customers]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Customers]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -121,7 +114,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Orderlines]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Orderlines]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -138,7 +131,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Orders]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Orders]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -155,7 +148,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Postalcode]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Postalcode]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -169,7 +162,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Products]    Script Date: 26-11-2024 08:38:21 ******/
+/****** Object:  Table [dbo].[Products]    Script Date: 28-11-2024 13:28:32 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -204,13 +197,11 @@ ALTER TABLE [dbo].[Products] ADD  DEFAULT ((0)) FOR [Stock]
 GO
 ALTER TABLE [dbo].[Products] ADD  DEFAULT ((0)) FOR [IsDeleted]
 GO
-ALTER TABLE [dbo].[Address]  WITH CHECK ADD FOREIGN KEY([Postalcode_FK])
-REFERENCES [dbo].[Postalcode] ([Postalcode])
-GO
-ALTER TABLE [dbo].[Address]  WITH CHECK ADD  CONSTRAINT [FK_Address_Account] FOREIGN KEY([CustomerId_FK])
+ALTER TABLE [dbo].[Address]  WITH CHECK ADD FOREIGN KEY([AccountId])
 REFERENCES [dbo].[Accounts] ([Id])
 GO
-ALTER TABLE [dbo].[Address] CHECK CONSTRAINT [FK_Address_Account]
+ALTER TABLE [dbo].[Address]  WITH CHECK ADD FOREIGN KEY([Postalcode_FK])
+REFERENCES [dbo].[Postalcode] ([Postalcode])
 GO
 ALTER TABLE [dbo].[Admin]  WITH CHECK ADD FOREIGN KEY([AccountId])
 REFERENCES [dbo].[Accounts] ([Id])

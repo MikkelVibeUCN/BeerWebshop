@@ -1,4 +1,5 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.Client;
+using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using NUnit.Framework;
 using System;
@@ -14,11 +15,14 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 		private ProductAPIClient _productApiClient;
 		private CategoryAPIClient _categoryApiClient;
 		private BreweryAPIClient _breweryApiClient;
+		private AccountAPIClient _accountApiClient;
 
 		private readonly string _testSuffix = $"_Test_{new Guid()}";
 		private readonly List<int> _createdProductIds = new();
 		private readonly List<int> _createdCategoryIds = new();
 		private readonly List<int> _createdBreweryIds = new();
+		private LoginViewModel _viewModel;
+		private string _token;
 
 		[OneTimeSetUp]
 		public async Task SetUpAsync()
@@ -27,12 +31,19 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 			_productApiClient = new ProductAPIClient(apiUri);
 			_categoryApiClient = new CategoryAPIClient(apiUri);
 			_breweryApiClient = new BreweryAPIClient(apiUri);
+			_accountApiClient = new AccountAPIClient(apiUri);
+			_viewModel = new LoginViewModel()
+			{
+				Email = "admin@admin",
+				Password = "Password!123"
+			};
+            _token = await _accountApiClient.GetLoginToken(_viewModel);
 
-			var categoryDto = new CategoryDTO { Name = $"IPA{_testSuffix}" };
-			_createdCategoryIds.Add(await _categoryApiClient.CreateAsync(categoryDto));
+            var categoryDto = new CategoryDTO { Name = $"IPA{_testSuffix}" };
+			_createdCategoryIds.Add(await _categoryApiClient.CreateAsync(categoryDto,null,_token));
 
 			var breweryDto = new BreweryDTO { Name = $"Overtone{_testSuffix}" };
-			_createdBreweryIds.Add(await _breweryApiClient.CreateAsync(breweryDto));
+			_createdBreweryIds.Add(await _breweryApiClient.CreateAsync(breweryDto,null,_token));
 		}
 
 		[OneTimeTearDown]
@@ -43,7 +54,7 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 			{
 				try
 				{
-					await _productApiClient.DeleteAsync(productId);
+					await _productApiClient.DeleteAsync(productId,null,_token);
 				}
 				catch (Exception ex)
 				{
@@ -56,7 +67,7 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 			{
 				try
 				{
-					await _breweryApiClient.DeleteAsync(breweryId);
+					await _breweryApiClient.DeleteAsync(breweryId, null, _token);
 				}
 				catch (Exception ex)
 				{
@@ -69,7 +80,7 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 			{
 				try
 				{
-					await _categoryApiClient.DeleteAsync(categoryId);
+					await _categoryApiClient.DeleteAsync(categoryId,null,_token);
 				}
 				catch (Exception ex)
 				{
@@ -85,8 +96,8 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 		[Test]
 		public async Task CreateProductAsync_ShouldReturnProductId()
 		{
-			var productDTO = CreateTestProductDto();
-			var productId = await _productApiClient.CreateAsync(productDTO);
+            var productDTO = CreateTestProductDto();
+			var productId = await _productApiClient.CreateAsync(productDTO,null,_token);
 			productDTO.Id = productId;
 			_createdProductIds.Add(productId);
 			productDTO.Name = productDTO.Name + "_test1";
@@ -97,11 +108,13 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 		[Test]
 		public async Task GetProductByIdAsync_ShouldReturnCorrectProduct()
 		{
+			//Arrange
 			var productDTO = CreateTestProductDto();
-			var productId = await _productApiClient.CreateAsync(productDTO);
+			var productId = await _productApiClient.CreateAsync(productDTO,null,_token);
+			//Act
 			_createdProductIds.Add(productId);
 			var product = await _productApiClient.GetAsync(productId);
-
+			//Assert
 			Assert.IsNotNull(product);
 			Assert.AreEqual(productDTO.Name, product.Name);
 			Assert.AreEqual(productDTO.CategoryName, product.CategoryName);
@@ -115,14 +128,15 @@ namespace BeerWebshop.Test.APIClientLibraryTests
 		[Test]
 		public async Task DeleteProductAsync_ShouldRemoveProduct()
 		{
+			//Arrange
 			var productDTO = CreateTestProductDto();
-			var productId = await _productApiClient.CreateAsync(productDTO);
+			//Act
+			var productId = await _productApiClient.CreateAsync(productDTO, null, _token);
 			_createdProductIds.Add(productId);
 			productDTO.Id = productId;
-
-			await _productApiClient.DeleteAsync(productId);
-
-			Assert.ThrowsAsync<Exception>(async () => await _productApiClient.DeleteAsync(productId));
+			await _productApiClient.DeleteAsync(productId,null,_token);
+			//Assert
+			Assert.ThrowsAsync<Exception>(async () => await _productApiClient.DeleteAsync(productId,null,_token));
 		}
 
 		private ProductDTO CreateTestProductDto()

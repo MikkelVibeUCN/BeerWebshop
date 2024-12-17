@@ -10,15 +10,15 @@ internal static class MappingHelper
     {
         Customer customer = MapToEntity(dto.CustomerDTO);
 
-		return new Order
-		{
-			CreatedAt = dto.Date,
-			DeliveryAddress = dto.CustomerDTO?.Address,
-			IsDelivered = dto.IsDelivered,
-			Customer = customer,
-			OrderLines = orderLines
-		};
-	}
+        return new Order
+        {
+            CreatedAt = dto.Date,
+            DeliveryAddress = dto.CustomerDTO?.Address,
+            IsDelivered = dto.IsDelivered,
+            Customer = customer,
+            OrderLines = orderLines
+        };
+    }
 
     public static OrderLine MapOrderLineDtoToEntity(OrderLineDTO dto, Product product)
     {
@@ -30,19 +30,19 @@ internal static class MappingHelper
     }
 
 
-	public static OrderDTO MapOrderEntityToDTO(Order order)
-	{
-		return new OrderDTO
-		{
-			Id = order.Id ?? 0,
-			Date = order.CreatedAt,
-			IsDelivered = order.IsDelivered,
-			OrderLines = order.OrderLines != null
-				? order.OrderLines.Select(MapOrderLineEntityToDTO).ToList()
-				: new List<OrderLineDTO>(),
-			CustomerDTO = MapToDTO(order.Customer)
-		};
-	}
+    public static OrderDTO MapOrderEntityToDTO(Order order)
+    {
+        return new OrderDTO
+        {
+            Id = order.Id ?? 0,
+            Date = order.CreatedAt,
+            IsDelivered = order.IsDelivered,
+            OrderLines = order.OrderLines != null
+                ? order.OrderLines.Select(MapOrderLineEntityToDTO).ToList()
+                : new List<OrderLineDTO>(),
+            CustomerDTO = MapToDTO(order.Customer)
+        };
+    }
 
     public static OrderLineDTO MapOrderLineEntityToDTO(OrderLine entity)
     {
@@ -84,7 +84,6 @@ internal static class MappingHelper
             Stock = productDTO.Stock,
             Abv = productDTO.ABV,
             ImageUrl = productDTO.ImageUrl,
-            IsDeleted = false,
             RowVersion = Convert.FromBase64String(productDTO.RowVersion)
         };
     }
@@ -94,7 +93,6 @@ internal static class MappingHelper
         return new Category
         {
             Name = categoryDTO.Name,
-            IsDeleted = false
         };
     }
 
@@ -104,53 +102,52 @@ internal static class MappingHelper
         return new Brewery
         {
             Name = breweryDTO.Name,
-            IsDeleted = false
         };
     }
 
-	public static CategoryDTO MapBreweryEntityToDTO(Brewery brewery)
-	{
-		return new CategoryDTO
-		{
-			Id = brewery.Id,
-			Name = brewery.Name
-		};
-	}
-	public static Customer MapToEntity(CustomerDTO customer)
-	{
-		return new Customer
-		{
-			Id = customer.Id ?? 0,
-			Name = customer.Name,
-			Address = customer.Address,
-			Email = customer.Email,
-			Phone = customer.Phone,
-			PasswordHash = customer.Password,
-			Age = customer.Age,
-		};
-	}
-	public static CustomerDTO MapToDTO(Customer customer)
-	{
-		return new CustomerDTO
-		{
-			Id = customer.Id,
-			Name = customer.Name,
-			Address = customer.Address,
-			Email = customer.Email,
-			Phone = customer.Phone,
-			Password = customer.PasswordHash,
-			Age = customer.Age,
-			Role = customer.Role
-		};
-	}
-	public static AdminDTO MapToDTO(Admin admin)
-	{
-		return new AdminDTO
-		{
-			Id = admin.Id,
-			Email = admin.Email,
-			Password = admin.PasswordHash,
-			Role = admin.Role
-		};
-	}
+    public static CategoryDTO MapBreweryEntityToDTO(Brewery brewery)
+    {
+        return new CategoryDTO
+        {
+            Id = brewery.Id,
+            Name = brewery.Name
+        };
+    }
+    public static Customer MapToEntity(CustomerDTO customer)
+    {
+        return new Customer
+        {
+            Id = customer.Id ?? 0,
+            Name = customer.Name,
+            Address = customer.Address,
+            Email = customer.Email,
+            Phone = customer.Phone,
+            PasswordHash = customer.Password,
+            Age = customer.Age,
+        };
+    }
+    public static CustomerDTO MapToDTO(Customer customer)
+    {
+        return new CustomerDTO
+        {
+            Id = customer.Id,
+            Name = customer.Name,
+            Address = customer.Address,
+            Email = customer.Email,
+            Phone = customer.Phone,
+            Password = customer.PasswordHash,
+            Age = customer.Age,
+            Role = customer.Role
+        };
+    }
+    public static AdminDTO MapToDTO(Admin admin)
+    {
+        return new AdminDTO
+        {
+            Id = admin.Id,
+            Email = admin.Email,
+            Password = admin.PasswordHash,
+            Role = admin.Role
+        };
+    }
 }

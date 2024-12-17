@@ -2,11 +2,6 @@
 using BeerWebshop.APIClientLibrary.ApiClient.Client;
 using BeerWebshop.APIClientLibrary.ApiClient.Client.Interfaces;
 using BeerWebshop.APIClientLibrary.ApiClient.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BeerWebshop.DesktopClient.Controllers
 {
@@ -21,9 +16,9 @@ namespace BeerWebshop.DesktopClient.Controllers
 
         }
 
-        public async Task<int>AddProductAsync(ProductDTO product)
+        public async Task<int> AddProductAsync(ProductDTO product)
         {
-            
+
             try
             {
                 ProductDTO newProduct = new ProductDTO
@@ -36,20 +31,20 @@ namespace BeerWebshop.DesktopClient.Controllers
                     Stock = product.Stock,
                     ABV = product.ABV,
                     CategoryName = product.CategoryName,
-					RowVersion = "",
+                    RowVersion = "",
                     ImageUrl = ""
-				};
+                };
 
-               return await _productAPIClient.CreateAsync(newProduct, "Products", JwtToken);
+                return await _productAPIClient.CreateAsync(newProduct, "Products", JwtToken);
             }
             catch (Exception ex)
             {
                 throw new Exception($"Produkt ikke tilføjet: {ex.Message}");
             }
         }
-        public async Task<IEnumerable<ProductDTO>> getProducts(ProductQueryParameters productQueryParameters) 
+        public async Task<IEnumerable<ProductDTO>> getProducts(ProductQueryParameters productQueryParameters)
         {
-            return await _productAPIClient.GetProductsAsync(productQueryParameters, JwtToken); 
+            return await _productAPIClient.GetProductsAsync(productQueryParameters, JwtToken);
         }
 
         public async Task<bool> DeleteProduct(ProductDTO product)
@@ -57,7 +52,7 @@ namespace BeerWebshop.DesktopClient.Controllers
             return await _productAPIClient.DeleteAsync(product.Id, JwtToken);
         }
         public async Task EditProduct(ProductDTO product)
-        { 
+        {
             await _productAPIClient.EditProductAsync(product, JwtToken);
         }
     }

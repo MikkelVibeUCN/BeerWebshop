@@ -11,38 +11,37 @@ namespace BeerWebshop.DAL.DATA.DAO.DAOClasses;
 public class ProductDAO : IProductDAO
 {
     #region Sql query
-    private const string InsertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, Abv, ImageUrl, IsDeleted)
-        VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl, @IsDeleted);
+    private const string InsertProductSql = @"INSERT INTO Products (Name, CategoryId_FK, BreweryId_FK, Price, Description, Stock, ABV, ImageUrl)
+        VALUES (@Name, @CategoryId, @BreweryId, @Price, @Description, @Stock, @Abv, @ImageUrl);
         SELECT CAST(SCOPE_IDENTITY() AS int);";
     private const string GetByIdSql = @"
-                SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.Stock, p.Abv, p.RowVersion, p.IsDeleted, 
+                SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.Stock, p.Abv, p.RowVersion, 
                        c.Id as Id, c.Name AS Name, 
                        b.Id as Id, b.Name AS Name
                 FROM Products p
                 INNER JOIN Categories c ON p.CategoryId_FK = c.Id
                 INNER JOIN Breweries b ON p.BreweryId_FK = b.Id                
-                WHERE p.IsDeleted = 0 AND p.Id = @Id";
+				AND p.Id = @Id";
+
     private const string DeleteByIdSql = @"DELETE FROM Products WHERE Id = @Id;";
     private const string UpdateByIdSql = @"UPDATE Products SET Name = @Name, CategoryId_FK = @CategoryId, BreweryId_FK = @BreweryId, 
-											Price = @Price, Description = @Description, Stock = @Stock, Abv = @Abv, ImageUrl = @ImageUrl, 
-											IsDeleted = @IsDeleted WHERE Id = @Id and RowVersion = @RowVersion;";
+											Price = @Price, Description = @Description, Stock = @Stock, Abv = @Abv, ImageUrl = @ImageUrl WHERE Id = @Id and RowVersion = @RowVersion;";
 
-	private const string GetFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
-	private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories WHERE IsDeleted = 0;";
-	private const string BaseProductSql = @"
+    private const string GetFromCategorySql = @"SELECT p.* FROM Products p JOIN Categories c ON p.CategoryId_FK = c.Id WHERE c.Name = @Category;";
+    private const string GetAllProductCategoriesSql = @"SELECT Name FROM Categories;";
+    private const string BaseProductSql = @"
         SELECT p.Id, p.Name, p.Description, p.ImageUrl, p.Price, p.ABV, p.Stock, p.Rowversion,
                c.Id AS Id, c.Name AS Name, 
                b.Id AS Id, b.Name AS Name
         FROM Products p
         INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
         INNER JOIN Categories c ON p.CategoryId_FK = c.Id
-        WHERE p.IsDeleted = 0 AND p.Stock > 0";
+        WHERE p.Stock > 0";
     private const string GetProductCountSql = @"
             SELECT COUNT(*) 
             FROM Products p
             INNER JOIN Breweries b ON p.BreweryId_FK = b.Id
-            INNER JOIN Categories c ON p.CategoryId_FK = c.Id
-            WHERE p.IsDeleted = 0";
+            INNER JOIN Categories c ON p.CategoryId_FK = c.Id";
     #endregion
 
     #region Dependency injection
@@ -69,7 +68,6 @@ public class ProductDAO : IProductDAO
                 product.Stock,
                 product.Abv,
                 product.ImageUrl,
-                product.IsDeleted
             };
             var newProductId = await connection.QuerySingleAsync<int>(InsertProductSql, parameters);
             return newProductId;
@@ -124,7 +122,6 @@ public class ProductDAO : IProductDAO
                 product.Stock,
                 product.Abv,
                 product.ImageUrl,
-                product.IsDeleted,
                 Id = product.Id,
                 product.RowVersion
             });
@@ -165,7 +162,7 @@ public class ProductDAO : IProductDAO
 
     #region IProductDAO Methods
     //TODO Timeout ved deadlock.
-  
+
 
     public async Task<IEnumerable<string>> GetProductCategoriesAsync()
     {

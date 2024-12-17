@@ -18,6 +18,10 @@ namespace BeerWebshop.RESTAPI.Services
         {
             _jwtSettings = jwtSettings.Value;
         }
+        public JWTService(JWTSettings jwtSettings)
+        {
+            _jwtSettings = jwtSettings;
+        }
 
         public string GenerateJwtToken(string email, string role)
         {

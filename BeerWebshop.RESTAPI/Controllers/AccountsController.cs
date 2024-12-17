@@ -1,10 +1,9 @@
 ﻿using BeerWebshop.APIClientLibrary.ApiClient.DTO;
 using BeerWebshop.DAL.DATA.Entities;
-using BeerWebshop.RESTAPI.Services;
+using BeerWebshop.RESTAPI.Services.Interfaces;
 using BeerWebshop.RESTAPI.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace BeerWebshop.RESTAPI.Controllers;
 
@@ -12,8 +11,8 @@ namespace BeerWebshop.RESTAPI.Controllers;
 [ApiController]
 public class AccountsController : ControllerBase
 {
-    private readonly AccountService _accountService;
-    public AccountsController(AccountService accountService)
+    private readonly IAccountService _accountService;
+    public AccountsController(IAccountService accountService)
     {
         _accountService = accountService;
     }
@@ -52,7 +51,7 @@ public class AccountsController : ControllerBase
 
             string? Token = await _accountService.AuthenticateAndGetTokenAsync(new LoginViewModel { Email = viewModel.Email, Password = viewModel.Password });
 
-            if(Token == null)
+            if (Token == null)
             {
                 return Unauthorized("Failed to authenticate after creation");
             }
@@ -78,7 +77,7 @@ public class AccountsController : ControllerBase
         try
         {
             var accountDTO = await _accountService.GetByEmail(email);
-            switch(accountDTO.Role)
+            switch (accountDTO.Role)
             {
                 case "User":
                     return Ok(MappingHelper.MapToDTO(accountDTO as Customer));

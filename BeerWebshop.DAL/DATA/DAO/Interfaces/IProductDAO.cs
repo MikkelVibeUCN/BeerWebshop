@@ -8,7 +8,7 @@ namespace BeerWebshop.DAL.DATA.DAO.Interfaces;
 public interface IProductDAO : IBaseDAO<Product>
 {
     Task<int> CreateAsync(Product entity, SqlConnection? connection = null, DbTransaction? transaction = null);
-	Task<int> GetProductCountAsync(ProductQueryParameters parameters);
-	Task<IEnumerable<string>> GetProductCategoriesAsync();
-	Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
+    Task<int> GetProductCountAsync(ProductQueryParameters parameters);
+    Task<IEnumerable<string>> GetProductCategoriesAsync();
+    Task<IEnumerable<Product>> GetProducts(ProductQueryParameters parameters);
 }
