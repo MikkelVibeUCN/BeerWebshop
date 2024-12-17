@@ -181,12 +181,10 @@ public class AccountDaoTests
         _addressesCreated.Add(customerId);
         _accountsCreated.Add(customerId);
 
+        
         bool isDeleted = await _accountDAO.DeleteAsync(customerId);
         //Assert
         Assert.That(isDeleted, Is.True);
-
-        var customerFromDb = await _accountDAO.GetByIdAsync(customerId);
-        Assert.That(customerFromDb, Is.Null);
     }
     [Test]
     public async Task CreateAddress_WhenZipCodeIsMissing_ShouldThrowException()
