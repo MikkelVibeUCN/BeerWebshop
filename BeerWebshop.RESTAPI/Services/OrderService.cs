@@ -20,7 +20,7 @@ namespace BeerWebshop.RESTAPI.Services
             _productService = productService;
         }
 
-        //new
+        
         public async Task<int> CreateOrderFromDTOAsync(OrderDTO dto)
         {
             var orderLines = new List<OrderLine>();
@@ -42,7 +42,7 @@ namespace BeerWebshop.RESTAPI.Services
             return await CreateOrderAsync(order);
         }
 
-        //new
+        
         public async Task<int> CreateOrderAsync(Order order) => await _orderDao.CreateAsync(order);
 
 

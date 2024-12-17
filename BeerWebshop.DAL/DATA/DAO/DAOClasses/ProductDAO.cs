@@ -161,7 +161,6 @@ public class ProductDAO : IProductDAO
     #endregion
 
     #region IProductDAO Methods
-    //TODO Timeout ved deadlock.
 
 
     public async Task<IEnumerable<string>> GetProductCategoriesAsync()
